@@ -84,19 +84,53 @@ async function initSupabaseSession() {
         // Tải hồ sơ từ bảng students
         const { data, error } = await sb.from("students").select("*").eq("id", session.user.id).maybeSingle();
 
+        let profileData = null;
         if (data && data.data) {
-            // Ghi đè localStorage bằng dữ liệu đám mây (cloud luôn là nguồn sự thật)
-            localStorage.setItem('educareer_student_profile', JSON.stringify(data.data));
+            profileData = data.data;
             console.log("[EduCareer Sync] Đã tải hồ sơ học sinh từ đám mây:", data.name);
+        } else {
+            // Trường hợp tài khoản đã đăng ký từ trước nhưng chưa có dòng trong bảng students (do lỗi lúc đăng ký hoặc bảng chưa tạo)
+            // Tự động sinh hồ sơ trống mới
+            const userEmail = session.user.email;
+            const userName = userEmail.split('@')[0];
+            const defaultProfile = {
+                studentId: "HS" + Math.floor(1000 + Math.random() * 9000),
+                studentName: userName,
+                school: "Chưa cập nhật",
+                gradeClass: "Chưa cập nhật",
+                level: "thpt",
+                academic: {},
+                riasec: {},
+                mbti: "",
+                tipi: {}
+            };
+
+            const { error: insertErr } = await sb.from("students").insert({
+                id: session.user.id,
+                name: userName,
+                data: defaultProfile
+            });
+
+            if (!insertErr) {
+                profileData = defaultProfile;
+                console.log("[EduCareer Sync] Tự động khởi tạo hồ sơ mới cho tài khoản:", userEmail);
+            } else {
+                console.error("[EduCareer Sync] Không thể tự động khởi tạo hồ sơ:", insertErr);
+            }
+        }
+
+        if (profileData) {
+            // Ghi đè localStorage bằng dữ liệu đám mây (cloud luôn là nguồn sự thật)
+            localStorage.setItem('educareer_student_profile', JSON.stringify(profileData));
             
             // Phát sự kiện để các trang (Bản đồ năng lực, AI tư vấn...) cập nhật UI tức thời không cần F5
-            window.dispatchEvent(new CustomEvent('studentProfileUpdated', { detail: data.data }));
+            window.dispatchEvent(new CustomEvent('studentProfileUpdated', { detail: profileData }));
         }
 
         // Cập nhật nút navbar "Hồ sơ của tôi" -> hiện tên học sinh
         const profileLink = document.getElementById('nav-profile-link');
         if (profileLink) {
-            const displayName = (data && data.name) ? data.name : session.user.email;
+            const displayName = (profileData && profileData.studentName) ? profileData.studentName : session.user.email;
             profileLink.innerHTML = `<i class="fa-solid fa-user-check"></i> ${displayName}`;
         }
 
