@@ -667,23 +667,28 @@
         const sendBtn = document.getElementById('adv-chat-send');
         const quickQueriesContainer = document.getElementById('adv-quick-queries');
 
-        // Check if student profile is empty
-        const hasGrades = studentData.academic && Object.keys(studentData.academic).length > 0;
-        const hasHolland = studentData.riasec && Object.keys(studentData.riasec).length > 0;
-        const hasMbti = !!studentData.mbti;
-        const hasBigfive = studentData.tipi && Object.keys(studentData.tipi).length > 0;
-        const isProfileEmpty = !hasGrades && !hasHolland && !hasMbti && !hasBigfive;
-
         // Render Sidebar
         function renderSidebar() {
             if (!sidebar) return;
+            
+            // Tính toán động dựa trên studentData hiện tại
+            const hasGrades = studentData.academic && Object.keys(studentData.academic).length > 0;
+            const hasHolland = studentData.riasec && Object.keys(studentData.riasec).length > 0;
+            const hasMbti = !!studentData.mbti;
+            const hasBigfive = studentData.tipi && Object.keys(studentData.tipi).length > 0;
+            const isProfileEmpty = !hasGrades && !hasHolland && !hasMbti && !hasBigfive;
+
+            const currentName = studentData.studentName || 'Học Sinh Mới';
+            const currentSchool = (studentData.gradeClass && studentData.school) 
+                ? `${studentData.gradeClass} – ${studentData.school}`
+                : (studentData.school || 'Chưa nạp dữ liệu định hướng');
             
             if (isProfileEmpty) {
                 sidebar.innerHTML = `
                     <div class="profile-header-card">
                         <div class="profile-avatar-circle"><i class="fa-solid fa-user-slash"></i></div>
-                        <h4 class="profile-name">Học Sinh Mới</h4>
-                        <p class="profile-school">Chưa nạp dữ liệu định hướng</p>
+                        <h4 class="profile-name">${currentName}</h4>
+                        <p class="profile-school">${currentSchool}</p>
                     </div>
                     
                     <div class="sidebar-empty-state">
@@ -725,8 +730,8 @@
                 sidebar.innerHTML = `
                     <div class="profile-header-card">
                         <div class="profile-avatar-circle">${nameInit}</div>
-                        <h4 class="profile-name">${studentData.studentName}</h4>
-                        <p class="profile-school">${studentData.school} (Lớp ${studentData.gradeClass})</p>
+                        <h4 class="profile-name">${studentData.studentName || 'Học Sinh Mới'}</h4>
+                        <p class="profile-school">${studentData.school || 'Trường chưa cập nhật'}${studentData.gradeClass ? ' (Lớp ' + studentData.gradeClass + ')' : ''}</p>
                     </div>
                     
                     <div>
