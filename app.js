@@ -73,10 +73,74 @@ window.syncStudentDataToCloud = syncStudentDataToCloud;
  * Nếu đã đăng nhập, tải hồ sơ học sinh từ cloud về localStorage.
  * Đồng thời cập nhật giao diện navbar hiển thị tên học sinh.
  */
+// Hàm tiện ích tự động chèn CSS cho nút Đăng nhập / Hồ sơ cá nhân dạng hiện đại
+function injectNavbarStyles() {
+    if (document.getElementById('nav-profile-custom-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'nav-profile-custom-styles';
+    style.textContent = `
+        #nav-profile-link.login-btn-style {
+            background: linear-gradient(135deg, #2563eb, #0ea5e9) !important;
+            color: #ffffff !important;
+            padding: 8px 18px !important;
+            border-radius: 50px !important;
+            font-weight: 700 !important;
+            display: inline-flex !important;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            text-decoration: none !important;
+            font-size: 0.9rem !important;
+        }
+        #nav-profile-link.login-btn-style:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3) !important;
+            background: linear-gradient(135deg, #1d4ed8, #0284c7) !important;
+        }
+        #nav-profile-link.login-btn-style:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 2px 5px rgba(37, 99, 235, 0.2) !important;
+        }
+        #nav-profile-link.logged-in-style {
+            background: rgba(37, 99, 235, 0.06) !important;
+            color: #2563eb !important;
+            padding: 8px 18px !important;
+            border-radius: 50px !important;
+            font-weight: 700 !important;
+            display: inline-flex !important;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(37, 99, 235, 0.15) !important;
+            transition: all 0.3s ease !important;
+            text-decoration: none !important;
+            font-size: 0.9rem !important;
+        }
+        #nav-profile-link.logged-in-style:hover {
+            background: rgba(37, 99, 235, 0.12) !important;
+            color: #1d4ed8 !important;
+            transform: translateY(-1px) !important;
+        }
+        /* Style for mobile nav menu if needed */
+        @media (max-width: 768px) {
+            #nav-profile-link.login-btn-style, #nav-profile-link.logged-in-style {
+                margin: 10px 0 !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 async function initSupabaseSession() {
     try {
         const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
         if (!sb) return;
+
+        // Chèn styles cho nút
+        injectNavbarStyles();
 
         const { data: { session } } = await sb.auth.getSession();
         if (!session) {
@@ -90,12 +154,14 @@ async function initSupabaseSession() {
             localStorage.removeItem('educareer_v2_thcs_lop8');
             localStorage.removeItem('educareer_v2_thcs_lop9');
 
-            // Cập nhật nút navbar thành "Đăng nhập"
+            // Cập nhật nút navbar thành "Đăng nhập" với CSS class login-btn-style
             const profileLink = document.getElementById('nav-profile-link');
             if (profileLink) {
-                const isSubDir = window.location.pathname.includes('/pages/');
+                const isSubDir = window.location.pathname.includes('/pages/') || window.location.pathname.includes('/game/');
                 profileLink.href = isSubDir ? '../ho-so-hoc-sinh.html' : 'ho-so-hoc-sinh.html';
                 profileLink.innerHTML = `<i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập`;
+                profileLink.classList.remove('logged-in-style');
+                profileLink.classList.add('login-btn-style');
             }
 
             // Danh sách các trang bắt buộc đăng nhập để sử dụng tính năng
@@ -105,14 +171,18 @@ async function initSupabaseSession() {
                 'ai-tu-van.html',
                 'explore.html',
                 'career-games.html',
-                'tao-cam-nang.html'
+                'tao-cam-nang.html',
+                'trac-nghiem - Truyen.html',
+                'game-cntt.html'
             ];
 
-            // Tách lấy tên file HTML hiện tại
-            const currentPage = window.location.pathname.split('/').pop();
-            if (protectedPages.includes(currentPage)) {
-                alert("Vui lòng đăng ký hoặc đăng nhập tài khoản để sử dụng tính năng này!");
-                const isSubDir = window.location.pathname.includes('/pages/');
+            // Tách lấy tên file HTML hiện tại (dùng decodeURIComponent để giải mã ký tự có khoảng cách)
+            const currentPage = decodeURIComponent(window.location.pathname.split('/').pop());
+            const isInsideGameFolder = window.location.pathname.includes('/game/');
+
+            if (protectedPages.includes(currentPage) || isInsideGameFolder) {
+                alert("Bạn cần đăng nhập để sử dụng tính năng này.");
+                const isSubDir = window.location.pathname.includes('/pages/') || window.location.pathname.includes('/game/');
                 window.location.href = isSubDir ? '../ho-so-hoc-sinh.html' : 'ho-so-hoc-sinh.html';
             }
             return;
@@ -166,11 +236,15 @@ async function initSupabaseSession() {
             window.dispatchEvent(new CustomEvent('studentProfileUpdated', { detail: profileData }));
         }
 
-        // Cập nhật nút navbar "Hồ sơ của tôi" -> hiện tên học sinh
+        // Cập nhật nút navbar "Hồ sơ của tôi" -> hiện tên học sinh với CSS class logged-in-style
         const profileLink = document.getElementById('nav-profile-link');
         if (profileLink) {
             const displayName = (profileData && profileData.studentName) ? profileData.studentName : session.user.email;
+            const isSubDir = window.location.pathname.includes('/pages/') || window.location.pathname.includes('/game/');
+            profileLink.href = isSubDir ? '../ho-so-hoc-sinh.html' : 'ho-so-hoc-sinh.html';
             profileLink.innerHTML = `<i class="fa-solid fa-user-check"></i> ${displayName}`;
+            profileLink.classList.remove('login-btn-style');
+            profileLink.classList.add('logged-in-style');
         }
 
     } catch (err) {
