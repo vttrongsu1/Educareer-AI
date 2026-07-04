@@ -1034,6 +1034,18 @@
             renderQuickQueries();
         });
 
+        // Lắng nghe sự kiện đồng bộ từ Supabase để tự động cập nhật UI tức thời
+        window.addEventListener('studentProfileUpdated', (e) => {
+            if (e.detail) {
+                console.log("[EduCareer Chat] Nhận được dữ liệu đồng bộ mới từ Supabase. Đang cập nhật UI...");
+                studentData = e.detail;
+                renderSidebar();
+                renderPersonalizedPrompts();
+                // Re-initialize welcome message with new student name
+                initWelcomeMessage();
+            }
+        });
+
         // Auto-reload page when storage changes in another tab (e.g. from developer panel)
         window.addEventListener('storage', (e) => {
             if (e.key && e.key.startsWith('educareer_')) {

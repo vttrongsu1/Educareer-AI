@@ -88,6 +88,9 @@ async function initSupabaseSession() {
             // Ghi đè localStorage bằng dữ liệu đám mây (cloud luôn là nguồn sự thật)
             localStorage.setItem('educareer_student_profile', JSON.stringify(data.data));
             console.log("[EduCareer Sync] Đã tải hồ sơ học sinh từ đám mây:", data.name);
+            
+            // Phát sự kiện để các trang (Bản đồ năng lực, AI tư vấn...) cập nhật UI tức thời không cần F5
+            window.dispatchEvent(new CustomEvent('studentProfileUpdated', { detail: data.data }));
         }
 
         // Cập nhật nút navbar "Hồ sơ của tôi" -> hiện tên học sinh
