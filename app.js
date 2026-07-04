@@ -119,7 +119,9 @@ async function initSupabaseSession() {
             // Trường hợp tài khoản đã đăng ký từ trước nhưng chưa có dòng trong bảng students (do lỗi lúc đăng ký hoặc bảng chưa tạo)
             // Tự động sinh hồ sơ trống mới
             const userEmail = session.user.email;
-            const userName = userEmail.split('@')[0];
+            const userName = (session.user.user_metadata && session.user.user_metadata.full_name) 
+                ? session.user.user_metadata.full_name 
+                : userEmail.split('@')[0];
             const defaultProfile = {
                 studentId: "HS" + Math.floor(1000 + Math.random() * 9000),
                 studentName: userName,

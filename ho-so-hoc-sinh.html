@@ -565,8 +565,16 @@
                 } else {
                     // Sign Up
                     if (!name) throw new Error("Vui lòng điền Họ và tên học sinh!");
-                    const { data, error } = await sb.auth.signUp({ email, password });
-                    if (error) throw error;
+                     const { data, error } = await sb.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            data: {
+                                full_name: name
+                            }
+                        }
+                     });
+                     if (error) throw error;
 
                     const user = data.user;
                     if (user) {
