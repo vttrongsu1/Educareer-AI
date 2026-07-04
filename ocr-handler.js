@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('image', file);
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout to prevent cold start aborts
 
             console.log("Connecting to online API proxy server at https://educareer-ai.onrender.com/api/scan-transcript...");
             

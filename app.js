@@ -2135,7 +2135,7 @@ function initIndustryCreator() {
     });
 
     // E. Save Industry (Form Submit)
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
         e.preventDefault();
         
         // Validation check for ratings
@@ -2170,6 +2170,22 @@ function initIndustryCreator() {
             .trim()
             .replace(/\s+/g, "_"); // spaces to underscores
 
+        // Get current user details for tracking
+        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        let userId = null;
+        let userEmail = null;
+        if (sb) {
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session && session.user) {
+                    userId = session.user.id;
+                    userEmail = session.user.email;
+                }
+            } catch (err) {
+                console.error("Lỗi lấy thông tin phiên đăng nhập:", err);
+            }
+        }
+
         const newIndustry = {
             id: slug,
             title: title,
@@ -2193,7 +2209,10 @@ function initIndustryCreator() {
                 comp: ratingValues["rating-comp"],
                 stress: ratingValues["rating-stress"]
             },
-            sec9: sec9
+            sec9: sec9,
+            created_by: userId,
+            created_by_email: userEmail,
+            created_at: new Date().toISOString()
         };
 
         // Save to localStorage (Local fallback)
