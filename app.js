@@ -164,27 +164,6 @@ async function initSupabaseSession() {
                 profileLink.classList.add('login-btn-style');
             }
 
-            // Danh sách các trang bắt buộc đăng nhập để sử dụng tính năng
-            const protectedPages = [
-                'ocr-hoc-ba.html',
-                'ban-do-nang-luc.html',
-                'ai-tu-van.html',
-                'explore.html',
-                'career-games.html',
-                'tao-cam-nang.html',
-                'trac-nghiem - Truyen.html',
-                'game-cntt.html'
-            ];
-
-            // Tách lấy tên file HTML hiện tại (dùng decodeURIComponent để giải mã ký tự có khoảng cách)
-            const currentPage = decodeURIComponent(window.location.pathname.split('/').pop());
-            const isInsideGameFolder = window.location.pathname.includes('/game/');
-
-            if (protectedPages.includes(currentPage) || isInsideGameFolder) {
-                alert("Bạn cần đăng nhập để sử dụng tính năng này.");
-                const isSubDir = window.location.pathname.includes('/pages/') || window.location.pathname.includes('/game/');
-                window.location.href = isSubDir ? '../ho-so-hoc-sinh.html' : 'ho-so-hoc-sinh.html';
-            }
             return;
         }
 

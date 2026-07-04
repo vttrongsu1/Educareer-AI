@@ -613,7 +613,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 10. Saving & Loading from Local Storage
-    saveBtn.addEventListener('click', () => {
+    saveBtn.addEventListener('click', async () => {
+        // Kiểm tra đăng nhập trước khi lưu
+        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (sb) {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) {
+                alert("Bạn cần đăng nhập để sử dụng tính năng này.");
+                window.location.href = "ho-so-hoc-sinh.html";
+                return;
+            }
+        }
+
         let gradesList = [];
         const rows = tableBody.querySelectorAll('tr');
         
