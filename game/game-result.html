@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Báo cáo kết quả đánh giá năng lực một ngày trải nghiệm làm nghề nghiệp.">
+    <title>Kết quả Một Ngày Làm Nghề - EduCareer AI</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-light: #F8FAFC;
+            --bg-dark: #0B192C;
+            --primary-blue: #2563EB;
+            --primary-cyan: #0EA5E9;
+            --text-dark: #0F172A;
+            --text-muted: rgba(15, 23, 42, 0.6);
+            --card-shadow: 0 10px 30px rgba(37, 99, 235, 0.04);
+            --border-radius-lg: 24px;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background-image: radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
+                              radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.03) 0%, transparent 50%);
+        }
+
+        .result-container {
+            max-width: 800px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: var(--border-radius-lg);
+            border: 1px solid rgba(37, 99, 235, 0.08);
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.06);
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-cyan));
+        }
+
+        .exit-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .exit-btn:hover {
+            background: #e2e8f0;
+            transform: scale(1.05);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .result-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-dark) 40%, var(--primary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .result-header p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .score-hero-card {
+            background: #f8fafc;
+            border: 1px solid rgba(37, 99, 235, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 36px;
+        }
+
+        .score-circle-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+        }
+
+        .score-circle-svg {
+            transform: rotate(-90deg);
+            width: 120px;
+            height: 120px;
+        }
+
+        .score-circle-bg {
+            fill: none;
+            stroke: #e2e8f0;
+            stroke-width: 3.5;
+        }
+
+        .score-circle-fill {
+            fill: none;
+            stroke: var(--primary-blue);
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            transition: stroke-dasharray 1.2s ease-out;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .score-details-text h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .score-details-text p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 36px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-title i {
+            color: var(--primary-blue);
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-cyan));
+            border-radius: 4px;
+            width: 0;
+            transition: width 1s ease-out;
+        }
+
+        .metric-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .evaluation-details {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+            margin-bottom: 36px;
+        }
+
+        .evaluation-details h3 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .evaluation-details h3 i {
+            color: var(--primary-blue);
+        }
+
+        .eval-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .eval-item i {
+            font-size: 1rem;
+            color: #10b981;
+            margin-top: 3px;
+        }
+
+        .eval-item-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .eval-item-content p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: var(--text-dark);
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .result-container {
+                padding: 30px 20px;
+            }
+            .score-hero-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .action-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="result-container">
+        <!-- Close button to exit back to games catalog -->
+        <a href="../pages/career-games.html" class="exit-btn" title="Thoát kết quả">✕</a>
+
+        <div class="result-header">
+            <h1>Đánh Giá Trải Nghiệm Một Ngày Làm Nghề</h1>
+            <p>Phân tích mức độ tương thích nghề nghiệp dựa trên hiệu suất thực tế của em trong công việc</p>
+        </div>
+
+        <!-- Hero Score card -->
+        <div class="score-hero-card">
+            <div class="score-circle-wrapper">
+                <svg viewBox="0 0 36 36" class="score-circle-svg">
+                    <path class="score-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="score-circle-fill" id="final-score-fill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="score-text" id="final-score">0</div>
+            </div>
+            <div class="score-details-text">
+                <h2 id="final-verdict">Đang đánh giá...</h2>
+                <p id="final-feedback">Dữ liệu đang được tổng hợp và phân tích từ kết quả các nhiệm vụ Coding, Sửa lỗi và Vận hành hệ thống của em.</p>
+            </div>
+        </div>
+
+        <!-- Metrics bars grid -->
+        <div class="metrics-grid">
+            <!-- Speed -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title"><i class="fa-solid fa-gauge-high"></i> Tốc độ thao tác</span>
+                    <span class="metric-value" id="val-speed">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="fill-speed"></div>
+                </div>
+                <p class="metric-desc">Tốc độ gõ code và phản xạ xử lý các yêu cầu nghiệp vụ nhanh chóng.</p>
+            </div>
+
+            <!-- Precision -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title"><i class="fa-solid fa-circle-check"></i> Độ cẩn thận</span>
+                    <span class="metric-value" id="val-precision">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="fill-precision"></div>
+                </div>
+                <p class="metric-desc">Khả năng phát hiện bug, hạn chế tối đa sai sót trước khi triển khai hệ thống.</p>
+            </div>
+
+            <!-- Logic -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title"><i class="fa-solid fa-brain"></i> Tư duy logic</span>
+                    <span class="metric-value" id="val-logic">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="fill-logic"></div>
+                </div>
+                <p class="metric-desc">Kỹ năng phân tích thuật toán, cấu trúc chương trình và quản trị quy trình release.</p>
+            </div>
+
+            <!-- Stress resistance -->
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-title"><i class="fa-solid fa-stopwatch"></i> Xử lý áp lực</span>
+                    <span class="metric-value" id="val-pressure">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="fill-pressure"></div>
+                </div>
+                <p class="metric-desc">Giữ vững bình tĩnh và duy trì hiệu suất làm việc cao dưới áp lực thời gian giới hạn.</p>
+            </div>
+        </div>
+
+        <!-- Strengths / Roadmap Section -->
+        <div class="evaluation-details">
+            <h3><i class="fa-solid fa-award"></i> Thế mạnh & Lời khuyên phát triển</h3>
+            
+            <div class="eval-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <div class="eval-item-content">
+                    <h4>Khả năng Giải quyết Vấn đề linh hoạt</h4>
+                    <p>Em nhạy bén trong việc bóc tách và phân tích các đoạn mã lỗi, từ đó đưa ra hướng giải quyết nhanh gọn, hạn chế ảnh hưởng đến các Module liên quan.</p>
+                </div>
+            </div>
+
+            <div class="eval-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <div class="eval-item-content">
+                    <h4>Kế hoạch Phát triển đề xuất</h4>
+                    <p>Nên bắt đầu trải nghiệm viết các ứng dụng thực tế nhỏ, tìm hiểu sâu về giải thuật cấu trúc dữ liệu và tham khảo quy trình DevOps Kanban để phát triển kỹ năng toàn diện.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Actions -->
+        <div class="action-buttons">
+            <a href="../pages/career-games.html" class="btn btn-outline"><i class="fa-solid fa-gamepad"></i> Trải nghiệm nghề khác</a>
+            <a href="../ai-tu-van.html" class="btn btn-primary"><i class="fa-solid fa-comment-dots"></i> Cố vấn AI khuyên dùng</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Read scores from localStorage (with fallbacks if game wasn't played)
+            const finalScore = parseInt(localStorage.getItem('career_game_final_score') || '82');
+            const speedScore = parseInt(localStorage.getItem('career_game_speed_score') || '85');
+            const precisionScore = parseInt(localStorage.getItem('career_game_precision_score') || '90');
+            const logicScore = parseInt(localStorage.getItem('career_game_logic_score') || '80');
+            const pressureScore = parseInt(localStorage.getItem('career_game_pressure_score') || '85');
+
+            // Render elements
+            document.getElementById('final-score').innerText = finalScore;
+            document.getElementById('final-score-fill').setAttribute('stroke-dasharray', `${finalScore}, 100`);
+
+            document.getElementById('val-speed').innerText = `${speedScore}%`;
+            document.getElementById('fill-speed').style.width = `${speedScore}%`;
+
+            document.getElementById('val-precision').innerText = `${precisionScore}%`;
+            document.getElementById('fill-precision').style.width = `${precisionScore}%`;
+
+            document.getElementById('val-logic').innerText = `${logicScore}%`;
+            document.getElementById('fill-logic').style.width = `${logicScore}%`;
+
+            document.getElementById('val-pressure').innerText = `${pressureScore}%`;
+            document.getElementById('fill-pressure').style.width = `${pressureScore}%`;
+
+            // Calculate verdict
+            let verdict = "";
+            let feedback = "";
+            if (finalScore >= 80) {
+                verdict = "Rất phù hợp với ngành CNTT";
+                feedback = "Tuyệt vời! Em thể hiện xuất sắc ở tất cả các khía cạnh: gõ code tốc độ, tư duy logic nhạy bén và thái độ cẩn trọng khi rà soát lỗi hệ thống. Ngành Công nghệ thông tin rất cần những nhân tài có tiềm năng như em!";
+            } else if (finalScore >= 60) {
+                verdict = "Có tiềm năng phát triển CNTT";
+                feedback = "Kết quả rất khả quan! Em nắm giữ các kỹ năng cơ bản tốt. Việc trau dồi thêm tư duy thuật toán và sự kiên nhẫn khi debug lỗi hệ thống sẽ giúp em tiến xa hơn nữa trong lĩnh vực này.";
+            } else if (finalScore >= 40) {
+                verdict = "Nên rèn luyện và tìm hiểu thêm";
+                feedback = "Em hoàn thành công việc ở mức ổn định. Lĩnh vực CNTT đòi hỏi tính kiên trì cao. Em nên tự thử nghiệm viết các đoạn code đơn giản để xem bản thân có thực sự hứng thú lâu dài không nhé.";
+            } else {
+                verdict = "Chưa thực sự phù hợp với CNTT";
+                feedback = "Có vẻ tính chất công việc viết code và debug hơi khô khan hoặc áp lực so với thiên hướng tự nhiên của em. Hãy thử trải nghiệm các mini-game nghề nghiệp khác để tìm ra thế mạnh vượt trội của mình nhé!";
+            }
+
+            document.getElementById('final-verdict').innerText = verdict;
+            document.getElementById('final-feedback').innerText = feedback;
+        });
+    </script>
+</body>
+</html>

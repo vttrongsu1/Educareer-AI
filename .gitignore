@@ -1,0 +1,25 @@
+# 1. Chặn file chứa API key bí mật (CỰC KỲ QUAN TRỌNG)
+.env
+
+# 2. Chặn thư mục môi trường ảo Python
+venv/
+.venv/
+env/
+
+# 3. Chặn các file cache của Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 4. Chặn các file tạm của hệ điều hành
+.DS_Store
+Thumbs.db
+
+# 5. Chặn file cấu hình của trình soạn thảo IDE (VS Code, PyCharm)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

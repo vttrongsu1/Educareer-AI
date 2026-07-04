@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hỏi đáp và trò chuyện cùng Cố vấn học tập AI thông minh của EduCareer AI. Tra cứu cẩm nang tuyển sinh, định hướng nghề nghiệp RAG cá nhân hóa.">
+    <title>AI Tư Vấn - EduCareer AI</title>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .chat-consult-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+            margin-top: 100px;
+            margin-bottom: 40px;
+            min-height: calc(100vh - 350px);
+        }
+
+        /* Left Side: Profile Card (Light theme) */
+        .profile-sidebar {
+            background: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.08);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: fit-content;
+            box-shadow: var(--card-shadow);
+        }
+
+        .profile-header-card {
+            text-align: center;
+            border-bottom: 1px dashed rgba(37, 99, 235, 0.1);
+            padding-bottom: 18px;
+        }
+
+        .profile-avatar-circle {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-cyan));
+            color: white;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+            font-weight: 800;
+        }
+
+        .profile-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .profile-school {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin: 4px 0 0 0;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary-blue);
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-badges-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .profile-badge-item {
+            background: #f8fafc;
+            border: 1px solid rgba(37, 99, 235, 0.05);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-badge-label {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .profile-badge-val {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        /* Empty State inside Sidebar */
+        .sidebar-empty-state {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sidebar-empty-state i {
+            font-size: 1.6rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-empty-state p {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 14px;
+        }
+
+        .sidebar-empty-btn {
+            background: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            color: var(--primary-blue);
+            padding: 8px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-empty-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        /* Personalized prompts list */
+        .personalized-prompts {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .prompt-card {
+            background: rgba(37, 99, 235, 0.03);
+            border: 1px solid rgba(37, 99, 235, 0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 0.75rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            line-height: 1.45;
+            font-family: inherit;
+        }
+
+        .prompt-card:hover {
+            background: rgba(37, 99, 235, 0.08);
+            border-color: rgba(37, 99, 235, 0.25);
+            color: var(--primary-blue);
+            transform: translateX(4px);
+        }
+
+        /* Right Side: Chatbox Container (Light theme) */
+        .advisor-chat-box {
+            background: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.08);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            height: 650px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .adv-chat-header {
+            background: #f8fafc;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.08);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .adv-chat-agent-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .adv-chat-agent-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        .adv-chat-agent-meta h3 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .adv-chat-agent-meta span {
+            font-size: 0.7rem;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .adv-chat-messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Message Bubbles styling */
+        .adv-bubble {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            line-height: 1.55;
+        }
+
+        .adv-bubble.bot {
+            background: #f1f5f9;
+            color: var(--text-dark);
+            align-self: flex-start;
+            border-top-left-radius: 4px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .adv-bubble.user {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            align-self: flex-end;
+            border-top-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15);
+        }
+
+        /* Styling tables inside chat bubbles */
+        .adv-bubble table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 6px 0;
+            font-size: 0.78rem;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .adv-bubble table th, .adv-bubble table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            text-align: left;
+            color: var(--text-dark);
+        }
+
+        .adv-bubble table th {
+            background: #f8fafc;
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        /* Typing indicator */
+        .adv-chat-typing {
+            display: none;
+            align-self: flex-start;
+            background: #f1f5f9;
+            padding: 12px 18px;
+            border-radius: 16px;
+            border-top-left-radius: 4px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .adv-chat-typing span {
+            width: 6px;
+            height: 6px;
+            background: #64748b;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+            animation: typingWave 1.4s infinite ease-in-out both;
+        }
+
+        .adv-chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .adv-chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingWave {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Quick query cards on bottom */
+        .adv-quick-queries {
+            padding: 10px 24px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            background: #f8fafc;
+            border-top: 1px solid rgba(37, 99, 235, 0.08);
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .adv-quick-queries::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .adv-query-btn {
+            white-space: nowrap;
+            padding: 8px 14px;
+            background: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            border-radius: 20px;
+            color: var(--text-dark);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .adv-query-btn:hover {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* Chat Input Bar */
+        .adv-input-bar {
+            display: flex;
+            background: #f8fafc;
+            border-top: 1px solid rgba(37, 99, 235, 0.08);
+            padding: 12px 18px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .adv-input-field {
+            flex: 1;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .adv-input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .adv-input-field:focus {
+            border-color: var(--primary-blue);
+            background: #ffffff;
+        }
+
+        .adv-send-btn {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .adv-send-btn:hover {
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+            transform: scale(1.05);
+        }
+
+        /* Custom Scrollbar for chat messages */
+        .adv-chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .adv-chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .adv-chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .adv-chat-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .chat-consult-layout {
+                grid-template-columns: 1fr;
+            }
+            .profile-sidebar {
+                height: auto;
+            }
+        }
+
+        /* Single-screen layout overrides */
+        html, body {
+            height: 100% !important;
+            height: 100dvh !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        .chat-consult-layout {
+            height: calc(100vh - 120px) !important;
+            height: calc(100dvh - 120px) !important;
+            margin-top: 90px !important;
+            margin-bottom: 15px !important;
+            min-height: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        .advisor-chat-box {
+            height: 100% !important;
+        }
+
+        .profile-sidebar {
+            height: 100% !important;
+            max-height: 100% !important;
+            overflow-y: auto !important;
+        }
+
+        #contact {
+            display: none !important;
+        }
+
+        @media (max-width: 900px) {
+            .profile-sidebar {
+                display: none !important; /* Hide sidebar on mobile to maximize chat space */
+            }
+            .chat-consult-layout {
+                grid-template-columns: 1fr !important;
+                height: calc(100vh - 110px) !important;
+                height: calc(100dvh - 110px) !important;
+                margin-top: 80px !important;
+                margin-bottom: 10px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header id="header" class="scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-wrapper">
+                <img src="images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+                <div class="logo-text">EduCareer <span>AI</span></div>
+            </a>
+            
+            <nav>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="pages/explore.html">Khám phá bản thân</a></li>
+                    <li><a href="ban-do-nang-luc.html">Bản đồ năng lực</a></li>
+                    <li><a href="cam-nang-nganh.html">Cẩm nang</a></li>
+                    <li><a href="ai-tu-van.html" class="active">AI tư vấn</a></li>
+                </ul>
+            </nav>
+            
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="chat-consult-layout">
+            
+            <!-- Sidebar: Personalized Student Profile Card -->
+            <aside class="profile-sidebar" id="advisor-profile-sidebar">
+                <!-- Dynamically populated via JS -->
+            </aside>
+
+            <!-- Chat Room: AI Advisor Chatbox -->
+            <section class="advisor-chat-box">
+                <!-- Chatbox Header -->
+                <div class="adv-chat-header">
+                    <div class="adv-chat-agent-info">
+                        <div class="adv-chat-agent-avatar">AI</div>
+                        <div class="adv-chat-agent-meta">
+                            <h3>Cố vấn Học tập AI</h3>
+                            <span><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Đang hoạt động</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scrollable Messages container -->
+                <div class="adv-chat-messages" id="adv-chat-messages">
+                    <div class="adv-bubble bot" id="adv-welcome-message">
+                        Chào em! Anh là Cố vấn học tập AI của EduCareer AI. Rất vui được hỗ trợ em định hướng ngành nghề học và giải đáp các thắc mắc về cẩm nang học tập!
+                    </div>
+                </div>
+
+                <!-- Typing indicator -->
+                <div class="adv-chat-typing" id="adv-chat-typing">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <!-- Quick Query suggestions -->
+                <div class="adv-quick-queries" id="adv-quick-queries">
+                    <!-- Dynamically populated based on profile -->
+                </div>
+
+                <!-- User input box -->
+                <div class="adv-input-bar">
+                    <input type="text" class="adv-input-field" id="adv-chat-input" placeholder="Nhập câu hỏi định hướng ngành học tại đây...">
+                    <button class="adv-send-btn" id="adv-chat-send" aria-label="Gửi tin nhắn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo-wrapper">
+                        <img src="images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+                        <div class="logo-text" style="color: white;">EduCareer <span>AI</span></div>
+                    </a>
+                    <p style="margin-top: 14px;">
+                        Hệ thống hướng nghiệp thông minh hàng đầu dành cho học sinh Việt Nam, kiến tạo tương lai vững chắc dựa trên trí tuệ nhân tạo và dữ liệu khoa học đa chiều.
+                    </p>
+                </div>
+                
+                <div class="footer-links-col">
+                    <h4>Đường dẫn nhanh</h4>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="cam-nang-nganh.html">Cẩm nang</a></li>
+                        <li><a href="pages/explore.html">Khám phá bản thân</a></li>
+                        <li><a href="ban-do-nang-luc.html">Bản đồ năng lực</a></li>
+                        <li><a href="ai-tu-van.html">AI tư vấn</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links-col">
+                    <h4>Thông tin liên hệ</h4>
+                    <div class="footer-contact">
+                        <div class="contact-item">
+                            <i class="fa-solid fa-people-group"></i>
+                            <span>Đội thi: <strong>KgLorious</strong> - HackAIthon 2026</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>Trưởng nhóm: Nguyễn Nhật Long & Trần Anh Khoa</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>longnnce200633@gmail.com <br> khoatace200187@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>Hotline: 0949 737 951</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 EduCareer AI. Bản quyền thuộc về đội thi KgLorious. Dự án tham gia Vietnamese Student HackAIthon 2026.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Điều khoản sử dụng</a>
+                    <a href="#">Chính sách bảo mật</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactivity Script -->
+    <script src="Data/DataHS/hoc_sinh_profile.js"></script>
+    <script src="app.js?v=2.5"></script>
+    <script>
+    (function() {
+        // 1. Check bypass flag to block static mock loading
+        const isReset = localStorage.getItem('educareer_reset_flag') === 'true';
+        let studentData = (!isReset && window.HOC_SINH_PROFILE) ? window.HOC_SINH_PROFILE : {
+            studentId: 'HS2026',
+            studentName: 'Học sinh mới',
+            school: 'Chưa cập nhật trường',
+            gradeClass: 'Chưa cập nhật',
+            level: 'thpt',
+            academic: {},
+            riasec: {},
+            mbti: '',
+            tipi: {}
+        };
+
+        try {
+            const stored = localStorage.getItem('educareer_student_profile');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed && typeof parsed === 'object') {
+                    studentData = parsed;
+                }
+            }
+        } catch(e) {
+            console.error("Error loading student profile:", e);
+        }
+
+        // DOM elements
+        const sidebar = document.getElementById('advisor-profile-sidebar');
+        const chatMessages = document.getElementById('adv-chat-messages');
+        const typingIndicator = document.getElementById('adv-chat-typing');
+        const chatInput = document.getElementById('adv-chat-input');
+        const sendBtn = document.getElementById('adv-chat-send');
+        const quickQueriesContainer = document.getElementById('adv-quick-queries');
+
+        // Check if student profile is empty
+        const hasGrades = studentData.academic && Object.keys(studentData.academic).length > 0;
+        const hasHolland = studentData.riasec && Object.keys(studentData.riasec).length > 0;
+        const hasMbti = !!studentData.mbti;
+        const hasBigfive = studentData.tipi && Object.keys(studentData.tipi).length > 0;
+        const isProfileEmpty = !hasGrades && !hasHolland && !hasMbti && !hasBigfive;
+
+        // Render Sidebar
+        function renderSidebar() {
+            if (!sidebar) return;
+            
+            if (isProfileEmpty) {
+                sidebar.innerHTML = `
+                    <div class="profile-header-card">
+                        <div class="profile-avatar-circle"><i class="fa-solid fa-user-slash"></i></div>
+                        <h4 class="profile-name">Học Sinh Mới</h4>
+                        <p class="profile-school">Chưa nạp dữ liệu định hướng</p>
+                    </div>
+                    
+                    <div class="sidebar-empty-state">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <p>Hồ sơ học tập và tính cách của em hiện đang trống. Hãy cung cấp dữ liệu để AI đưa ra tư vấn cá nhân hóa chính xác nhất!</p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <a href="ocr-hoc-ba.html" class="sidebar-empty-btn">
+                                <i class="fa-solid fa-address-card"></i> Nhập điểm học bạ
+                            </a>
+                            <a href="trac-nghiem - Truyen.html" class="sidebar-empty-btn">
+                                <i class="fa-solid fa-list-check"></i> Làm trắc nghiệm định hướng
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const nameInit = studentData.studentName ? studentData.studentName.split(' ').pop().charAt(0) : 'H';
+                
+                // Calculate GPA
+                let gpaText = 'Chưa nạp';
+                if (hasGrades) {
+                    const keys = Object.keys(studentData.academic);
+                    const sum = keys.reduce((s, k) => s + studentData.academic[k], 0);
+                    gpaText = (sum / keys.length).toFixed(1);
+                }
+
+                // Get Holland top
+                let hollandText = 'Chưa làm';
+                if (hasHolland) {
+                    const sorted = Object.keys(studentData.riasec).sort((a,b) => studentData.riasec[b] - studentData.riasec[a]);
+                    hollandText = sorted[0];
+                    const hollandNames = { R: 'Thực tế', I: 'Nghiên cứu', A: 'Nghệ thuật', S: 'Xã hội', E: 'Quản lý', C: 'Nghiệp vụ' };
+                    if (hollandNames[hollandText]) {
+                        hollandText = `${hollandText} – ${hollandNames[hollandText]}`;
+                    }
+                }
+
+                sidebar.innerHTML = `
+                    <div class="profile-header-card">
+                        <div class="profile-avatar-circle">${nameInit}</div>
+                        <h4 class="profile-name">${studentData.studentName}</h4>
+                        <p class="profile-school">${studentData.school} (Lớp ${studentData.gradeClass})</p>
+                    </div>
+                    
+                    <div>
+                        <div class="sidebar-section-title"><i class="fa-solid fa-dna"></i> Tóm tắt hồ sơ</div>
+                        <div class="profile-badges-list">
+                            <div class="profile-badge-item">
+                                <span class="profile-badge-label">Học lực (GPA):</span>
+                                <span class="profile-badge-val" style="color: var(--primary-cyan);">${gpaText}</span>
+                            </div>
+                            <div class="profile-badge-item">
+                                <span class="profile-badge-label">Tính cách MBTI:</span>
+                                <span class="profile-badge-val" style="color: #a855f7;">${studentData.mbti || 'Chưa làm'}</span>
+                            </div>
+                            <div class="profile-badge-item">
+                                <span class="profile-badge-label">Sở thích Holland:</span>
+                                <span class="profile-badge-val" style="color: #f59e0b;">${hollandText}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <div class="sidebar-section-title"><i class="fa-solid fa-lightbulb"></i> Gợi ý câu hỏi cho bạn</div>
+                        <div class="personalized-prompts" id="personalized-prompts-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Generate Personalized prompts
+        function renderPersonalizedPrompts() {
+            const container = document.getElementById('personalized-prompts-container');
+            if (!container) return;
+
+            let prompts = [];
+
+            if (hasMbti) {
+                prompts.push(`Tôi có tính cách ${studentData.mbti}, tính cách này có đặc trưng thế mạnh gì trong học tập và công việc?`);
+            }
+            if (hasHolland) {
+                const sorted = Object.keys(studentData.riasec).sort((a,b) => studentData.riasec[b] - studentData.riasec[a]);
+                const topHolland = sorted[0];
+                const names = { R: 'Thực tế (R)', I: 'Nghiên cứu (I)', A: 'Nghệ thuật (A)', S: 'Xã hội (S)', E: 'Quản lý (E)', C: 'Nghiệp vụ (C)' };
+                prompts.push(`Với nhóm sở thích Holland trội nhất là ${names[topHolland] || topHolland}, những ngành đại học nào khớp nhất?`);
+            }
+            if (hasGrades && studentData.academic.math >= 8.5) {
+                prompts.push(`Học lực môn Toán của tôi tốt (Toán: ${studentData.academic.math.toFixed(1)}), tôi có thuận lợi gì khi học ngành AI và Vi mạch bán dẫn?`);
+            }
+
+            // Fallbacks
+            if (prompts.length < 3) {
+                prompts.push("So sánh sự khác nhau giữa Khoa học máy tính và Kỹ thuật phần mềm.");
+            }
+            if (prompts.length < 3) {
+                prompts.push("Mức lương và cơ hội việc làm của ngành Công nghệ Bán dẫn ra sao?");
+            }
+
+            container.innerHTML = prompts.map(p => `
+                <button class="prompt-card" data-prompt="${p}">${p}</button>
+            `).join('');
+
+            // Click triggers
+            container.querySelectorAll('.prompt-card').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    chatInput.value = btn.getAttribute('data-prompt');
+                    handleChatSubmit();
+                });
+            });
+        }
+
+        // Initialize dynamic welcome message in Chatbox
+        function initWelcomeMessage() {
+            const welcomeBubble = document.getElementById('adv-welcome-message');
+            if (!welcomeBubble) return;
+
+            if (isProfileEmpty) {
+                welcomeBubble.innerHTML = `Chào em! Anh là Cố vấn học tập AI của EduCareer AI. 
+                Hệ thống nhận thấy em là học sinh mới và chưa có thông tin học bạ hay trắc nghiệm tính cách. 
+                Em có thể đặt câu hỏi về các ngành nghề bất kỳ, hoặc nhấn nút <strong>"Nhập điểm học bạ"</strong> ở cột bên trái để bắt đầu lập hồ sơ nhé!`;
+            } else {
+                let statusDetails = [];
+                if (hasGrades) {
+                    const keys = Object.keys(studentData.academic);
+                    const avg = (keys.reduce((s, k) => s + studentData.academic[k], 0) / keys.length).toFixed(1);
+                    statusDetails.push(`GPA học bạ ${avg}`);
+                }
+                if (hasMbti) statusDetails.push(`Tính cách ${studentData.mbti}`);
+                if (hasHolland) {
+                    const sorted = Object.keys(studentData.riasec).sort((a,b) => studentData.riasec[b] - studentData.riasec[a]);
+                    statusDetails.push(`Holland ${sorted[0]}`);
+                }
+
+                welcomeBubble.innerHTML = `Chào <strong>${studentData.studentName}</strong>! Anh là Cố vấn học tập AI. 
+                Anh đã nạp thành công hồ sơ của em (${statusDetails.join(', ')}). 
+                Em muốn anh tư vấn chuyên sâu hoặc giải đáp thông tin về hướng đi ngành học nào hôm nay?`;
+            }
+        }
+
+        // Chatbot RAG Database
+        const botDatabase = {
+            "so sanh khoa hoc may tinh va ky thuat phan mem": `
+                <div>
+                    <p><strong>Cẩm nang so sánh ngành học (Truy xuất RAG):</strong></p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tiêu chí</th>
+                                <th>Khoa học Máy tính (CS)</th>
+                                <th>Kỹ thuật Phần mềm (SE)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Bản chất</strong></td>
+                                <td>Đi sâu vào lý thuyết thuật toán, kiến trúc máy tính, mật mã học, AI.</td>
+                                <td>Nghiêng về quy trình phát triển, kiểm thử, quản lý dự án phần mềm.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Môn cốt lõi</strong></td>
+                                <td>Đại số tuyến tính, Trí tuệ nhân tạo, Thiết kế trình biên dịch.</td>
+                                <td>Thiết kế hướng đối tượng (OOP), Kiểm thử phần mềm, Agile/Scrum.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mức lương thị trường</strong></td>
+                                <td>$1,200 - $3,500/tháng (Phù hợp làm R&D, AI)</td>
+                                <td>$900 - $2,800/tháng (Phù hợp làm kỹ sư Web, App)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 8px;">Nếu học lực môn Toán của em tốt, học ngành **Khoa học Máy tính** sẽ có lợi thế tư duy rất lớn!</p>
+                </div>
+            `,
+            "co hoi viec lam cua nganh cong nghe ban dan": `
+                <div>
+                    <p><strong>Cơ hội nghề nghiệp ngành Thiết kế vi mạch & Bán dẫn:</strong></p>
+                    <p>Ngành Bán dẫn đang là tâm điểm phát triển chiến lược quốc gia với 3 hướng đi chính:</p>
+                    <ul style="margin-left: 18px; margin-top: 6px;">
+                        <li><strong>Kỹ sư thiết kế IC (Front-End/Back-End):</strong> Thiết kế sơ đồ logic và bố trí cấu trúc vật lý của chip.</li>
+                        <li><strong>Kỹ sư kiểm thử (IC Verification):</strong> Viết kịch bản tự động mô phỏng và dò lỗi thiết kế.</li>
+                        <li><strong>Kỹ sư đóng gói và sản xuất:</strong> Giám sát quy trình chế tạo chip trong phòng sạch.</li>
+                    </ul>
+                    <p style="margin-top: 8px;"><strong>Đơn vị đào tạo hàng đầu:</strong> ĐH Bách Khoa Hà Nội/TP.HCM, ĐHQG TP.HCM, ĐH FPT. Mức lương khởi điểm khoảng $1,000 - $1,800/tháng cho kỹ sư thiết kế tốt.</p>
+                </div>
+            `,
+            "tinh cach intj": `
+                <div>
+                    <p><strong>Tư vấn cá nhân hóa cho nhóm tính cách INTJ (Nhà Hoạch Định):</strong></p>
+                    <p>Nhóm tính cách **INTJ** chiếm tỷ lệ khá hiếm trong xã hội (~2%), nổi tiếng với khả năng tự nghiên cứu, tư duy chiến lược và tinh thần kỷ luật tự giác cao.</p>
+                    <ul style="margin-left: 18px; margin-top: 6px;">
+                        <li><strong>Thế mạnh:</strong> Rất nhạy bén với cấu trúc logic trừu tượng, giỏi bóc tách quy luật phức tạp, kiên trì tự học.</li>
+                        <li><strong>Điểm cần lưu ý:</strong> Xu hướng khép kín, ngại giao tiếp nhóm đông người hoặc thuyết trình biểu đạt cảm xúc.</li>
+                        <li><strong>Nhóm ngành phù hợp nhất:</strong> AI & Khoa học Dữ liệu, Vi mạch bán dẫn, An ninh mạng, Kỹ sư hệ thống hoặc Nghiên cứu Khoa học.</li>
+                    </ul>
+                </div>
+            `,
+            "so thich holland": `
+                <div>
+                    <p><strong>Định hướng nghề nghiệp theo nhóm sở thích Holland trội:</strong></p>
+                    <p>Hệ thống ghi nhận em có thiên hướng sở thích trội nhất là nhóm **Nghiên cứu (I - Investigative)**:</p>
+                    <ul style="margin-left: 18px; margin-top: 6px;">
+                        <li><strong>Đặc trưng tính cách:</strong> Thích quan sát, tìm tòi học hỏi, phân tích, đánh giá và giải quyết các bài toán hóc búa mang tính học thuật.</li>
+                        <li><strong>Môi trường làm việc lý tưởng:</strong> Phòng thí nghiệm, bộ phận nghiên cứu và phát triển (R&D) của các tập đoàn công nghệ lớn, hoặc giảng dạy đại học.</li>
+                        <li><strong>Ngành học gợi ý:</strong> Công nghệ sinh học, Khoa học dữ liệu, Vật lý bán dẫn, Nghiên cứu Trí tuệ nhân tạo.</li>
+                    </ul>
+                </div>
+            `,
+            "mon toan": `
+                <div>
+                    <p><strong>Phân tích lợi thế môn Toán học (Điểm số: ${studentData.academic.math ? studentData.academic.math.toFixed(1) : '9.0'}):</strong></p>
+                    <p>Đạt điểm số môn Toán nổi trội là tấm vé vàng để em đi sâu vào các nhóm ngành công nghệ cao thế hệ mới:</p>
+                    <ul style="margin-left: 18px; margin-top: 6px;">
+                        <li><strong>Trí tuệ nhân tạo (AI):</strong> Yêu cầu cực kỳ khắt khe về Toán rời rạc, Xác suất thống kê và Đại số tuyến tính để huấn luyện mô hình học máy.</li>
+                        <li><strong>Thiết kế vi mạch bán dẫn:</strong> Đòi hỏi tư duy thuật toán tối ưu hóa diện tích chip vật lý và giải phương trình vi phân mô phỏng dòng điện.</li>
+                    </ul>
+                    <p style="margin-top: 8px;">Em có nền tảng toán học rất vững vàng để tự tin lựa chọn các khối ngành kỹ thuật khó này!</p>
+                </div>
+            `
+        };
+
+        // Render Quick Queries inside chat container
+        function renderQuickQueries() {
+            if (!quickQueriesContainer) return;
+
+            let queries = [
+                { text: "So sánh Khoa học máy tính & Kỹ thuật PM", q: "So sánh khoa học máy tính và kỹ thuật phần mềm" },
+                { text: "Học Công nghệ Bán dẫn ra trường làm gì?", q: "Cơ hội việc làm của ngành công nghệ bán dẫn" }
+            ];
+
+            if (hasMbti) {
+                queries.push({ text: `Thế mạnh của tính cách ${studentData.mbti}`, q: "tinh cach intj" });
+            }
+            if (hasHolland) {
+                queries.push({ text: "Tư vấn nhóm Holland của tôi", q: "so thich holland" });
+            }
+
+            quickQueriesContainer.innerHTML = queries.map(item => `
+                <button class="adv-query-btn" data-query="${item.q}">${item.text}</button>
+            `).join('');
+
+            // Click triggers
+            quickQueriesContainer.querySelectorAll('.adv-query-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    chatInput.value = btn.getAttribute('data-query');
+                    handleChatSubmit();
+                });
+            });
+        }
+
+        // Append message to Chat Area
+        function appendMessage(sender, htmlText) {
+            if (!chatMessages) return;
+
+            const bubble = document.createElement('div');
+            bubble.className = `adv-bubble ${sender}`;
+            bubble.innerHTML = htmlText;
+            chatMessages.appendChild(bubble);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Chat Submit handler
+        async function handleChatSubmit() {
+            const query = chatInput.value.trim();
+            if (query === '') return;
+
+            // Append user message
+            appendMessage('user', query);
+            chatInput.value = '';
+
+            // Show typing indicator
+            if (typingIndicator) {
+                typingIndicator.style.display = 'block';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            try {
+                // Call local FastAPI server consult-bot API
+                const response = await fetch("http://127.0.0.1:5000/api/consult-bot", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: query,
+                        student_data: studentData
+                    })
+                });
+
+                if (typingIndicator) typingIndicator.style.display = 'none';
+
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    appendMessage('bot', result.reply);
+                } else {
+                    throw new Error("API error");
+                }
+            } catch (err) {
+                console.warn("Lỗi kết nối server, sử dụng Local Bot Database:", err);
+                
+                // Search bot local reply fallback
+                const searchKey = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                let reply = "Cảm ơn câu hỏi của em. Hệ thống RAG đang đối chiếu dữ liệu tuyển sinh. Anh đề xuất em bấm chọn các câu hỏi nhanh gợi ý ở phía trên hoặc ở cột bên trái để nhận thông tin cẩm nang chuẩn xác nhất nhé!";
+                
+                for (let key in botDatabase) {
+                    if (searchKey.includes(key) || key.includes(searchKey)) {
+                        reply = botDatabase[key];
+                        break;
+                    }
+                }
+                
+                if (typingIndicator) typingIndicator.style.display = 'none';
+                appendMessage('bot', reply);
+            }
+        }
+
+        // Click listeners
+        if (sendBtn) {
+            sendBtn.addEventListener('click', handleChatSubmit);
+        }
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleChatSubmit();
+            });
+        }
+
+        // Mobile Menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        if (menuToggle && navLinks) {
+            menuToggle.addEventListener('click', () => {
+                menuToggle.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // Initialize view
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSidebar();
+            renderPersonalizedPrompts();
+            initWelcomeMessage();
+            renderQuickQueries();
+        });
+
+        // Auto-reload page when storage changes in another tab (e.g. from developer panel)
+        window.addEventListener('storage', (e) => {
+            if (e.key && e.key.startsWith('educareer_')) {
+                window.location.reload();
+            }
+        });
+
+    })();
+    </script>
+</body>
+</html>

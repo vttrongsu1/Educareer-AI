@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trải nghiệm một ngày làm nghề Công nghệ Thông tin qua mini-game Code Quest.">
+    <title>Code Quest - Một Ngày Làm CNTT</title>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="../style.css">
+    <!-- Game Stylesheet -->
+    <link rel="stylesheet" href="../game-cntt.css">
+    <style>
+        /* CSS Overrides for Perfect Vertical and Horizontal Centering */
+        html, body.game-cntt-page {
+            height: 100% !important;
+            height: 100dvh !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #0d1117;
+            overflow: hidden !important; /* Disable scrollbars */
+        }
+
+        .game-main {
+            height: 100% !important;
+            height: 100dvh !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: center !important; /* Perfect vertical centering */
+            justify-content: center !important; /* Perfect horizontal centering */
+            box-sizing: border-box !important;
+        }
+
+        .game-container {
+            margin: 0 auto !important;
+            width: 100% !important;
+            max-width: 900px !important;
+            box-sizing: border-box !important;
+        }
+
+        .game-screen.hidden {
+            display: none !important;
+        }
+
+        .footer-compact {
+            display: none !important;
+        }
+
+        /* Quit / Exit Button */
+        .game-exit-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #21262d;
+            border: 1px solid #30363d;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 9999;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .game-exit-btn:hover {
+            background-color: #30363d;
+            border-color: #8b949e;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        /* Compress layout spacing to fit everything without scrolling */
+        .game-screen {
+            padding: 16px 20px !important;
+        }
+
+        .game-title {
+            font-size: 2rem !important;
+            margin-bottom: 10px !important;
+        }
+
+        .game-desc {
+            font-size: 1rem !important;
+            margin-bottom: 20px !important;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        #screen-intro {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px !important;
+        }
+
+        #btn-start-game {
+            margin: 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            justify-content: center;
+        }
+
+        .game-header {
+            margin-bottom: 12px !important;
+            padding-bottom: 8px !important;
+        }
+
+        .game-header h2 {
+            font-size: 1.2rem !important;
+        }
+
+        .stat-box {
+            padding: 5px 10px !important;
+            font-size: 0.8rem !important;
+        }
+
+        /* Màn 1: Code Sprint spacing */
+        .terminal-body {
+            padding: 12px !important;
+        }
+
+        .target-text-container {
+            font-size: 1.25rem !important;
+            margin-bottom: 12px !important;
+        }
+
+        .terminal-input-wrapper {
+            padding: 0 12px 12px 12px !important;
+        }
+
+        /* Màn 2: Logic Builder spacing */
+        .logic-workspace {
+            margin-top: 12px !important;
+            gap: 12px !important;
+        }
+
+        .logic-editor, .logic-toolbox {
+            padding: 12px !important;
+        }
+
+        .logic-statement {
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 15px !important;
+        }
+
+        .drop-slot {
+            width: 120px !important;
+            height: 32px !important;
+            line-height: 28px !important;
+            margin: 0 4px !important;
+        }
+
+        .draggable-card {
+            padding: 5px 10px !important;
+            font-size: 0.85rem !important;
+        }
+
+        /* Màn 3: Release Rush spacing */
+        .kanban-board {
+            margin-bottom: 12px !important;
+            gap: 8px !important;
+        }
+
+        .kanban-col-header {
+            padding: 6px 10px !important;
+            font-size: 0.85rem !important;
+        }
+
+        .kanban-dropzone {
+            min-height: 80px !important;
+            padding: 6px !important;
+        }
+
+        .release-tasks-pool {
+            padding: 8px 12px !important;
+            min-height: 50px !important;
+        }
+
+        .task-card {
+            padding: 5px 10px !important;
+            font-size: 0.8rem !important;
+        }
+
+        /* Result screen spacing */
+        .result-card {
+            padding: 15px !important;
+        }
+        .result-score-circle {
+            width: 100px !important;
+            margin: 0 auto 15px auto !important;
+        }
+        .circular-chart {
+            max-height: 140px !important;
+        }
+        .skills-grid {
+            gap: 6px !important;
+        }
+        .skill-item {
+            margin-bottom: 6px !important;
+        }
+        .final-feedback {
+            margin: 10px 0 !important;
+            font-size: 0.85rem !important;
+        }
+
+        /* Adjustments for screens with very small height */
+        @media (max-height: 600px) {
+            .game-main {
+                padding: 5px !important;
+            }
+            .game-screen {
+                padding: 12px !important;
+            }
+            .game-title {
+                font-size: 1.6rem !important;
+            }
+            .game-desc {
+                font-size: 0.9rem !important;
+                margin-bottom: 10px !important;
+            }
+        }
+    </style>
+</head>
+<body class="game-cntt-page">
+
+    <!-- Quit Game Button -->
+    <a href="../pages/career-games.html" class="game-exit-btn" title="Thoát game">✕</a>
+
+    <main class="game-main">
+        <div class="container game-container" id="game-container">
+            <!-- Màn Mở Đầu -->
+            <section id="screen-intro" class="game-screen active">
+                <h1 class="game-title">Code Quest <br><span class="gradient-text">Một Ngày Làm CNTT</span></h1>
+                <p class="game-desc">Hôm nay em thử làm thành viên nhóm CNTT. Nhiệm vụ: xử lý lỗi, lắp logic và chốt demo đúng hạn.</p>
+                <button class="btn btn-orange game-btn" id="btn-start-game">Bắt đầu <i class="fa-solid fa-arrow-right"></i></button>
+            </section>
+
+            <!-- Màn 1: Code Sprint -->
+            <section id="screen-sprint" class="game-screen hidden">
+                <div class="game-header">
+                    <h2>Màn 1: Code Sprint - Gõ nhanh cứu hệ thống</h2>
+                    <div class="game-stats">
+                        <div class="stat-box timer"><i class="fa-regular fa-clock"></i> <span id="sprint-time">60</span>s</div>
+                        <div class="stat-box"><i class="fa-solid fa-bolt"></i> WPM: <span id="sprint-wpm">0</span></div>
+                        <div class="stat-box"><i class="fa-solid fa-bullseye"></i> Acc: <span id="sprint-acc">100</span>%</div>
+                        <div class="stat-box combo-box"><i class="fa-solid fa-fire"></i> Combo: <span id="sprint-combo">0</span></div>
+                    </div>
+                </div>
+                <div class="terminal-wrapper">
+                    <div class="terminal-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="terminal-title">system_terminal.exe</span>
+                    </div>
+                    <div class="terminal-body">
+                        <p class="terminal-instruction">> Cần sửa lỗi hệ thống. Hãy gõ lại chính xác dòng lệnh bên dưới:</p>
+                        <div class="target-text-container" id="target-text-container">
+                            <!-- Chữ mẫu sẽ được render ở đây -->
+                        </div>
+                    </div>
+                    <div class="terminal-input-wrapper">
+                        <span class="prompt-symbol">></span>
+                        <input type="text" id="sprint-input" class="terminal-input" placeholder="Gõ vào đây và nhấn Enter..." autocomplete="off">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Màn 2: Logic Builder -->
+            <section id="screen-logic" class="game-screen hidden">
+                <div class="game-header">
+                    <h2>Màn 2: Logic Builder - Lắp Công Thức</h2>
+                    <div class="game-stats">
+                        <div class="stat-box">Vòng <span id="logic-round">1</span>/3</div>
+                    </div>
+                </div>
+                <div class="logic-workspace">
+                    <div class="logic-editor">
+                        <p class="logic-instruction">Website cần gợi ý ngành. Hãy kéo các thẻ vào ô trống để lắp logic đúng.</p>
+                        <div class="logic-statement" id="logic-statement">
+                            <!-- Mã giả sẽ render ở đây -->
+                        </div>
+                        <button class="btn btn-orange game-btn hidden" id="btn-run-logic">Chạy thử hệ thống <i class="fa-solid fa-play"></i></button>
+                    </div>
+                    <div class="logic-toolbox" id="logic-toolbox">
+                        <h3>Dữ liệu sẵn có</h3>
+                        <div class="toolbox-cards" id="toolbox-cards">
+                            <!-- Các thẻ sẽ render ở đây -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Màn 3: Release Rush -->
+            <section id="screen-release" class="game-screen hidden">
+                <div class="game-header">
+                    <h2>Màn 3: Release Rush - Chốt Demo</h2>
+                    <div class="game-stats">
+                        <div class="stat-box timer"><i class="fa-regular fa-clock"></i> <span id="release-time">60</span>s</div>
+                    </div>
+                    <p class="release-instruction">Còn ít phút trước demo. Hãy kéo việc vào cột ưu tiên xử lý.</p>
+                </div>
+                
+                <div class="kanban-board">
+                    <div class="kanban-col priority-high">
+                        <div class="kanban-col-header">🔥 Sửa ngay</div>
+                        <div class="kanban-dropzone" data-category="fix-now" id="drop-fix-now"></div>
+                    </div>
+                    <div class="kanban-col priority-med">
+                        <div class="kanban-col-header">⏳ Để sau</div>
+                        <div class="kanban-dropzone" data-category="fix-later" id="drop-fix-later"></div>
+                    </div>
+                    <div class="kanban-col priority-low">
+                        <div class="kanban-col-header">🗑 Bỏ qua</div>
+                        <div class="kanban-dropzone" data-category="ignore" id="drop-ignore"></div>
+                    </div>
+                </div>
+
+                <div class="release-tasks-pool" id="release-tasks-pool">
+                    <!-- Các task sẽ render ở đây -->
+                </div>
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-orange game-btn" id="btn-finish-release">Chốt Demo <i class="fa-solid fa-rocket"></i></button>
+                </div>
+            </section>
+
+            <!-- Màn Tổng Kết -->
+            <section id="screen-result" class="game-screen hidden">
+                <div class="result-card">
+                    <h2>Kết quả: Một Ngày Làm CNTT</h2>
+                    <div class="result-score-circle">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" id="final-score-path" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="18" y="20.35" class="percentage" id="final-score-text">0</text>
+                        </svg>
+                        <div class="result-title" id="final-verdict">Đang tính toán...</div>
+                    </div>
+                    
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <span class="skill-name">Tốc độ thao tác</span>
+                            <div class="progress-bar"><div class="progress-fill" id="bar-speed" style="width: 0%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Độ cẩn thận</span>
+                            <div class="progress-bar"><div class="progress-fill" id="bar-detail" style="width: 0%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Tư duy logic</span>
+                            <div class="progress-bar"><div class="progress-fill" id="bar-logic" style="width: 0%"></div></div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Xử lý áp lực</span>
+                            <div class="progress-bar"><div class="progress-fill" id="bar-pressure" style="width: 0%"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="badge-display" id="final-badge">
+                        <!-- Badge hiển thị ở đây -->
+                    </div>
+                    <p class="final-feedback" id="final-feedback"></p>
+
+                    <button class="btn btn-outline" id="btn-replay"><i class="fa-solid fa-rotate-right"></i> Chơi lại</button>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Popup chuyển màn -->
+        <div class="transition-popup hidden" id="transition-popup">
+            <div class="popup-content">
+                <div class="popup-icon"><i class="fa-solid fa-check-circle"></i></div>
+                <p id="popup-text">Hoàn thành!</p>
+                <button class="btn btn-orange" id="popup-btn">Tiếp tục</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Compact Footer -->
+    <footer class="footer-compact">
+        <div class="container footer-compact-container">
+            <p>&copy; 2026 EduCareer AI. Bản quyền thuộc về đội thi <strong>KgLorious</strong>.</p>
+        </div>
+    </footer>
+
+    <!-- Game Scripts -->
+    <script src="../app.js?v=2.5"></script>
+    <script src="../Data/game-cntt-data.js"></script>
+    <script src="../game-cntt.js"></script>
+</body>
+</html>

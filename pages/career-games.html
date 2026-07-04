@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Một ngày làm nghề - Trải nghiệm thực tế công việc các ngành nghề qua mini-game mô phỏng.">
+    <title>Một Ngày Làm Nghề - EduCareer AI</title>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .games-section {
+            padding-top: 120px;
+            padding-bottom: 80px;
+            min-height: calc(100vh - 120px);
+            display: flex;
+            align-items: center;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .game-card {
+            background: #ffffff;
+            border-radius: var(--border-radius-lg);
+            padding: 30px 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(37, 99, 235, 0.04);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .game-card.active-game::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-cyan));
+        }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .game-card.disabled-game {
+            opacity: 0.75;
+            background: rgba(248, 250, 252, 0.6);
+            border-color: rgba(15, 23, 42, 0.03);
+        }
+
+        .game-card.disabled-game:hover {
+            transform: none;
+            box-shadow: var(--card-shadow);
+        }
+
+        .game-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            transition: var(--transition-smooth);
+        }
+
+        .game-card.active-game .game-icon-wrapper {
+            background: rgba(37, 99, 235, 0.06);
+            color: var(--primary-blue);
+        }
+
+        .game-card.disabled-game .game-icon-wrapper {
+            background: rgba(15, 23, 42, 0.04);
+            color: var(--text-muted);
+        }
+
+        .game-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--bg-dark);
+        }
+
+        .game-card p {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        .game-status-badge {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 16px;
+            width: fit-content;
+        }
+
+        .status-active {
+            background: rgba(14, 165, 233, 0.08);
+            color: var(--primary-cyan);
+        }
+
+        .status-coming {
+            background: rgba(15, 23, 42, 0.05);
+            color: var(--text-muted);
+        }
+
+        .game-card .btn {
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+            padding: 10px 16px;
+        }
+
+        @media (max-width: 1200px) {
+            .games-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .games-section {
+                padding-top: 100px;
+                padding-bottom: 60px;
+            }
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header id="header" class="scrolled">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo-wrapper">
+                <img src="../images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+                <div class="logo-text">EduCareer <span>AI</span></div>
+            </a>
+            
+            <nav>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="../index.html">Trang chủ</a></li>
+                    <li><a href="explore.html" class="active">Khám phá bản thân</a></li>
+                    <li><a href="../ban-do-nang-luc.html">Bản đồ năng lực</a></li>
+                    <li><a href="../cam-nang-nganh.html">Cẩm nang</a></li>
+                    <li><a href="../ai-tu-van.html">AI tư vấn</a></li>
+                </ul>
+            </nav>
+            
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="games-section">
+            <div class="container">
+                <!-- Breadcrumbs back to Khám phá bản thân -->
+                <div style="margin-bottom: 20px;">
+                    <a href="explore.html" style="text-decoration: none; color: var(--primary-blue); font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại Khám phá bản thân
+                    </a>
+                </div>
+
+                <div class="section-header" style="text-align: center; margin-bottom: 20px;">
+                    <h1 class="section-title">Chọn Nghề Muốn <span class="gradient-text">Trải Nghiệm</span></h1>
+                    <p class="section-desc" style="margin: 0 auto; max-width: 700px;">
+                        Trở thành người trong nghề và trực tiếp giải quyết các công việc thường nhật thông qua các trò chơi mô phỏng tương tác.
+                    </p>
+                </div>
+
+                <div class="games-grid">
+                    <!-- Công nghệ thông tin -->
+                    <div class="game-card active-game">
+                        <div class="game-status-badge status-active">
+                            <i class="fa-solid fa-circle-play"></i> Sẵn sàng
+                        </div>
+                        <div class="game-icon-wrapper">
+                            <i class="fa-solid fa-code"></i>
+                        </div>
+                        <h3>Công nghệ thông tin</h3>
+                        <p>Tham gia Code Quest - Một ngày làm CNTT: sửa lỗi cú pháp nhanh chóng, lắp ghép logic hệ thống định hướng và hoàn tất demo phát hành trước khi hết thời gian.</p>
+                        <div>
+                            <a href="../game/game-cntt.html" class="btn btn-orange">Trải nghiệm ngay <i class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Thiết kế đồ họa -->
+                    <div class="game-card disabled-game">
+                        <div class="game-status-badge status-coming">
+                            <i class="fa-solid fa-hourglass-half"></i> Sắp ra mắt
+                        </div>
+                        <div class="game-icon-wrapper">
+                            <i class="fa-solid fa-palette"></i>
+                        </div>
+                        <h3>Thiết kế đồ họa</h3>
+                        <p>Thực hành thiết kế giao diện ứng dụng, phối màu sắc tương phản, sắp xếp bố cục thiết kế và xử lý feedback yêu cầu gấp từ khách hàng.</p>
+                        <div>
+                            <button class="btn btn-outline" disabled style="cursor: not-allowed; border-color: #E2E8F0; color: var(--text-muted);">Coming Soon</button>
+                        </div>
+                    </div>
+
+                    <!-- Marketing -->
+                    <div class="game-card disabled-game">
+                        <div class="game-status-badge status-coming">
+                            <i class="fa-solid fa-hourglass-half"></i> Sắp ra mắt
+                        </div>
+                        <div class="game-icon-wrapper">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <h3>Marketing</h3>
+                        <p>Xây dựng chiến dịch quảng bá kỹ thuật số, lập ngân sách chi tiêu tối ưu cho quảng cáo facebook/tiktok và thu hút nhóm đối tượng khách hàng tiềm năng.</p>
+                        <div>
+                            <button class="btn btn-outline" disabled style="cursor: not-allowed; border-color: #E2E8F0; color: var(--text-muted);">Coming Soon</button>
+                        </div>
+                    </div>
+
+                    <!-- Kế toán -->
+                    <div class="game-card disabled-game">
+                        <div class="game-status-badge status-coming">
+                            <i class="fa-solid fa-hourglass-half"></i> Sắp ra mắt
+                        </div>
+                        <div class="game-icon-wrapper">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <h3>Kế toán</h3>
+                        <p>Kiểm tra dữ liệu thu chi hóa đơn doanh nghiệp, cân bằng bảng cân đối kế toán, lập báo cáo tài chính và phát hiện lỗi lệch số liệu nhanh chóng.</p>
+                        <div>
+                            <button class="btn btn-outline" disabled style="cursor: not-allowed; border-color: #E2E8F0; color: var(--text-muted);">Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer id="contact" style="background: var(--bg-dark); color: white; padding: 60px 0 30px; margin-top: 80px;">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo-wrapper">
+                        <img src="../images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+                        <div class="logo-text" style="color: white;">EduCareer <span>AI</span></div>
+                    </a>
+                    <p style="margin-top: 14px; color: var(--text-muted-dark);">
+                        Hệ thống hướng nghiệp thông minh hàng đầu dành cho học sinh Việt Nam, kiến tạo tương lai vững chắc dựa trên trí tuệ nhân tạo và dữ liệu khoa học đa chiều.
+                    </p>
+                </div>
+                
+                <div class="footer-links-col">
+                    <h4 style="color: white; margin-bottom: 16px;">Đường dẫn nhanh</h4>
+                    <ul>
+                        <li><a href="../index.html" style="color: var(--text-muted-dark); text-decoration: none;">Trang chủ</a></li>
+                        <li><a href="../cam-nang-nganh.html" style="color: var(--text-muted-dark); text-decoration: none;">Cẩm nang</a></li>
+                        <li><a href="explore.html" style="color: var(--text-muted-dark); text-decoration: none; font-weight: bold;">Khám phá bản thân</a></li>
+                        <li><a href="../ban-do-nang-luc.html" style="color: var(--text-muted-dark); text-decoration: none;">Bản đồ năng lực</a></li>
+                        <li><a href="../ai-tu-van.html" style="color: var(--text-muted-dark); text-decoration: none;">AI tư vấn</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links-col">
+                    <h4 style="color: white; margin-bottom: 16px;">Thông tin liên hệ</h4>
+                    <div class="footer-contact" style="color: var(--text-muted-dark); display: flex; flex-direction: column; gap: 12px;">
+                        <div class="contact-item" style="display: flex; gap: 10px; align-items: center;">
+                            <i class="fa-solid fa-people-group"></i>
+                            <span>Đội thi: <strong>KgLorious</strong> - HackAIthon 2026</span>
+                        </div>
+                        <div class="contact-item" style="display: flex; gap: 10px; align-items: center;">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>longnnce200633@gmail.com</span>
+                        </div>
+                        <div class="contact-item" style="display: flex; gap: 10px; align-items: center;">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>Hotline: 0949 737 951</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom" style="border-top: 1px solid rgba(255,255,255,0.08); margin-top: 40px; padding-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted-dark);">
+                <p>&copy; 2026 EduCareer AI. Bản quyền thuộc về đội thi KgLorious.</p>
+                <div class="footer-bottom-links" style="display: flex; gap: 20px;">
+                    <a href="#" style="color: var(--text-muted-dark); text-decoration: none;">Điều khoản sử dụng</a>
+                    <a href="#" style="color: var(--text-muted-dark); text-decoration: none;">Chính sách bảo mật</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Consult Button -->
+    <a href="../ai-tu-van.html" class="floating-consult-btn" id="floating-btn">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span>Tư vấn AI</span>
+    </a>
+
+    <!-- Interactivity Script -->
+    <script src="../app.js?v=2.5"></script>
+</body>
+</html>

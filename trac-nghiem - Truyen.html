@@ -1,0 +1,6493 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Hệ thống Trắc nghiệm Tính cách & Hướng nghiệp khoa học EduCareer AI. Khám phá bản thân qua Holland, MBTI và Big Five.">
+
+    <title>Trắc nghiệm Tính cách & Hướng nghiệp - EduCareer AI</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        .quiz-container {
+
+            padding-top: 90px;
+
+            padding-bottom: 30px;
+
+            min-height: calc(100vh - 100px);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+        }
+
+        .quiz-card {
+
+            background: #ffffff;
+
+            border-radius: var(--border-radius-lg);
+
+            padding: 24px;
+
+            box-shadow: var(--card-shadow);
+
+            border: 1px solid rgba(37, 99, 235, 0.08);
+
+            width: 100%;
+
+            max-width: 800px;
+
+            transition: var(--transition-smooth);
+
+        }
+
+        .quiz-header {
+
+            border-bottom: 1.5px solid #F1F5F9;
+
+            padding-bottom: 20px;
+
+            margin-bottom: 25px;
+
+            text-align: center;
+
+        }
+
+        .quiz-title {
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            font-size: 1.8rem;
+
+            font-weight: 900;
+
+            color: var(--bg-dark);
+
+            letter-spacing: -0.5px;
+
+            margin-bottom: 6px;
+
+        }
+
+        .quiz-subtitle {
+
+            font-size: 0.92rem;
+
+            color: var(--text-muted);
+
+            font-weight: 600;
+
+        }
+
+        /* Test selection grid */
+
+        .test-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+
+            margin-top: 20px;
+
+        }
+
+        .test-card {
+
+            background: #F8FAFC;
+
+            border: 1px solid #E2E8F0;
+
+            border-radius: var(--border-radius);
+
+            padding: 24px;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition: var(--transition-smooth);
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: space-between;
+
+            height: 100%;
+
+        }
+
+        .test-card:hover {
+
+            border-color: var(--primary-blue);
+
+            background: rgba(37, 99, 235, 0.02);
+
+            transform: translateY(-3px);
+
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.06);
+
+        }
+
+        .test-icon-wrapper {
+
+            width: 56px;
+
+            height: 56px;
+
+            border-radius: 50%;
+
+            background: rgba(37, 99, 235, 0.08);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin: 0 auto 16px auto;
+
+            color: var(--primary-blue);
+
+            font-size: 1.35rem;
+
+            transition: var(--transition-smooth);
+
+        }
+
+        .test-card:hover .test-icon-wrapper {
+
+            background: var(--primary-blue);
+
+            color: #fff;
+
+        }
+
+        .test-name {
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            font-size: 1.05rem;
+
+            font-weight: 800;
+
+            color: var(--bg-dark);
+
+            margin-bottom: 8px;
+
+        }
+
+        .test-desc {
+
+            font-size: 0.78rem;
+
+            color: var(--text-muted);
+
+            line-height: 1.5;
+
+            margin-bottom: 16px;
+
+            flex-grow: 1;
+
+        }
+
+        .test-status {
+
+            font-size: 0.75rem;
+
+            font-weight: 700;
+
+            padding: 6px 12px;
+
+            border-radius: 20px;
+
+            display: inline-block;
+
+            margin-top: auto;
+
+        }
+
+        /* Active Quiz Viewport Constraint (No Scrollbar, Hides Footer) */
+
+        body.quiz-active {
+
+            overflow: hidden !important;
+
+            height: 100vh !important;
+
+            max-height: 100vh !important;
+
+        }
+
+        body.quiz-active footer {
+
+            display: none !important;
+
+        }
+
+        body.quiz-active .quiz-container {
+
+            padding-top: 60px !important;
+
+            padding-bottom: 20px !important;
+
+            min-height: 100vh !important;
+
+            height: 100vh !important;
+
+        }
+
+        /* ===== GLASSMORPHIC BACKGROUND BLOBS ===== */
+
+        .bg-blob {
+
+            position: absolute;
+
+            border-radius: 50%;
+
+            filter: blur(100px);
+
+            pointer-events: none;
+
+            z-index: 0;
+
+        }
+
+        .bg-blob-1 {
+
+            width: 500px; height: 500px;
+
+            background: rgba(129, 140, 248, 0.25);
+
+            top: -120px; left: -120px;
+
+            animation: blob-drift 12s infinite ease-in-out;
+
+        }
+
+        .bg-blob-2 {
+
+            width: 400px; height: 400px;
+
+            background: rgba(96, 165, 250, 0.2);
+
+            bottom: -100px; right: -100px;
+
+            animation: blob-drift 10s infinite ease-in-out reverse;
+
+        }
+
+        .bg-blob-3 {
+
+            width: 300px; height: 300px;
+
+            background: rgba(167, 139, 250, 0.15);
+
+            top: 40%; right: 20%;
+
+            animation: blob-drift 14s infinite ease-in-out 2s;
+
+        }
+
+        @keyframes blob-drift {
+
+            0%, 100% { transform: translate(0, 0) scale(1); }
+
+            33% { transform: translate(40px, -30px) scale(1.08); }
+
+            66% { transform: translate(-30px, 25px) scale(0.95); }
+
+        }
+
+        /* ===== VISUAL CARD DECK ===== */
+
+        .visual-card-deck {
+
+            position: relative;
+
+            width: 100%;
+
+            max-width: 420px;
+
+            height: 500px;
+
+            margin: 0 auto;
+
+            perspective: 1200px;
+
+        }
+
+        .visual-card {
+
+            position: absolute;
+
+            width: 100%;
+
+            height: 100%;
+
+            border-radius: 28px;
+
+            background: #ffffff;
+
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12), 0 8px 20px rgba(15, 23, 42, 0.06);
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-sizing: border-box;
+
+            padding: 20px;
+
+            overflow: hidden;
+
+            transform-style: preserve-3d;
+
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.15), opacity 0.4s ease;
+
+            z-index: 2;
+
+        }
+
+        .visual-card img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            border-radius: 16px;
+
+        }
+
+        /* Organic rotated stack cards */
+
+        .visual-card-dummy {
+
+            position: absolute;
+
+            width: 100%;
+
+            height: 100%;
+
+            border-radius: 28px;
+
+            background: linear-gradient(145deg, #EFF6FF 0%, #E0E7FF 100%);
+
+            border: 1px solid rgba(199, 210, 254, 0.5);
+
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.06);
+
+            pointer-events: none;
+
+        }
+
+        .visual-card-dummy.dummy-1 {
+
+            transform: rotate(-5deg) translateX(-14px) scale(0.97);
+
+            z-index: 1;
+
+            opacity: 0.6;
+
+        }
+
+        .visual-card-dummy.dummy-2 {
+
+            transform: rotate(4deg) translateX(10px) scale(0.94);
+
+            z-index: 0;
+
+            opacity: 0.35;
+
+        }
+
+        /* ===== CIRCULAR ACTION BUTTONS ===== */
+
+        .visual-btn {
+
+            width: 68px;
+
+            height: 68px;
+
+            border-radius: 50%;
+
+            border: 2.5px solid transparent;
+
+            background: #ffffff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+
+            cursor: pointer;
+
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            outline: none;
+
+            font-size: 1.5rem;
+
+        }
+
+        .visual-btn:hover {
+
+            transform: scale(1.18);
+
+        }
+
+        .visual-btn:active {
+
+            transform: scale(0.92);
+
+        }
+
+        .visual-btn.dislike {
+
+            color: #EF4444;
+
+            border-color: #FECACA;
+
+        }
+
+        .visual-btn.dislike:hover {
+
+            background: #FEF2F2;
+
+            box-shadow: 0 16px 40px rgba(239, 68, 68, 0.25);
+
+            border-color: #EF4444;
+
+        }
+
+        .visual-btn.like {
+
+            color: #10B981;
+
+            border-color: #A7F3D0;
+
+        }
+
+        .visual-btn.like:hover {
+
+            background: #ECFDF5;
+
+            box-shadow: 0 16px 40px rgba(16, 185, 129, 0.25);
+
+            border-color: #10B981;
+
+        }
+
+        /* Swipe animations */
+
+        .visual-card.swipe-left {
+
+            transform: translate(-140%, 60px) rotate(-25deg) !important;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+        }
+
+        .visual-card.swipe-right {
+
+            transform: translate(140%, 60px) rotate(25deg) !important;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+        }
+
+        /* ===== DESKTOP 2-COLUMN LAYOUT ===== */
+
+        .visual-quiz-layout {
+
+            display: grid;
+
+            grid-template-columns: 1.2fr 0.8fr;
+
+            gap: 72px;
+
+            width: 100%;
+
+            max-width: 1120px;
+
+            align-items: center;
+
+            padding: 0 48px;
+
+            box-sizing: border-box;
+
+            z-index: 1;
+
+            position: relative;
+
+        }
+
+        .visual-right-panel {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 28px;
+
+            justify-content: center;
+
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+
+        @media (max-width: 768px) {
+
+            .visual-quiz-layout {
+
+                grid-template-columns: 1fr !important;
+
+                gap: 20px !important;
+
+                padding: 20px !important;
+
+                max-width: 420px !important;
+
+                margin: 0 auto;
+
+            }
+
+            .visual-card-deck {
+
+                max-width: 300px !important;
+
+                height: 360px !important;
+
+            }
+
+            .visual-btn {
+
+                width: 56px !important;
+
+                height: 56px !important;
+
+                font-size: 1.2rem !important;
+
+            }
+
+            .bg-blob { opacity: 0.15 !important; }
+
+        }
+
+        /* Questionnaire styles */
+
+        .question-area {
+
+            min-height: 240px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            text-align: center;
+
+            padding: 20px 0;
+
+        }
+
+        .question-text {
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            font-size: 1.25rem;
+
+            font-weight: 800;
+
+            color: var(--bg-dark);
+
+            line-height: 1.6;
+
+            margin-bottom: 30px;
+
+            max-width: 600px;
+
+        }
+
+        .answer-options {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 16px;
+
+            width: 100%;
+
+            max-width: 500px;
+
+            margin: 0 auto;
+
+        }
+
+        .answer-btn {
+
+            padding: 14px 28px;
+
+            font-weight: 700;
+
+            font-size: 0.95rem;
+
+            border-radius: var(--border-radius);
+
+            cursor: pointer;
+
+            transition: var(--transition-smooth);
+
+            border: 1.5px solid #E2E8F0;
+
+            background: #fff;
+
+            color: var(--text-dark);
+
+            flex: 1;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+        }
+
+        .answer-btn:hover {
+
+            border-color: var(--primary-blue);
+
+            background: rgba(37, 99, 235, 0.03);
+
+            color: var(--primary-blue);
+
+        }
+
+        .answer-btn.primary {
+
+            background: var(--primary-blue);
+
+            color: #fff;
+
+            border-color: var(--primary-blue);
+
+        }
+
+        .answer-btn.primary:hover {
+
+            background: #1D4ED8;
+
+            border-color: #1D4ED8;
+
+            color: #fff;
+
+        }
+
+        /* Progress indicator */
+
+        .progress-container {
+
+            margin-bottom: 30px;
+
+        }
+
+        .progress-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            font-size: 0.82rem;
+
+            font-weight: 700;
+
+            color: var(--text-muted);
+
+            margin-bottom: 8px;
+
+        }
+
+        .progress-bar-bg {
+
+            width: 100%;
+
+            height: 6px;
+
+            background: #F1F5F9;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+        .progress-bar-fill {
+
+            height: 100%;
+
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-blue));
+
+            width: 0%;
+
+            border-radius: 10px;
+
+            transition: width 0.3s ease;
+
+        }
+
+        /* Success screen card */
+
+        .success-metrics-card {
+
+            background: #F8FAFC;
+
+            border: 1px solid #E2E8F0;
+
+            border-radius: var(--border-radius);
+
+            padding: 24px;
+
+            margin: 20px 0;
+
+        }
+
+        /* Custom back/abort button row */
+
+        .nav-button-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            border-top: 1.5px solid #F1F5F9;
+
+            padding-top: 20px;
+
+            margin-top: 25px;
+
+        }
+
+        .nav-btn {
+
+            background: none;
+
+            border: none;
+
+            color: var(--text-muted);
+
+            font-weight: 700;
+
+            font-size: 0.85rem;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            transition: var(--transition-smooth);
+
+        }
+
+        .nav-btn:hover {
+
+            color: var(--primary-blue);
+
+        }
+
+        /* Responsive */
+
+        @media (max-width: 768px) {
+
+            .test-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .answer-options {
+
+                flex-direction: column;
+
+            }
+
+        }
+
+        /* ===== MBTI FULLSCREEN LAYOUT CSS ===== */
+
+        .mbti-quiz-layout {
+
+            width: 100%;
+
+            max-width: 1080px;
+
+            height: 90vh;
+
+            max-height: 800px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: space-between;
+
+            padding: 0 40px;
+
+            box-sizing: border-box;
+
+            z-index: 1;
+
+            position: relative;
+
+        }
+
+        .mbti-top-bar {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 16px;
+
+            width: 100%;
+
+        }
+
+        .mbti-circle-btn {
+
+            width: 44px;
+
+            height: 44px;
+
+            border-radius: 50%;
+
+            border: none;
+
+            background: rgba(239, 246, 255, 0.8);
+
+            backdrop-filter: blur(8px);
+
+            color: var(--primary-blue);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            cursor: pointer;
+
+            transition: all 0.2s ease;
+
+            flex-shrink: 0;
+
+            font-size: 0.95rem;
+
+        }
+
+        .mbti-circle-btn:hover {
+
+            transform: scale(1.1);
+
+            background: #EFF6FF;
+
+        }
+
+        .mbti-circle-btn.abort {
+
+            background: rgba(254, 226, 226, 0.8);
+
+            color: #EF4444;
+
+        }
+
+        .mbti-circle-btn.abort:hover {
+
+            background: #FEE2E2;
+
+        }
+
+        .mbti-progress-bar-container {
+
+            flex-grow: 1;
+
+            height: 8px;
+
+            background: rgba(226, 232, 240, 0.6);
+
+            border-radius: 99px;
+
+            overflow: hidden;
+
+        }
+
+        .mbti-progress-line-fill {
+
+            width: 0%;
+
+            height: 100%;
+
+            background: linear-gradient(90deg, var(--primary-blue), #818CF8);
+
+            border-radius: 99px;
+
+            transition: width 0.4s ease;
+
+        }
+
+        .mbti-question-header {
+
+            text-align: center;
+
+            margin: 20px 0;
+
+        }
+
+        .mbti-section-tag {
+
+            font-size: 0.78rem;
+
+            font-weight: 800;
+
+            color: var(--primary-blue);
+
+            text-transform: uppercase;
+
+            letter-spacing: 2px;
+
+            display: inline-block;
+
+            margin-bottom: 8px;
+
+        }
+
+        .mbti-question-header h2 {
+
+            font-size: 1.65rem;
+
+            font-weight: 900;
+
+            color: #0F172A;
+
+            line-height: 1.5;
+
+            margin: 0;
+
+            letter-spacing: -0.02em;
+
+        }
+
+        /* 2-Choice Cards Grid */
+
+        .mbti-cards-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 40px;
+
+            flex-grow: 1;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin: 10px 0;
+
+        }
+
+        .mbti-choice-card {
+
+            background: #ffffff;
+
+            border-radius: 24px;
+
+            box-shadow: 0 15px 45px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.02);
+
+            border: 2px solid rgba(226, 232, 240, 0.8);
+
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            height: 380px;
+
+            cursor: pointer;
+
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+            box-sizing: border-box;
+
+            position: relative;
+
+        }
+
+        .mbti-choice-card:hover {
+
+            transform: translateY(-8px) scale(1.02);
+
+            border-color: var(--primary-blue);
+
+            box-shadow: 0 25px 50px rgba(37, 99, 235, 0.1);
+
+        }
+
+        .mbti-choice-card.active {
+
+            border-color: var(--primary-blue);
+
+            box-shadow: 0 25px 60px rgba(37, 99, 235, 0.15);
+
+            transform: scale(1.03);
+
+            background: linear-gradient(145deg, #ffffff 0%, rgba(37, 99, 235, 0.01) 100%);
+
+        }
+
+        .mbti-card-img-wrapper {
+
+            flex-grow: 1;
+
+            background: #F8FAFC;
+
+            overflow: hidden;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            position: relative;
+
+        }
+
+        .mbti-card-img-wrapper img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            transition: transform 0.5s ease;
+
+        }
+
+        .mbti-choice-card:hover .mbti-card-img-wrapper img {
+
+            transform: scale(1.05);
+
+        }
+
+        .mbti-card-footer {
+
+            padding: 20px 24px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 16px;
+
+            background: #ffffff;
+
+            border-top: 1px solid #F1F5F9;
+
+        }
+
+        .mbti-opt-indicator {
+
+            width: 36px;
+
+            height: 36px;
+
+            border-radius: 50%;
+
+            background: #EFF6FF;
+
+            border: 1px solid #DBEAFE;
+
+            color: var(--primary-blue);
+
+            font-size: 0.95rem;
+
+            font-weight: 800;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            transition: all 0.3s ease;
+
+        }
+
+        .mbti-choice-card:hover .mbti-opt-indicator,
+
+        .mbti-choice-card.active .mbti-opt-indicator {
+
+            background: var(--primary-blue);
+
+            color: #ffffff;
+
+            border-color: var(--primary-blue);
+
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+
+        }
+
+        .mbti-choice-desc {
+
+            font-size: 1.02rem;
+
+            font-weight: 700;
+
+            color: #334155;
+
+            line-height: 1.5;
+
+            margin: 0;
+
+            transition: all 0.3s ease;
+
+        }
+
+        .mbti-choice-card:hover .mbti-choice-desc,
+
+        .mbti-choice-card.active .mbti-choice-desc {
+
+            color: #0F172A;
+
+        }
+
+        .mbti-footer {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            font-size: 0.82rem;
+
+            color: #94A3B8;
+
+            font-weight: 600;
+
+            margin-top: 20px;
+
+        }
+
+        #mbti-progress-badge {
+
+            color: var(--primary-blue);
+
+            font-weight: 800;
+
+            font-size: 0.95rem;
+
+        }
+
+        .kbd-key {
+
+            background: #E2E8F0;
+
+            padding: 2px 6px;
+
+            border-radius: 4px;
+
+            font-family: monospace;
+
+            font-size: 0.75rem;
+
+            border: 1px solid #CBD5E1;
+
+            color: var(--text-dark);
+
+        }
+
+        /* ===== MBTI MOBILE RESPONSIVE ===== */
+
+        }
+
+        /* ===== HOLLAND RPG STORY MODE STYLE SYSTEM ===== */
+
+        .rpg-quiz-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            width: 100%;
+
+            height: 100vh;
+
+            max-height: 100vh;
+
+            box-sizing: border-box;
+
+            padding: 24px;
+
+            justify-content: space-between;
+
+            background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+
+            z-index: 10000;
+
+            position: relative;
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            color: #f8fafc;
+
+            overflow: hidden;
+
+        }
+
+        /* Ambient glowing background circles */
+
+        .rpg-glow {
+
+            position: absolute;
+
+            border-radius: 50%;
+
+            filter: blur(120px);
+
+            opacity: 0.15;
+
+            pointer-events: none;
+
+            z-index: 0;
+
+        }
+
+        .rpg-glow-primary {
+
+            width: 500px; height: 500px;
+
+            background: #6366f1;
+
+            top: -100px; left: -100px;
+
+        }
+
+        .rpg-glow-secondary {
+
+            width: 400px; height: 400px;
+
+            background: #d946ef;
+
+            bottom: -50px; right: -50px;
+
+        }
+
+        /* RPG Header */
+
+        .rpg-header {
+
+            display: grid;
+
+            grid-template-columns: 1.2fr 2fr 1.2fr;
+
+            align-items: center;
+
+            width: 100%;
+
+            z-index: 2;
+
+            gap: 16px;
+
+        }
+
+        .rpg-chapter-badge {
+
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(217, 70, 239, 0.2) 100%);
+
+            border: 1px solid rgba(139, 92, 246, 0.4);
+
+            padding: 8px 16px;
+
+            border-radius: 99px;
+
+            font-size: 0.85rem;
+
+            font-weight: 800;
+
+            color: #c084fc;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+
+        }
+
+        /* Timeline / Chapter Nodes */
+
+        .rpg-chapter-map {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            position: relative;
+
+            width: 100%;
+
+            max-width: 500px;
+
+            margin: 0 auto;
+
+        }
+
+        .rpg-chapter-map-line {
+
+            position: absolute;
+
+            height: 4px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            width: 80%;
+
+            z-index: 1;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+        }
+
+        .rpg-chapter-map-line-fill {
+
+            position: absolute;
+
+            height: 4px;
+
+            background: linear-gradient(90deg, #6366f1, #d946ef);
+
+            width: 0%;
+
+            z-index: 1;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+        }
+
+        .rpg-node {
+
+            width: 32px;
+
+            height: 32px;
+
+            border-radius: 50%;
+
+            background: #1e293b;
+
+            border: 2px solid rgba(255, 255, 255, 0.2);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: 800;
+
+            font-size: 0.85rem;
+
+            color: #94a3b8;
+
+            z-index: 2;
+
+            position: relative;
+
+            transition: all 0.4s ease;
+
+            cursor: default;
+
+        }
+
+        .rpg-node.active {
+
+            background: #8b5cf6;
+
+            border-color: #c084fc;
+
+            color: #fff;
+
+            box-shadow: 0 0 15px #8b5cf6;
+
+            transform: scale(1.15);
+
+        }
+
+        .rpg-node.completed {
+
+            background: #10b981;
+
+            border-color: #34d399;
+
+            color: #fff;
+
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+
+        }
+
+        /* RPG Layout Main Arena */
+
+        .rpg-arena {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1.2fr;
+
+            gap: 40px;
+
+            align-items: center;
+
+            justify-content: center;
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: auto;
+
+            z-index: 2;
+
+        }
+
+        /* Left visual card */
+
+        .rpg-visual-container {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            position: relative;
+
+            height: 440px;
+
+        }
+
+        .rpg-visual-card {
+
+            width: 100%;
+
+            max-width: 360px;
+
+            height: 100%;
+
+            border-radius: 24px;
+
+            overflow: hidden;
+
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.15);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+
+            position: relative;
+
+            transition: transform 0.4s;
+
+            background: #1e293b;
+
+        }
+
+        .rpg-visual-card img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+        .rpg-visual-card::after {
+
+            content: '';
+
+            position: absolute;
+
+            inset: 0;
+
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0) 50%);
+
+            pointer-events: none;
+
+        }
+
+        /* Right Narrative panel */
+
+        .rpg-narrative-panel {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 24px;
+
+            background: rgba(30, 41, 59, 0.5);
+
+            backdrop-filter: blur(16px);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 28px;
+
+            padding: 32px;
+
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+
+            position: relative;
+
+        }
+
+        .rpg-scenario-title {
+
+            font-size: 1rem;
+
+            font-weight: 700;
+
+            color: #a78bfa;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            margin: 0;
+
+        }
+
+        .rpg-scenario-text {
+
+            font-size: 1.25rem;
+
+            font-weight: 600;
+
+            line-height: 1.7;
+
+            color: #e2e8f0;
+
+            margin: 0;
+
+            min-height: 110px;
+
+        }
+
+        .rpg-choices-list {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 16px;
+
+        }
+
+        .rpg-choice-btn {
+
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+
+            border-radius: 16px;
+
+            padding: 18px 24px;
+
+            color: #f1f5f9;
+
+            font-family: inherit;
+
+            cursor: pointer;
+
+            text-align: left;
+
+            transition: all 0.25s ease;
+
+            position: relative;
+
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+        }
+
+        .rpg-choice-btn:hover {
+
+            transform: translateY(-2px);
+
+            background: linear-gradient(135deg, rgba(76, 29, 149, 0.35) 0%, rgba(15, 23, 42, 0.95) 100%);
+
+            border-color: #8b5cf6;
+
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25);
+
+        }
+
+        .rpg-choice-btn:active {
+
+            transform: translateY(0);
+
+        }
+
+        .rpg-choice-btn-title {
+
+            font-size: 1.08rem;
+
+            font-weight: 800;
+
+        }
+
+        .rpg-choice-btn-stat-preview {
+
+            display: flex;
+
+            gap: 12px;
+
+            font-size: 0.78rem;
+
+            color: #94a3b8;
+
+            font-weight: 700;
+
+            flex-wrap: wrap;
+
+        }
+
+        .rpg-stat-indicator {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 4px;
+
+        }
+
+        .rpg-stat-indicator.positive { color: #34d399; }
+
+        .rpg-stat-indicator.negative { color: #f87171; }
+
+        /* Floating Text Animators */
+
+        .rpg-floating-stats {
+
+            position: absolute;
+
+            pointer-events: none;
+
+            z-index: 10005;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+
+            font-size: 1.25rem;
+
+            font-weight: 900;
+
+            text-shadow: 0 0 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9);
+
+            animation: floatUpFade 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+
+        }
+
+        @keyframes floatUpFade {
+
+            0% { transform: translateY(0); opacity: 0; }
+
+            15% { opacity: 1; }
+
+            100% { transform: translateY(-70px); opacity: 0; }
+
+        }
+
+        /* Stats Panel Header Card */
+
+        .rpg-stats-card {
+
+            display: none !important;
+
+        }
+
+        .rpg-stat-item-pos {
+
+            position: relative;
+
+        }
+
+        .rpg-stat-mini {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            font-size: 0.88rem;
+
+            font-weight: 800;
+
+            color: #f1f5f9;
+
+        }
+
+        .rpg-stat-mini i {
+
+            font-size: 1rem;
+
+        }
+
+        /* Bottom Controls Row */
+
+        .rpg-controls {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            z-index: 2;
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+        }
+
+        .rpg-btn-back {
+
+            background: rgba(255, 255, 255, 0.05);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+
+            color: #94a3b8;
+
+            padding: 10px 20px;
+
+            border-radius: 99px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: all 0.2s;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-family: inherit;
+
+        }
+
+        .rpg-btn-back:hover {
+
+            background: rgba(255, 255, 255, 0.1);
+
+            color: #fff;
+
+            border-color: rgba(255, 255, 255, 0.2);
+
+        }
+
+        .rpg-btn-back:disabled {
+
+            opacity: 0.3;
+
+            cursor: not-allowed;
+
+            pointer-events: none;
+
+        }
+
+        .rpg-btn-abort {
+
+            background: rgba(239, 68, 68, 0.1);
+
+            border: 1px solid rgba(239, 68, 68, 0.3);
+
+            color: #f87171;
+
+            width: 40px;
+
+            height: 40px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            cursor: pointer;
+
+            transition: all 0.2s;
+
+        }
+
+        .rpg-btn-abort:hover {
+
+            background: rgba(239, 68, 68, 0.25);
+
+            color: #fff;
+
+        }
+
+        /* Transition Screen Overlay */
+
+        .rpg-transition-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            background: #020617;
+
+            z-index: 10050;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transition: opacity 0.4s ease;
+
+            padding: 0 !important;
+
+        }
+
+        .rpg-transition-overlay.show {
+
+            opacity: 1;
+
+            pointer-events: all;
+
+        }
+
+        .rpg-transition-card {
+
+            width: 100%;
+
+            height: 100%;
+
+            max-width: 100% !important;
+
+            max-height: 100vh !important;
+
+            background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 60%, #020617 100%) !important;
+
+            border: none !important;
+
+            border-radius: 0 !important;
+
+            padding: 5vh 8vw !important;
+
+            box-shadow: none !important;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: space-between;
+
+            overflow-y: auto;
+
+            box-sizing: border-box;
+
+            gap: 24px;
+
+            animation: fadeIn 0.4s ease-out forwards;
+
+            color: #f8fafc;
+
+            font-family: inherit;
+
+        }
+
+        @keyframes fadeIn {
+
+            0% { opacity: 0; }
+
+            100% { opacity: 1; }
+
+        }
+
+        .rpg-transition-title {
+
+            font-size: 2.4rem;
+
+            font-weight: 900;
+
+            color: #c084fc;
+
+            margin: 0;
+
+            text-shadow: 0 0 15px rgba(192, 132, 252, 0.6);
+
+        }
+
+        .rpg-transition-text {
+
+            font-size: 1.12rem;
+
+            line-height: 1.7;
+
+            color: #cbd5e1;
+
+            margin: 0;
+
+            text-align: justify;
+
+        }
+
+        .rpg-btn-primary {
+
+            background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+
+            border: none;
+
+            color: #fff;
+
+            padding: 16px 36px;
+
+            border-radius: 99px;
+
+            font-size: 1.05rem;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: all 0.3s;
+
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+
+            align-self: center;
+
+            font-family: inherit;
+
+        }
+
+        .rpg-btn-primary:hover {
+
+            transform: scale(1.05);
+
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.6);
+
+        }
+
+        /* RPG Chapter Summary Styles */
+
+        .rpg-chapter-summary-panel {
+
+            background: rgba(15, 23, 42, 0.5);
+
+            border: 1.5px solid rgba(139, 92, 246, 0.3);
+
+            border-radius: 20px;
+
+            padding: 24px;
+
+            margin-top: 0;
+
+            text-align: left;
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            box-shadow: inset 0 0 15px rgba(139, 92, 246, 0.15);
+
+        }
+
+        
+
+        /* Fullscreen Transition Split Layout */
+
+        .rpg-transition-split {
+
+            display: grid;
+
+            grid-template-columns: 1.2fr 1fr;
+
+            gap: 40px;
+
+            width: 100%;
+
+            margin: auto 0;
+
+            align-items: start;
+
+            box-sizing: border-box;
+
+        }
+
+        @media (max-width: 992px) {
+
+            .rpg-transition-split {
+
+                grid-template-columns: 1fr;
+
+                gap: 24px;
+
+            }
+
+        }
+
+        .rpg-transition-narrative {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+
+            text-align: left;
+
+        }
+
+        .rpg-outro-text {
+
+            font-style: italic;
+
+            color: #cbd5e1;
+
+            font-size: 1.15rem;
+
+            line-height: 1.8;
+
+            text-align: justify;
+
+            margin: 0;
+
+            background: rgba(139, 92, 246, 0.04);
+
+            border-left: 4px solid #8b5cf6;
+
+            padding: 20px;
+
+            border-radius: 4px 20px 20px 4px;
+
+            border: 1px solid rgba(139, 92, 246, 0.1);
+
+            border-left-width: 4px;
+
+        }
+
+        .rpg-next-chapter-box {
+
+            background: rgba(15, 23, 42, 0.4);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.05);
+
+            border-radius: 20px;
+
+            padding: 24px;
+
+            box-sizing: border-box;
+
+        }
+
+        .rpg-next-chapter-header {
+
+            color: #c084fc;
+
+            margin-top: 0;
+
+            margin-bottom: 12px;
+
+            font-weight: 800;
+
+            font-size: 1.15rem;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            text-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+
+        }
+
+        .rpg-next-chapter-text {
+
+            color: #cbd5e1;
+
+            font-size: 1.02rem;
+
+            line-height: 1.7;
+
+            text-align: justify;
+
+            margin: 0;
+
+        }
+
+        .rpg-transition-stats {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+
+        }
+
+        /* RPG Emotion Checkpoint Styles */
+
+        .rpg-emotion-checkpoint {
+
+            background: rgba(15, 23, 42, 0.4);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 16px;
+
+            padding: 16px;
+
+            text-align: center;
+
+            margin-top: 10px;
+
+            box-sizing: border-box;
+
+            width: 100%;
+
+        }
+
+        .rpg-emotion-question {
+
+            font-size: 0.92rem;
+
+            color: #c084fc;
+
+            font-weight: 800;
+
+            margin-top: 0;
+
+            margin-bottom: 12px;
+
+            text-shadow: 0 0 8px rgba(192, 132, 252, 0.3);
+
+        }
+
+        .rpg-emotion-options {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            width: 100%;
+
+        }
+
+        .rpg-emotion-btn {
+
+            background: rgba(30, 41, 59, 0.6);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+
+            color: #cbd5e1;
+
+            padding: 10px 14px;
+
+            border-radius: 12px;
+
+            font-size: 0.88rem;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: all 0.25s ease;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            font-family: inherit;
+
+            flex: 1;
+
+            justify-content: center;
+
+        }
+
+        .rpg-emotion-btn:hover {
+
+            border-color: #8b5cf6;
+
+            background: rgba(139, 92, 246, 0.15);
+
+            transform: translateY(-1px);
+
+        }
+
+        .rpg-emotion-btn.active {
+
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.4) 0%, rgba(217, 70, 239, 0.4) 100%);
+
+            border-color: #d946ef;
+
+            color: #fff;
+
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.3);
+
+            transform: scale(1.03);
+
+        }
+
+        .rpg-save-exit-btn {
+
+            background: rgba(239, 68, 68, 0.15);
+
+            border: 1.5px dashed rgba(239, 68, 68, 0.4);
+
+            color: #fca5a5;
+
+            padding: 12px 20px;
+
+            border-radius: 12px;
+
+            font-size: 0.95rem;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: all 0.25s ease;
+
+            display: none; /* Hidden by default */
+
+            margin-top: 10px;
+
+            text-align: center;
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            font-family: inherit;
+
+        }
+
+        .rpg-save-exit-btn:hover {
+
+            background: rgba(239, 68, 68, 0.3);
+
+            border-color: #ef4444;
+
+            color: #fff;
+
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+
+            transform: translateY(-1px);
+
+        }
+
+        /* Custom RPG Modal Overlay */
+
+        .rpg-modal-overlay {
+
+            position: fixed;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100vw;
+
+            height: 100vh;
+
+            background: rgba(2, 6, 23, 0.85);
+
+            backdrop-filter: blur(12px);
+
+            -webkit-backdrop-filter: blur(12px);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            z-index: 99999;
+
+            opacity: 0;
+
+            transition: opacity 0.3s ease;
+
+            box-sizing: border-box;
+
+        }
+
+        .rpg-modal-overlay.show {
+
+            opacity: 1;
+
+        }
+
+        /* Custom RPG Modal Content Box */
+
+        .rpg-modal-content {
+
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.65) 0%, rgba(15, 23, 42, 0.85) 100%);
+
+            border: 1px solid rgba(139, 92, 246, 0.3);
+
+            box-shadow: 0 0 35px rgba(139, 92, 246, 0.25), inset 0 0 15px rgba(255, 255, 255, 0.05);
+
+            border-radius: 24px;
+
+            padding: 32px;
+
+            max-width: 460px;
+
+            width: 90%;
+
+            text-align: center;
+
+            transform: scale(0.9);
+
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            box-sizing: border-box;
+
+        }
+
+        .rpg-modal-overlay.show .rpg-modal-content {
+
+            transform: scale(1);
+
+        }
+
+        .rpg-modal-icon {
+
+            font-size: 3rem;
+
+            margin-bottom: 16px;
+
+            filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.5));
+
+            animation: float-rpg-icon 3s ease-in-out infinite;
+
+        }
+
+        @keyframes float-rpg-icon {
+
+            0%, 100% { transform: translateY(0); }
+
+            50% { transform: translateY(-8px); }
+
+        }
+
+        .rpg-modal-title {
+
+            color: #fff;
+
+            font-size: 1.4rem;
+
+            font-weight: 800;
+
+            margin-top: 0;
+
+            margin-bottom: 12px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+        }
+
+        .rpg-modal-text {
+
+            color: #cbd5e1;
+
+            font-size: 0.98rem;
+
+            line-height: 1.6;
+
+            margin-top: 0;
+
+            margin-bottom: 8px;
+
+        }
+
+        .rpg-modal-subtext {
+
+            color: #a78bfa;
+
+            font-size: 0.92rem;
+
+            font-weight: 700;
+
+            margin-top: 0;
+
+            margin-bottom: 24px;
+
+        }
+
+        .rpg-modal-actions {
+
+            display: flex;
+
+            gap: 12px;
+
+            justify-content: center;
+
+            width: 100%;
+
+        }
+
+        .rpg-modal-btn {
+
+            padding: 12px 20px;
+
+            border-radius: 12px;
+
+            font-size: 0.92rem;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: all 0.25s ease;
+
+            flex: 1;
+
+            font-family: inherit;
+
+            box-sizing: border-box;
+
+            outline: none;
+
+        }
+
+        .rpg-modal-btn.primary {
+
+            background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+
+            border: none;
+
+            color: #fff;
+
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+
+        }
+
+        .rpg-modal-btn.primary:hover {
+
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.55);
+
+            transform: translateY(-2px);
+
+        }
+
+        .rpg-modal-btn.secondary {
+
+            background: rgba(30, 41, 59, 0.6);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+
+            color: #94a3b8;
+
+        }
+
+        .rpg-modal-btn.secondary:hover {
+
+            border-color: rgba(255, 255, 255, 0.3);
+
+            color: #fff;
+
+            background: rgba(30, 41, 59, 0.9);
+
+            transform: translateY(-2px);
+
+        }
+
+        /* Custom Chapter Intro Styles */
+
+        .rpg-intro-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            max-width: 680px;
+
+            width: 100%;
+
+            margin: auto;
+
+            text-align: center;
+
+            box-sizing: border-box;
+
+            animation: introSlideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+        }
+
+        @keyframes introSlideUp {
+
+            0% { opacity: 0; transform: translateY(30px); }
+
+            100% { opacity: 1; transform: translateY(0); }
+
+        }
+
+        .rpg-intro-badge-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 16px;
+
+        }
+
+        .rpg-intro-roman {
+
+            font-size: 0.85rem;
+
+            font-weight: 800;
+
+            color: #94a3b8;
+
+            letter-spacing: 4px;
+
+            text-transform: uppercase;
+
+        }
+
+        .rpg-intro-category {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 6px 16px;
+
+            border-radius: 20px;
+
+            border: 1px solid;
+
+            font-size: 0.85rem;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+        }
+
+        .rpg-intro-main-title {
+
+            color: #fff;
+
+            font-size: 2.2rem;
+
+            font-weight: 900;
+
+            margin-top: 0;
+
+            margin-bottom: 28px;
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+
+        }
+
+        .rpg-intro-quest-card {
+
+            background: rgba(15, 23, 42, 0.55);
+
+            border: 1.5px solid;
+
+            border-radius: 24px;
+
+            padding: 32px 40px;
+
+            position: relative;
+
+            margin-bottom: 36px;
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            backdrop-filter: blur(8px);
+
+        }
+
+        .rpg-intro-text-content {
+
+            color: #e2e8f0;
+
+            font-size: 1.15rem;
+
+            line-height: 1.8;
+
+            text-align: justify;
+
+            margin: 0;
+
+            font-family: inherit;
+
+            font-weight: 500;
+
+        }
+
+        .rpg-intro-quote-icon {
+
+            position: absolute;
+
+            font-size: 2rem;
+
+            opacity: 0.8;
+
+        }
+
+        .rpg-intro-quote-icon.top {
+
+            top: -12px;
+
+            left: 24px;
+
+        }
+
+        .rpg-intro-quote-icon.bottom {
+
+            bottom: -16px;
+
+            right: 24px;
+
+        }
+
+        .rpg-intro-action-wrapper {
+
+            width: 100%;
+
+            display: flex;
+
+            justify-content: center;
+
+        }
+
+        .rpg-intro-action-wrapper button {
+
+            max-width: 280px;
+
+            width: 100%;
+
+            margin: 0 !important;
+
+        }
+
+        .rpg-summary-header {
+
+            font-size: 1.2rem;
+
+            font-weight: 800;
+
+            color: #c084fc;
+
+            margin-top: 0;
+
+            margin-bottom: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            text-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+
+        }
+
+        .rpg-summary-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 12px;
+
+            width: 100%;
+
+        }
+
+        @media (max-width: 550px) {
+
+            .rpg-summary-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+        .rpg-summary-item {
+
+            background: rgba(30, 41, 59, 0.5);
+
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 14px;
+
+            padding: 12px 16px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            box-sizing: border-box;
+
+            transition: all 0.3s ease;
+
+        }
+
+        .rpg-summary-item:hover {
+
+            transform: translateY(-2px);
+
+            background: rgba(30, 41, 59, 0.7);
+
+        }
+
+        .rpg-summary-icon {
+
+            width: 38px;
+
+            height: 38px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 1.25rem;
+
+            flex-shrink: 0;
+
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+        }
+
+        .rpg-summary-info {
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+
+            gap: 2px;
+
+        }
+
+        .rpg-summary-label {
+
+            font-size: 0.7rem;
+
+            color: #94a3b8;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.8px;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+        }
+
+        .rpg-summary-value {
+
+            font-size: 1rem;
+
+            font-weight: 900;
+
+            letter-spacing: 0.2px;
+
+        }
+
+        .rpg-summary-value.positive {
+
+            color: #10b981;
+
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+
+        }
+
+        .rpg-summary-value.negative {
+
+            color: #ef4444;
+
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+
+        }
+
+        .rpg-summary-value.neutral {
+
+            color: #94a3b8;
+
+            text-shadow: none;
+
+        }
+
+        /* Dynamic Ending Screen Styles */
+
+        .rpg-ending-title {
+
+            font-size: 2.2rem;
+
+            font-weight: 900;
+
+            color: var(--primary-blue);
+
+            font-family: 'Plus Jakarta Sans', sans-serif;
+
+            text-align: center;
+
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+
+            margin-bottom: 24px;
+
+        }
+
+        .rpg-ending-stats-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(5, 1fr);
+
+            gap: 12px;
+
+            margin: 20px 0;
+
+        }
+
+        .rpg-ending-stat-box {
+
+            background: #ffffff;
+
+            border: 1.5px solid #e2e8f0;
+
+            border-radius: 16px;
+
+            padding: 16px 8px;
+
+            text-align: center;
+
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+
+            transition: transform 0.2s;
+
+        }
+
+        .rpg-ending-stat-box:hover {
+
+            transform: translateY(-2px);
+
+        }
+
+        .rpg-ending-stat-label {
+
+            font-size: 0.72rem;
+
+            font-weight: 700;
+
+            color: var(--text-muted);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+
+            margin-bottom: 4px;
+
+        }
+
+        .rpg-ending-stat-value {
+
+            font-size: 1.25rem;
+
+            font-weight: 800;
+
+            color: var(--bg-dark);
+
+        }
+
+        .rpg-ending-diary-card {
+
+            background: linear-gradient(145deg, #fafafa 0%, #f1f5f9 100%);
+
+            border: 1.5px dashed var(--primary-blue);
+
+            border-radius: 20px;
+
+            padding: 28px;
+
+            margin: 24px 0;
+
+            text-align: left;
+
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+
+        }
+
+        .rpg-ending-diary-title {
+
+            font-size: 1.2rem;
+
+            font-weight: 800;
+
+            color: #1e293b;
+
+            margin-bottom: 16px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            border-bottom: 1.5px solid #e2e8f0;
+
+            padding-bottom: 10px;
+
+        }
+
+        .rpg-ending-diary-text {
+
+            font-size: 0.98rem;
+
+            line-height: 1.7;
+
+            color: #475569;
+
+            text-align: justify;
+
+        }
+
+        .rpg-ending-diary-paragraph {
+
+            margin-bottom: 16px;
+
+        }
+
+        .rpg-ending-diary-paragraph:last-child {
+
+            margin-bottom: 0;
+
+        }
+
+        .rpg-ending-archetype-card {
+
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+
+            border: 1.5px solid rgba(139, 92, 246, 0.2);
+
+            border-radius: 20px;
+
+            padding: 24px;
+
+            margin-bottom: 24px;
+
+        }
+
+        .rpg-ending-archetype-title {
+
+            font-size: 1.25rem;
+
+            font-weight: 800;
+
+            color: #6366f1;
+
+            margin-bottom: 8px;
+
+            text-transform: uppercase;
+
+        }
+
+        .rpg-ending-archetype-desc {
+
+            font-size: 0.95rem;
+
+            color: #475569;
+
+            line-height: 1.6;
+
+            margin: 0;
+
+        }
+
+        /* RPG Dark Theme overrides for Ending Cards */
+
+        .rpg-dark-theme .rpg-ending-stat-box {
+
+            background: rgba(30, 41, 59, 0.45) !important;
+
+            border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+
+            box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.02) !important;
+
+            color: #f1f5f9 !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-stat-label {
+
+            color: #94a3b8 !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-stat-box .rpg-ending-stat-value {
+
+            font-size: 1.25rem !important;
+
+            font-weight: 900 !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-stat-box[style*="border-color: #f59e0b"] .rpg-ending-stat-value {
+
+            color: #fb923c !important;
+
+            text-shadow: 0 0 10px rgba(251, 146, 60, 0.4) !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-stat-box[style*="border-color: #eab308"] .rpg-ending-stat-value {
+
+            color: #fde047 !important;
+
+            text-shadow: 0 0 10px rgba(253, 224, 71, 0.4) !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-stat-box[style*="border-color: #10b981"] .rpg-ending-stat-value {
+
+            color: #34d399 !important;
+
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.4) !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-stat-box[style*="border-color: #3b82f6"] .rpg-ending-stat-value {
+
+            color: #60a5fa !important;
+
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.4) !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-stat-box[style*="border-color: #a855f7"] .rpg-ending-stat-value {
+
+            color: #c084fc !important;
+
+            text-shadow: 0 0 10px rgba(192, 132, 252, 0.4) !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-diary-card {
+
+            background: rgba(30, 41, 59, 0.4) !important;
+
+            border: 1.5px dashed rgba(139, 92, 246, 0.4) !important;
+
+            box-shadow: inset 0 0 15px rgba(139, 92, 246, 0.1) !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-diary-title {
+
+            color: #c084fc !important;
+
+            border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-diary-text {
+
+            color: #cbd5e1 !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-archetype-card {
+
+            background: rgba(139, 92, 246, 0.1) !important;
+
+            border: 1.5px solid rgba(139, 92, 246, 0.3) !important;
+
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1) !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-archetype-title {
+
+            color: #a78bfa !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-archetype-desc {
+
+            color: #cbd5e1 !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-score-box {
+
+            background: rgba(30, 41, 59, 0.4) !important;
+
+            border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+
+            color: #cbd5e1 !important;
+
+            box-shadow: none !important;
+
+        }
+
+        .rpg-dark-theme .rpg-ending-score-box strong {
+
+            color: #c084fc !important;
+
+        }
+
+        .rpg-dark-theme h5 {
+
+            color: #f8fafc !important;
+
+            text-shadow: 0 0 8px rgba(139, 92, 246, 0.3) !important;
+
+        }
+
+        /* Mobile responsive for RPG */
+
+        @media (max-width: 992px) {
+
+            .rpg-arena {
+
+                grid-template-columns: 1fr;
+
+                gap: 20px;
+
+                overflow-y: auto;
+
+                max-height: 75vh;
+
+                padding-right: 5px;
+
+            }
+
+            .rpg-visual-container {
+
+                height: 180px;
+
+            }
+
+            .rpg-visual-card {
+
+                max-width: 240px;
+
+                height: 100%;
+
+            }
+
+            .rpg-narrative-panel {
+
+                padding: 20px;
+
+            }
+
+            .rpg-scenario-text {
+
+                font-size: 1.05rem;
+
+                min-height: auto;
+
+            }
+
+            .rpg-choice-btn {
+
+                padding: 14px 18px;
+
+            }
+
+            .rpg-choice-btn-title {
+
+                font-size: 0.95rem;
+
+            }
+
+            .rpg-header {
+
+                grid-template-columns: auto 1fr;
+
+            }
+
+            .rpg-stats-card {
+
+                grid-column: span 2;
+
+                justify-self: center;
+
+                width: 100%;
+
+                justify-content: space-around;
+
+            }
+
+            .rpg-chapter-map {
+
+                display: none;
+
+            }
+
+            .rpg-ending-stats-grid {
+
+                grid-template-columns: repeat(3, 1fr);
+
+                gap: 8px;
+
+            }
+
+            .rpg-ending-stats-grid div:nth-child(4),
+
+            .rpg-ending-stats-grid div:nth-child(5) {
+
+                grid-column: span 1;
+
+            }
+
+        }
+
+        @media (max-width: 576px) {
+
+            .rpg-ending-stats-grid {
+
+                grid-template-columns: repeat(2, 1fr);
+
+            }
+
+            .rpg-ending-stats-grid div:last-child {
+
+                grid-column: span 2;
+
+            }
+
+        }
+
+        /* End of HOLLAND RPG STYLE SYSTEM */
+
+        
+
+        @media (max-width: 768px) {
+
+            .mbti-quiz-layout {
+
+                padding: 0 16px;
+
+                height: 100vh;
+
+                max-height: 100%;
+
+                justify-content: flex-start;
+
+                gap: 15px;
+
+            }
+
+            .mbti-question-header h2 {
+
+                font-size: 1.25rem !important;
+
+            }
+
+            .mbti-cards-grid {
+
+                grid-template-columns: 1fr !important;
+
+                gap: 16px !important;
+
+                align-items: stretch !important;
+
+            }
+
+            .mbti-choice-card {
+
+                height: 160px !important;
+
+                flex-direction: row !important;
+
+            }
+
+            .mbti-card-img-wrapper {
+
+                width: 100px !important;
+
+                flex-shrink: 0 !important;
+
+                flex-grow: 0 !important;
+
+            }
+
+            .mbti-card-footer {
+
+                flex-grow: 1 !important;
+
+                border-top: none !important;
+
+                border-left: 1px solid #F1F5F9 !important;
+
+                padding: 16px !important;
+
+            }
+
+            .mbti-choice-desc {
+
+                font-size: 0.92rem !important;
+
+            }
+
+            .mbti-footer {
+
+                margin-top: 10px;
+
+                margin-bottom: 20px;
+
+            }
+
+        }
+
+        @keyframes pulseGlow {
+
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+
+            70% { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Header Navigation -->
+
+    <header id="header" class="scrolled">
+
+        <div class="container nav-container">
+
+            <a href="index.html" class="logo-wrapper">
+
+                <img src="images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+
+                <div class="logo-text">EduCareer <span>AI</span></div>
+
+            </a>
+
+            
+
+            <nav>
+
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="pages/explore.html" class="active">Khám phá bản thân</a></li>
+                    <li><a href="ban-do-nang-luc.html">Bản đồ năng lực</a></li>
+                    <li><a href="cam-nang-nganh.html">Cẩm nang</a></li>
+                    <li><a href="ai-tu-van.html">AI tư vấn</a></li>
+                </ul>
+
+            </nav>
+
+            
+
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+
+                <span></span><span></span><span></span>
+
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- Main Quiz Container -->
+
+    <div class="quiz-container container">
+
+        <div class="quiz-card">
+
+            
+
+            <!-- 1. DASHBOARD VIEW: Choose Test -->
+
+            <div id="quiz-dashboard">
+                <!-- Breadcrumbs back to Khám phá bản thân -->
+                <div style="margin-bottom: 20px; text-align: left;">
+                    <a href="pages/explore.html" style="text-decoration: none; color: var(--primary-blue); font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại Khám phá bản thân
+                    </a>
+                </div>
+
+                <div class="section-header" style="margin-bottom: 30px;">
+
+                    <h2 class="section-title">Trắc Nghiệm <span class="gradient-text">Định Hướng Bản Thân</span></h2>
+
+                    <p class="section-desc" style="font-size: 0.95rem;">Hãy hoàn thành các bài trắc nghiệm dưới đây để cập nhật Bản đồ Năng lực khoa học của bạn</p>
+
+                </div>
+
+                <div class="test-grid">
+
+                    <!-- Holland Card -->
+
+                    <div class="test-card" id="btn-start-holland">
+
+                        <div>
+
+                            <div class="test-icon-wrapper">
+
+                                <i class="fa-solid fa-square-poll-vertical"></i>
+
+                            </div>
+
+                            <h3 class="test-name">Sở thích Holland</h3>
+
+                            <p class="test-desc">Đánh giá 6 nhóm sở thích nghề nghiệp (RIASEC) để tìm ra công việc và môi trường làm việc phù hợp nhất với bạn.</p>
+
+                        </div>
+
+                        <div>
+
+                            <span class="test-status" id="status-holland">Chưa làm</span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- MBTI Card -->
+
+                    <div class="test-card" id="btn-start-mbti">
+
+                        <div>
+
+                            <div class="test-icon-wrapper">
+
+                                <i class="fa-solid fa-brain"></i>
+
+                            </div>
+
+                            <h3 class="test-name">Tính cách MBTI</h3>
+
+                            <p class="test-desc">Xác định xu hướng tính cách qua 4 chiều lựa chọn, giúp hiểu rõ cách thu nhận năng lượng và đưa ra quyết định.</p>
+
+                        </div>
+
+                        <div>
+
+                            <span class="test-status" id="status-mbti">Chưa làm</span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- TIPI (Big Five) Card -->
+
+                    <div class="test-card" id="btn-start-tipi">
+
+                        <div>
+
+                            <div class="test-icon-wrapper">
+
+                                <i class="fa-solid fa-chart-simple"></i>
+
+                            </div>
+
+                            <h3 class="test-name">Khảo sát TIPI (Big Five)</h3>
+
+                            <p class="test-desc">Đánh giá nhanh 5 nhân tố tính cách cốt lõi: Hướng ngoại, Hòa đồng, Tận tâm, Ổn định cảm xúc, Cởi mở.</p>
+
+                        </div>
+
+                        <div>
+
+                            <span class="test-status" id="status-tipi">Chưa làm</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+
+                    <a href="ocr-hoc-ba.html" class="btn btn-secondary" id="rpg-back-to-map-btn" style="border: 1px solid #E2E8F0; padding: 12px 30px; font-weight: 700; border-radius: 8px;">
+
+                        <i class="fa-solid fa-arrow-left"></i> Trở lại trang học bạ
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- 2. QUESTIONNAIRE VIEW: Test Taking -->
+
+            <div id="quiz-questionnaire" style="display: none;">
+
+                <div class="quiz-header">
+
+                    <h2 class="quiz-title" id="quiz-type-title">Bài Trắc Nghiệm</h2>
+
+                    <p class="quiz-subtitle">Vui lòng trả lời trung thực để có kết quả chính xác nhất.</p>
+
+                </div>
+
+                <div class="progress-container">
+
+                    <div class="progress-header">
+
+                        <span id="quiz-progress-text">Câu 1 / 10</span>
+
+                        <span id="btn-quiz-back-question" class="nav-btn" style="cursor: pointer;"><i class="fa-solid fa-rotate-left"></i> Câu trước</span>
+
+                    </div>
+
+                    <div class="progress-bar-bg">
+
+                        <div class="progress-bar-fill" id="quiz-progress-bar"></div>
+
+                    </div>
+
+                </div>
+
+                <div class="question-area">
+
+                    <!-- Image Card for Visual Quiz -->
+
+                    <div id="quiz-question-image-container" style="display: none; width: 100%; max-width: 450px; margin: 0 auto 16px auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); aspect-ratio: 16/10;">
+
+                        <img id="quiz-question-image" src="" alt="Minh họa câu hỏi" style="width: 100%; height: 100%; object-fit: cover;">
+
+                    </div>
+
+                    <div class="question-text" id="quiz-question-text">Đang tải câu hỏi...</div>
+
+                    
+
+                    <!-- Answers: RIASEC YES/NO -->
+
+                    <div class="answer-options" id="quiz-answers-riasec" style="display: none;">
+
+                        <button class="answer-btn" id="btn-holland-no"><i class="fa-regular fa-circle-xmark" style="color: #EF4444;"></i> Không thích / Sai</button>
+
+                        <button class="answer-btn primary" id="btn-holland-yes"><i class="fa-regular fa-circle-check"></i> Thích / Đúng</button>
+
+                    </div>
+
+                    <!-- Answers: MBTI A/B -->
+
+                    <div class="answer-options" id="quiz-answers-mbti" style="display: none; flex-direction: column; gap: 12px; width: 100%; max-width: 550px;">
+
+                        <button class="answer-btn" id="btn-mbti-a" style="text-align: left; justify-content: flex-start; padding: 15px 20px; line-height: 1.5;"></button>
+
+                        <button class="answer-btn" id="btn-mbti-b" style="text-align: left; justify-content: flex-start; padding: 15px 20px; line-height: 1.5;"></button>
+
+                    </div>
+
+                    <!-- Answers: TIPI 1-5 Scale -->
+
+                    <div class="answer-options" id="quiz-answers-tipi" style="display: none; flex-direction: column; gap: 10px; width: 100%; max-width: 500px;">
+
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+
+                            <button class="answer-btn tipi-val-btn" data-val="1" style="flex-direction: column; padding: 10px 5px; font-size: 0.72rem; gap: 4px;">
+
+                                <strong style="font-size: 1.1rem;">1</strong> Rất phản đối
+
+                            </button>
+
+                            <button class="answer-btn tipi-val-btn" data-val="2" style="flex-direction: column; padding: 10px 5px; font-size: 0.72rem; gap: 4px;">
+
+                                <strong style="font-size: 1.1rem;">2</strong> Phản đối
+
+                            </button>
+
+                            <button class="answer-btn tipi-val-btn" data-val="3" style="flex-direction: column; padding: 10px 5px; font-size: 0.72rem; gap: 4px;">
+
+                                <strong style="font-size: 1.1rem;">3</strong> Trung lập
+
+                            </button>
+
+                            <button class="answer-btn tipi-val-btn" data-val="4" style="flex-direction: column; padding: 10px 5px; font-size: 0.72rem; gap: 4px;">
+
+                                <strong style="font-size: 1.1rem;">4</strong> Đồng ý
+
+                            </button>
+
+                            <button class="answer-btn tipi-val-btn" data-val="5" style="flex-direction: column; padding: 10px 5px; font-size: 0.72rem; gap: 4px;">
+
+                                <strong style="font-size: 1.1rem;">5</strong> Rất đồng ý
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="nav-button-row">
+
+                    <button id="btn-quiz-abort" class="nav-btn"><i class="fa-solid fa-xmark"></i> Hủy bài làm</button>
+
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">EduCareer AI Test Engine</span>
+
+                </div>
+
+            </div>
+
+            <!-- 3. SUCCESS VIEW: Result Summary -->
+
+            <div id="quiz-result-success" style="display: none; text-align: center;">
+
+                <div class="quiz-header">
+
+                    <div style="width: 64px; height: 64px; background: #E6F4EA; color: #137333; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 1.8rem;">
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                    </div>
+
+                    <h2 class="quiz-title">HOÀN THÀNH BÀI KHẢO SÁT</h2>
+
+                    <p class="quiz-subtitle" id="quiz-success-desc">Kết quả của bạn đã được cập nhật thành công vào hệ thống dữ liệu học sinh.</p>
+
+                </div>
+
+                <div class="success-metrics-card" id="quiz-success-metrics-card">
+
+                    <!-- Dynamic metrics summary injected here -->
+
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+
+                    <button class="btn btn-secondary" id="btn-quiz-success-dashboard" style="border: 1px solid #E2E8F0; padding: 12px 24px; font-weight: 700; border-radius: 8px;">
+
+                        Làm khảo sát khác
+
+                    </button>
+
+                    <a href="ban-do-nang-luc.html" class="btn btn-primary" id="btn-quiz-success-done" style="padding: 12px 28px; font-weight: 700; border-radius: 8px; background: var(--primary-blue); color: white; display: flex; align-items: center; gap: 8px;">
+
+                        <i class="fa-solid fa-chart-line"></i> Xem Bản đồ Năng lực
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Custom RPG Modal Overlay -->
+
+    <div id="rpg-resume-modal" class="rpg-modal-overlay" style="display: none;">
+
+        <div class="rpg-modal-content">
+
+            <div class="rpg-modal-icon">
+
+                <i class="fa-solid fa-gamepad" style="color: #c084fc;"></i>
+
+            </div>
+
+            <h3 class="rpg-modal-title">Tiến Trình Chơi Dở Dang</h3>
+
+            <p class="rpg-modal-text">Hệ thống phát hiện bạn có một hành trình chuẩn bị lễ hội đang dừng lại ở chương trước.</p>
+
+            <p class="rpg-modal-subtext">Bạn có muốn tiếp tục hành trình này không?</p>
+
+            <div class="rpg-modal-actions">
+
+                <button id="rpg-modal-btn-restart" class="rpg-modal-btn secondary">Chơi lại từ đầu</button>
+
+                <button id="rpg-modal-btn-resume" class="rpg-modal-btn primary">Tiếp tục hành trình</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Fullscreen Visual Quiz Layout (Holland RPG Story Mode) -->
+
+    <div id="visual-quiz-fullscreen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; justify-content: center; align-items: center; background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 60%, #020617 100%); overflow: hidden;">
+
+        <div class="rpg-quiz-container">
+
+            <!-- Glow Blobs -->
+
+            <div class="rpg-glow rpg-glow-primary"></div>
+
+            <div class="rpg-glow rpg-glow-secondary"></div>
+
+            <!-- RPG Header -->
+
+            <header class="rpg-header">
+
+                <div>
+
+                    <span class="rpg-chapter-badge" id="rpg-chapter-title">
+
+                        <i class="fa-solid fa-book-open"></i> Chương 1: Kiến Tạo Không Gian
+
+                    </span>
+
+                </div>
+
+                
+
+                <!-- Sơ đồ chương (Map) -->
+
+                <div class="rpg-chapter-map">
+
+                    <div class="rpg-chapter-map-line"></div>
+
+                    <div class="rpg-chapter-map-line-fill" id="rpg-map-fill"></div>
+
+                    <div class="rpg-node active" id="rpg-node-1" title="Chương 1: Kiến Tạo Không Gian (R)">R</div>
+
+                    <div class="rpg-node" id="rpg-node-2" title="Chương 2: Khám Phá Tri Thức (I)">I</div>
+
+                    <div class="rpg-node" id="rpg-node-3" title="Chương 3: Khơi Nguồn Nghệ Thuật (A)">A</div>
+
+                    <div class="rpg-node" id="rpg-node-4" title="Chương 4: Kết Nối Yêu Thương (S)">S</div>
+
+                    <div class="rpg-node" id="rpg-node-5" title="Chương 5: Thủ Lĩnh Tiên Phong (E)">E</div>
+
+                    <div class="rpg-node" id="rpg-node-6" title="Chương 6: Vận Hành Chỉn Chu (C)">C</div>
+
+                </div>
+
+            </header>
+
+            <!-- Main Arena -->
+
+            <main class="rpg-arena">
+
+                <!-- LEFT: Visual Card -->
+
+                <div class="rpg-visual-container">
+
+                    <div class="rpg-visual-card" id="rpg-question-card">
+
+                        <!-- Img injected by JS -->
+
+                    </div>
+
+                </div>
+
+                <!-- RIGHT: Narrative Panel -->
+
+                <div class="rpg-narrative-panel">
+
+                    <span class="rpg-scenario-title" id="rpg-scenario-step">Tình huống 1 / 8</span>
+
+                    <p class="rpg-scenario-text" id="rpg-scenario-desc">Đang tải tình huống...</p>
+
+                    
+
+                    <div class="rpg-choices-list">
+
+                        <button class="rpg-choice-btn" id="rpg-btn-yes">
+
+                            <span class="rpg-choice-btn-title" id="rpg-yes-text">Đồng ý thực hiện</span>
+
+                            <span class="rpg-choice-btn-stat-preview" id="rpg-yes-preview">
+
+                                <!-- Stat preview labels -->
+
+                            </span>
+
+                        </button>
+
+                        <button class="rpg-choice-btn" id="rpg-btn-no">
+
+                            <span class="rpg-choice-btn-title" id="rpg-no-text">Bỏ qua công việc này</span>
+
+                            <span class="rpg-choice-btn-stat-preview" id="rpg-no-preview">
+
+                                <!-- Stat preview labels -->
+
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </main>
+
+            <!-- Bottom Controls -->
+
+            <footer class="rpg-controls">
+
+                <button class="rpg-btn-back" id="rpg-btn-back">
+
+                    <i class="fa-solid fa-chevron-left"></i> Quay lại câu trước
+
+                </button>
+
+                <div style="font-size: 0.85rem; color: #64748b; font-weight: 600;">
+
+                    Nhấn phím <span style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15);">←</span> hoặc <span style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15);">→</span> trên bàn phím để lựa chọn nhanh
+
+                </div>
+
+                <button class="rpg-btn-abort" id="rpg-btn-abort" title="Thoát trắc nghiệm">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </footer>
+
+        </div>
+
+    </div>
+
+    <!-- Chapter Transition Screen Overlay -->
+
+    <div id="rpg-transition-screen" class="rpg-transition-overlay">
+
+        <div class="rpg-transition-card">
+
+            <h3 class="rpg-transition-title" id="rpg-transition-title">Hoàn thành Chương 1!</h3>
+
+            <p class="rpg-transition-text" id="rpg-transition-desc">Nội dung tóm tắt chương...</p>
+
+            <button class="rpg-btn-primary" id="rpg-transition-btn">Bước Tiếp Vào Chương 2</button>
+
+        </div>
+
+    </div>
+
+    <!-- Fullscreen MBTI Quiz Layout -->
+
+    <div id="mbti-quiz-fullscreen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #F5F7FF 0%, #F8FAFC 50%, #EFF6FF 100%); z-index: 9999; justify-content: center; align-items: center; font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; overflow: hidden;">
+
+        <!-- Glassmorphic Background Blobs -->
+
+        <div class="bg-blob bg-blob-1"></div>
+
+        <div class="bg-blob bg-blob-2"></div>
+
+        <div class="bg-blob bg-blob-3"></div>
+
+        <div class="mbti-quiz-layout">
+
+            <!-- Top bar (Back + Progress Line + Exit) -->
+
+            <div class="mbti-top-bar">
+
+                <button id="btn-mbti-back" class="mbti-circle-btn"><i class="fa-solid fa-arrow-left"></i></button>
+
+                <div class="mbti-progress-bar-container">
+
+                    <div id="mbti-progress-line" class="mbti-progress-line-fill"></div>
+
+                </div>
+
+                <button id="btn-mbti-abort" class="mbti-circle-btn abort"><i class="fa-solid fa-xmark"></i></button>
+
+            </div>
+
+            <!-- Question Title -->
+
+            <div class="mbti-question-header">
+
+                <span class="mbti-section-tag">Trắc nghiệm Tính cách MBTI</span>
+
+                <h2 id="mbti-question-text">Đang tải câu hỏi...</h2>
+
+            </div>
+
+            <!-- Options Grid (2 Cards) -->
+
+            <div class="mbti-cards-grid">
+
+                <!-- Option A Card -->
+
+                <div class="mbti-choice-card" id="card-mbti-a">
+
+                    <div class="mbti-card-img-wrapper" id="img-mbti-a-container"></div>
+
+                    <div class="mbti-card-footer">
+
+                        <span class="mbti-opt-indicator">A</span>
+
+                        <p class="mbti-choice-desc" id="txt-mbti-a">Lựa chọn A</p>
+
+                    </div>
+
+                </div>
+
+                <!-- Option B Card -->
+
+                <div class="mbti-choice-card" id="card-mbti-b">
+
+                    <div class="mbti-card-img-wrapper" id="img-mbti-b-container"></div>
+
+                    <div class="mbti-card-footer">
+
+                        <span class="mbti-opt-indicator">B</span>
+
+                        <p class="mbti-choice-desc" id="txt-mbti-b">Lựa chọn B</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Footer (Keyboard Tip & Counter) -->
+
+            <div class="mbti-footer">
+
+                <span id="mbti-progress-badge">1 / 70</span>
+
+                <span><i class="fa-regular fa-keyboard" style="margin-right: 5px; color: var(--primary-blue);"></i> Nhấn <span class="kbd-key">A</span> hoặc <span class="kbd-key">B</span> trên bàn phím</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer Section -->
+
+    <footer id="contact">
+
+        <div class="container footer-grid">
+
+            <div class="footer-brand">
+
+                <a href="index.html" class="logo-wrapper" style="margin-bottom: 15px; display: inline-flex;">
+
+                    <img src="images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+
+                    <div class="logo-text" style="color: #fff;">EduCareer <span style="color: var(--primary-cyan);">AI</span></div>
+
+                </a>
+
+                <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.6;">Hệ thống hướng nghiệp thông minh hàng đầu dành cho học sinh THPT tại Việt Nam.</p>
+
+            </div>
+
+            
+
+            <div class="footer-links-col">
+
+                <h4 style="color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 800; margin-bottom: 15px;">Đường dẫn nhanh</h4>
+
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.8rem;">
+
+                    <li><a href="index.html" style="color: rgba(255,255,255,0.6); text-decoration: none; transition: var(--transition-smooth);">Trang chủ</a></li>
+
+                    <li><a href="cam-nang-nganh.html" style="color: rgba(255,255,255,0.6); text-decoration: none; transition: var(--transition-smooth);">Cẩm nang</a></li>
+
+                    <li><a href="pages/explore.html" class="active">Khám phá bản thân</a></li>
+
+                    <li><a href="ban-do-nang-luc.html" style="color: rgba(255,255,255,0.6); text-decoration: none; transition: var(--transition-smooth);">Bản đồ năng lực</a></li>
+
+                    <li><a href="ai-tu-van.html" style="color: rgba(255,255,255,0.6); text-decoration: none; transition: var(--transition-smooth);">AI tư vấn</a></li>
+
+                </ul>
+
+            </div>
+
+            
+
+            <div class="footer-contact" style="display: flex; flex-direction: column; gap: 12px; color: rgba(255,255,255,0.6); font-size: 0.8rem;">
+
+                <h4 style="color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 800; margin-bottom: 5px;">Liên hệ</h4>
+
+                <p><i class="fa-solid fa-envelope" style="color: var(--primary-cyan); margin-right: 8px;"></i> support@educareer.ai</p>
+
+                <p><i class="fa-solid fa-phone" style="color: var(--primary-cyan); margin-right: 8px;"></i> +84 (024) 123-4567</p>
+
+            </div>
+
+        </div>
+
+        
+
+        <div class="container footer-bottom" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: rgba(255,255,255,0.4);">
+
+            <p>© 2026 EduCareer AI. Bảo lưu mọi quyền.</p>
+
+            <div class="footer-bottom-links" style="display: flex; gap: 20px;">
+
+                <a href="#" style="color: rgba(255,255,255,0.4); text-decoration: none;">Điều khoản sử dụng</a>
+
+                <a href="#" style="color: rgba(255,255,255,0.4); text-decoration: none;">Chính sách bảo mật</a>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <script src="Data/DataHS/hoc_sinh_profile.js"></script>
+
+    <script src="Data/bandonangluc/career_catalog.js"></script>
+
+    <script src="Data/Tracnghiem/holland_story_questions.js"></script>
+
+    <script src="Data/Tracnghiem/mbti_questions.js"></script>
+
+    <script src="Data/Tracnghiem/tipi_questions.js"></script>
+
+    <script src="Data/bandonangluc/mbti_details.js"></script>
+
+    <script src="app.js?v=2.5"></script>
+
+    <script>
+
+    (function() {
+
+        'use strict';
+
+        const isReset = localStorage.getItem('educareer_reset_flag') === 'true';
+
+        // Student Data setup with local storage persistence
+
+        let studentData = (!isReset && window.HOC_SINH_PROFILE) ? window.HOC_SINH_PROFILE : {
+
+            studentId: 'HS0000',
+
+            studentName: 'Học sinh chưa đăng ký',
+
+            school: 'Chưa cập nhật',
+
+            gradeClass: 'Chưa cập nhật',
+
+            level: 'thpt',
+
+            academic: {},
+
+            riasec: {},
+
+            mbti: '',
+
+            tipi: null,
+
+            eq: null,
+
+            expertRemarks: '',
+
+            recommendedCareers: []
+
+        };
+
+        // Try to load student profile from localStorage
+
+        try {
+
+            const savedProfile = localStorage.getItem('educareer_student_profile');
+
+            if (savedProfile) {
+
+                const parsed = JSON.parse(savedProfile);
+
+                if (parsed && typeof parsed === 'object') {
+
+                    studentData = parsed;
+
+                }
+
+            }
+
+        } catch(e) {
+
+            console.error("Error loading student profile:", e);
+
+        }
+
+        const tipiFullNames = window.TIPI_FULL_NAMES || {};
+
+        const tipiColors = window.TIPI_COLORS || {};
+
+        let activeQuizType = null;
+
+        let completedTests = { holland: false, mbti: false, tipi: false };
+
+        let currentQuestionIndex = 0;
+
+        let quizQuestions = [];
+
+        let quizAnswers = {};
+
+        let rpgStats = {};
+
+        let rpgStatsHistory = [];
+
+        function formatBudget(val) { return ''; }
+
+        function generateStatPreviewHtml(effects) { return ''; }
+
+        function showFloatingChange(statId, changeText, color) {}
+
+        function applyEffectsAndFloat(effects) {}
+
+        function showChapterIntro(chapterIndex) {
+
+            const currentChapter = window.QUESTION_DATABASE.riasecStory.chapters[chapterIndex];
+
+            const transitionScreen = document.getElementById('rpg-transition-screen');
+
+            const titleEl = document.getElementById('rpg-transition-title');
+
+            const descEl = document.getElementById('rpg-transition-desc');
+
+            const btnEl = document.getElementById('rpg-transition-btn');
+
+            
+
+            if (!transitionScreen || !titleEl || !descEl || !btnEl) return;
+
+            
+
+            // Hide transition title to use custom styled intro layout
+
+            titleEl.style.display = 'none';
+
+            // Ensure button display is block (since checkpoint might set to none)
+
+            btnEl.style.display = 'block';
+
+            btnEl.style.opacity = '1';
+
+            // RIASEC categories decoration mapping
+
+            const categoryData = {
+
+                R: { label: "Kỹ Thuật - Thực Tế (Realistic)", color: "#ef4444", icon: "fa-screwdriver-wrench", bgGlow: "rgba(239, 68, 68, 0.15)" },
+
+                I: { label: "Nghiên Cứu - Trí Tuệ (Investigative)", color: "#3b82f6", icon: "fa-microscope", bgGlow: "rgba(59, 130, 246, 0.15)" },
+
+                A: { label: "Nghệ Thuật - Sáng Tạo (Artistic)", color: "#a855f7", icon: "fa-palette", bgGlow: "rgba(168, 85, 247, 0.15)" },
+
+                S: { label: "Xã Hội - Đồng Đội (Social)", color: "#10b981", icon: "fa-handshake-angle", bgGlow: "rgba(16, 185, 129, 0.15)" },
+
+                E: { label: "Quản Lý - Thách Thức (Enterprising)", color: "#f59e0b", icon: "fa-chart-line", bgGlow: "rgba(245, 158, 11, 0.15)" },
+
+                C: { label: "Nghiệp Vụ - Chỉn Chu (Conventional)", color: "#06b6d4", icon: "fa-folder-open", bgGlow: "rgba(6, 182, 212, 0.15)" }
+
+            };
+
+            const catInfo = categoryData[currentChapter.category] || categoryData.R;
+
+            
+
+            let introHtml = `
+
+                <div class="rpg-intro-container">
+
+                    <div class="rpg-intro-badge-container">
+
+                        <span class="rpg-intro-roman">CHƯƠNG ${chapterIndex + 1}</span>
+
+                        <div class="rpg-intro-category" style="color: ${catInfo.color}; border-color: ${catInfo.color}40; background: ${catInfo.color}10;">
+
+                            <i class="fa-solid ${catInfo.icon}"></i> ${catInfo.label}
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <h2 class="rpg-intro-main-title">${currentChapter.title.replace(/Chương \d+: /, '')}</h2>
+
+                    
+
+                    <div class="rpg-intro-quest-card" style="box-shadow: 0 0 40px ${catInfo.bgGlow}, inset 0 0 20px ${catInfo.color}10; border-color: ${catInfo.color}30;">
+
+                        <div class="rpg-intro-quote-icon top" style="color: ${catInfo.color}30;">
+
+                            <i class="fa-solid fa-quote-left"></i>
+
+                        </div>
+
+                        <p class="rpg-intro-text-content">${currentChapter.intro}</p>
+
+                        <div class="rpg-intro-quote-icon bottom" style="color: ${catInfo.color}30;">
+
+                            <i class="fa-solid fa-quote-right"></i>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="rpg-intro-action-wrapper" id="rpg-intro-action-col">
+
+                        <!-- Button will be moved here -->
+
+                    </div>
+
+                </div>
+
+            `;
+
+            
+
+            descEl.innerHTML = introHtml;
+
+            btnEl.textContent = "Bắt đầu chương này";
+
+            
+
+            // Move transition button inside the quest action wrapper
+
+            const actionCol = document.getElementById('rpg-intro-action-col');
+
+            if (actionCol) {
+
+                actionCol.appendChild(btnEl);
+
+            }
+
+            
+
+            transitionScreen.classList.add('show');
+
+        }
+
+        function showChapterTransition(chapterIndex) {
+
+            const currentChapter = window.QUESTION_DATABASE.riasecStory.chapters[chapterIndex];
+
+            const nextChapter = window.QUESTION_DATABASE.riasecStory.chapters[chapterIndex + 1];
+
+            
+
+            const transitionScreen = document.getElementById('rpg-transition-screen');
+
+            const titleEl = document.getElementById('rpg-transition-title');
+
+            const descEl = document.getElementById('rpg-transition-desc');
+
+            const btnEl = document.getElementById('rpg-transition-btn');
+
+            
+
+            if (!transitionScreen || !titleEl || !descEl || !btnEl) return;
+
+            
+
+            titleEl.style.display = 'block';
+
+            titleEl.textContent = `Hoàn thành Chương ${chapterIndex + 1}!`;
+
+            
+
+            if (nextChapter) {
+
+                btnEl.textContent = "Xem bối cảnh tiếp theo";
+
+            } else {
+
+                btnEl.textContent = "Hoàn thành Lễ hội";
+
+            }
+
+            
+
+            const savedEmotion = (window.rpgEmotionHistory && window.rpgEmotionHistory[chapterIndex]) ? window.rpgEmotionHistory[chapterIndex] : '';
+
+            if (savedEmotion) {
+
+                btnEl.style.display = 'block';
+
+            } else {
+
+                btnEl.style.display = 'none';
+
+            }
+
+            
+
+            let transitionHtml = `
+
+                <div class="rpg-transition-split" style="max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 30px;">
+
+                    <div class="rpg-transition-narrative" style="text-align: center; width: 100%;">
+
+                        <p class="rpg-outro-text" style="font-size: 1.25rem; line-height: 1.6; font-style: italic;">"${currentChapter.outro}"</p>
+
+                    </div>
+
+                    
+
+                    <!-- Emotion Checkpoint -->
+
+                    <div class="rpg-emotion-checkpoint" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+
+                        <p class="rpg-emotion-question">Cảm xúc của bạn sau chương này?</p>
+
+                        <div class="rpg-emotion-options" style="display: flex; gap: 12px; justify-content: center; width: 100%;">
+
+                            <button class="rpg-emotion-btn ${savedEmotion === 'excited' ? 'active' : ''}" onclick="selectRpgEmotion(this, 'excited', ${chapterIndex})">🤩 Hào hứng</button>
+
+                            <button class="rpg-emotion-btn ${savedEmotion === 'tired' ? 'active' : ''}" onclick="selectRpgEmotion(this, 'tired', ${chapterIndex})">😴 Mệt mỏi</button>
+
+                            <button class="rpg-emotion-btn ${savedEmotion === 'anxious' ? 'active' : ''}" onclick="selectRpgEmotion(this, 'anxious', ${chapterIndex})">😰 Lo lắng</button>
+
+                        </div>
+
+                        
+
+                        <!-- Save & Exit Button -->
+
+                        <button id="rpg-save-exit-btn" class="rpg-save-exit-btn" style="display: ${savedEmotion === 'tired' ? 'block' : 'none'}; opacity: ${savedEmotion === 'tired' ? '1' : '0'}; margin-top: 10px;" onclick="saveRpgCheckpoint(${chapterIndex})">
+
+                            <i class="fa-solid fa-floppy-disk"></i> Nghỉ ngơi một lát (Lưu & Thoát)
+
+                        </button>
+
+                    </div>
+
+                    <div id="rpg-transition-actions" style="margin-top: 10px; display: flex; justify-content: center; width: 100%;"></div>
+
+                </div>
+
+            `;
+
+            
+
+            descEl.innerHTML = transitionHtml;
+
+            
+
+            const actionsDiv = document.getElementById('rpg-transition-actions');
+
+            if (actionsDiv && btnEl) {
+
+                actionsDiv.appendChild(btnEl);
+
+            }
+
+            
+
+            transitionScreen.classList.add('show');
+
+        }
+
+        window.isHollandEndingShowed = false;
+
+        window.finishHollandQuiz = function(action) {
+            const transitionScreen = document.getElementById('rpg-transition-screen');
+            if (transitionScreen) transitionScreen.classList.remove('show');
+            window.isHollandEndingShowed = false;
+            
+            if (action === 'map') {
+                completeQuiz();
+            } else {
+                SoundManager.stopBgm();
+                document.body.classList.remove('quiz-active');
+                const fsContainer = document.getElementById('visual-quiz-fullscreen');
+                if (fsContainer) fsContainer.style.display = 'none';
+                
+                completedTests['holland'] = true;
+                localStorage.setItem('educareer_quiz_statuses', JSON.stringify(completedTests));
+                updateQuizStatusBadges();
+                localStorage.removeItem('educareer_rpg_checkpoint');
+                
+                document.getElementById('quiz-dashboard').style.display = 'block';
+            }
+        };
+
+        function showHollandEnding() {
+
+            window.isHollandEndingShowed = true;
+
+            
+
+            // Calculate Holland scores
+
+            const counts = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+
+            quizQuestions.forEach((q, idx) => {
+
+                const ans = quizAnswers[idx];
+
+                if (ans === 1) {
+
+                    counts[q.category]++;
+
+                }
+
+            });
+
+            const riasec = {};
+
+            for (let cat in counts) {
+
+                riasec[cat] = Math.round((counts[cat] / 8) * 100);
+
+            }
+
+            studentData.riasec = riasec;
+
+            localStorage.setItem('educareer_student_profile', JSON.stringify(studentData));
+
+            const sortedCategories = Object.keys(riasec).sort((a, b) => riasec[b] - riasec[a]);
+
+            const primaryCat = sortedCategories[0];
+
+            
+
+            const archetypes = {
+
+                R: { title: "Chiến binh Kiến tạo Thực tế (Realistic)", desc: "Bạn yêu thích việc tự tay chế tạo cơ khí, lắp ráp công nghệ và giải quyết các bài toán vật lý, cơ sở vật chất thực tiễn." },
+
+                I: { title: "Pháp sư Trí tuệ Độc lập (Investigative)", desc: "Bạn say mê nghiên cứu khoa học, giải đố logic hóc búa, khám phá vũ trụ và tự tay gỡ code sửa phần mềm." },
+
+                A: { title: "Nhà thơ Sáng tạo Tự do (Artistic)", desc: "Bạn sở hữu tâm hồn bay bổng, yêu cái đẹp, thích viết thơ văn truyền cảm xúc, diễn kịch nghệ thuật và thiết kế thời trang." },
+
+                S: { title: "Tu sĩ Gắn kết Nhân ái (Social)", desc: "Bạn có trái tim ấm áp, thích lắng nghe tâm sự, giảng giải bài học, làm từ thiện tình nguyện giải quyết mâu thuẫn đồng đội." },
+
+                E: { title: "Thủ lĩnh Tiên phong Táo bạo (Enterprising)", desc: "Bạn có tố chất điều phối chỉ huy, kêu gọi vốn đầu tư, đàm phán thuyết phục nhà tài trợ và làm MC dẫn dắt tập thể." },
+
+                C: { title: "Hộ vệ Chỉn chu Kỷ luật (Conventional)", desc: "Bạn cực kỳ tỉ mỉ, làm việc khoa học với bảng Excel, hóa đơn, thời gian biểu và đảm bảo format báo cáo chuẩn chỉnh." }
+
+            };
+
+            
+
+            const myArchetype = archetypes[primaryCat] || archetypes.R;
+
+            let emotionPara = '';
+
+            if (window.rpgEmotionHistory) {
+
+                const eCounts = { excited: 0, tired: 0, anxious: 0 };
+
+                for (let ch in window.rpgEmotionHistory) {
+
+                    eCounts[window.rpgEmotionHistory[ch]]++;
+
+                }
+
+                const dominantEmotion = Object.keys(eCounts).sort((a, b) => eCounts[b] - eCounts[a])[0];
+
+                const emotionMsgs = {
+
+                    excited: `🌟 <strong>Tinh thần thép:</strong> Xuyên suốt hành trình chuẩn bị lễ hội, bạn luôn giữ một thái độ hào hứng, tích cực và tràn đầy năng lượng 🤩. Sự nhiệt huyết này không chỉ thúc đẩy bạn hoàn thành tốt phần việc của mình mà còn truyền lửa cho tất cả mọi người xung quanh.`,
+
+                    tired: `💪 <strong>Bền bỉ kiên cường:</strong> Dù khối lượng công việc khổng lồ đôi lúc khiến bạn cảm thấy kiệt sức và mệt mỏi 😴, bạn vẫn không hề bỏ cuộc. Tinh thần trách nhiệm cao độ đã giúp bạn vượt qua mọi rào cản để cán đích thành công cùng tập thể.`,
+
+                    anxious: `🛡️ <strong>Thận trọng vững vàng:</strong> Trước những thử thách và thay đổi bất ngờ, bạn thường có cảm giác lo lắng và áp lực 😰. Tuy nhiên, sự lo âu này chính là biểu hiện của tinh thần trách nhiệm, giúp bạn luôn suy nghĩ thấu đáo và chuẩn bị kỹ lưỡng cho mọi tình huống.`
+
+                };
+
+                emotionPara = emotionMsgs[dominantEmotion] || '';
+
+            }
+
+            const transitionScreen = document.getElementById('rpg-transition-screen');
+
+            const titleEl = document.getElementById('rpg-transition-title');
+
+            const descEl = document.getElementById('rpg-transition-desc');
+
+            const btnEl = document.getElementById('rpg-transition-btn');
+
+            if (titleEl) titleEl.style.display = 'none';
+
+            let endingHtml = `
+
+                <div class="rpg-ending-container" style="max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;">
+
+                    <div style="font-size: 2.5rem; color: #a78bfa; filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.4)); margin-bottom: 5px;">🏆</div>
+
+                    <h2 style="font-size: 1.8rem; font-weight: 800; color: #ffffff; margin: 0; text-transform: uppercase; letter-spacing: 1px;">Nhật Ký Lễ Hội Của Bạn</h2>
+
+                    
+
+                    <div class="rpg-intro-quest-card" style="box-shadow: 0 0 40px rgba(167, 139, 250, 0.15), inset 0 0 20px rgba(167, 139, 250, 0.05); border-color: rgba(167, 139, 250, 0.3); text-align: left; width: 100%; padding: 25px; border-radius: 16px;">
+
+                        <h3 style="font-size: 1.15rem; color: #c084fc; font-weight: 700; margin-top: 0; margin-bottom: 10px;">Vai Trò Của Bạn: ${myArchetype.title}</h3>
+
+                        <p style="font-size: 0.95rem; line-height: 1.6; color: #e2e8f0; margin: 0;">${myArchetype.desc}</p>
+
+                    </div>
+
+                    ${emotionPara ? `
+
+                    <div class="rpg-intro-quest-card" style="box-shadow: 0 0 40px rgba(16, 185, 129, 0.1), inset 0 0 20px rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2); text-align: left; width: 100%; padding: 25px; border-radius: 16px;">
+
+                        <h4 style="font-size: 1.05rem; color: #34d399; font-weight: 700; margin-top: 0; margin-bottom: 10px;">
+
+                            <i class="fa-solid fa-feather-pointed" style="margin-right: 6px;"></i> Kỷ yếu Lễ hội trường học
+
+                        </h4>
+
+                        <p style="font-size: 0.92rem; line-height: 1.6; color: #cbd5e1; margin: 0;">${emotionPara}</p>
+
+                    </div>
+
+                    ` : ''}
+
+                    <!-- Hai nút hành động ở cuối bài -->
+                    <div style="display: flex; gap: 15px; justify-content: center; width: 100%; margin-top: 15px;">
+                        <button class="rpg-choice-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(16,185,129,0.3); font-family: inherit; font-size: 0.95rem; transition: transform 0.2s;" onclick="window.finishHollandQuiz('map')">
+                            <i class="fa-solid fa-chart-line"></i> Xem Bản đồ Năng lực
+                        </button>
+                        <button class="rpg-choice-btn" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(239,68,68,0.3); font-family: inherit; font-size: 0.95rem; transition: transform 0.2s;" onclick="window.finishHollandQuiz('exit')">
+                            <i class="fa-solid fa-right-from-bracket"></i> Lối ra
+                        </button>
+                    </div>
+
+                </div>
+
+            `;
+
+            if (descEl) descEl.innerHTML = endingHtml;
+
+            if (btnEl) {
+
+                btnEl.style.display = 'none'; // Ẩn nút mặc định của transition đi để dùng 2 nút custom ở trên
+
+            }
+
+        }
+
+        window.selectRpgEmotion = function(btn, emotion, chapterIndex) {
+
+            SoundManager.playAnswer();
+
+            const parent = btn.parentElement;
+
+            if (!parent) return;
+
+            const buttons = parent.querySelectorAll('.rpg-emotion-btn');
+
+            buttons.forEach(b => b.classList.remove('active'));
+
+            
+
+            btn.classList.add('active');
+
+            
+
+            if (!window.rpgEmotionHistory) window.rpgEmotionHistory = {};
+
+            window.rpgEmotionHistory[chapterIndex] = emotion;
+
+            
+
+            const btnNext = document.getElementById('rpg-transition-btn');
+
+            if (btnNext) {
+
+                btnNext.style.display = 'block';
+
+                btnNext.style.opacity = '0';
+
+                btnNext.style.transition = 'opacity 0.3s ease';
+
+                btnNext.offsetHeight; // trigger reflow
+
+                btnNext.style.opacity = '1';
+
+            }
+
+            // Handle Save & Exit button visibility
+
+            const btnSaveExit = document.getElementById('rpg-save-exit-btn');
+
+            if (btnSaveExit) {
+
+                if (emotion === 'tired') {
+
+                    btnSaveExit.style.display = 'block';
+
+                    btnSaveExit.style.opacity = '0';
+
+                    btnSaveExit.style.transition = 'opacity 0.3s ease';
+
+                    btnSaveExit.offsetHeight;
+
+                    btnSaveExit.style.opacity = '1';
+
+                } else {
+
+                    btnSaveExit.style.display = 'none';
+
+                }
+
+            }
+
+        };
+
+        window.saveRpgCheckpoint = function(chapterIndex) {
+
+            SoundManager.playClick();
+
+            SoundManager.stopBgm();
+
+            const checkpoint = {
+
+                currentQuestionIndex: (chapterIndex + 1) * 8,
+
+                quizAnswers: quizAnswers,
+
+                rpgEmotionHistory: window.rpgEmotionHistory || {}
+
+            };
+
+            localStorage.setItem('educareer_rpg_checkpoint', JSON.stringify(checkpoint));
+
+            
+
+            // Close quiz mode
+
+            document.body.classList.remove('quiz-active');
+
+            const fsContainer = document.getElementById('visual-quiz-fullscreen');
+
+            if (fsContainer) fsContainer.style.display = 'none';
+
+            
+
+            // Hide transition screen overlay
+
+            const transitionScreen = document.getElementById('rpg-transition-screen');
+
+            if (transitionScreen) {
+
+                transitionScreen.classList.remove('show');
+
+            }
+
+        };
+
+        function handleRpgAnswer(ans) {
+
+            SoundManager.playAnswer();
+
+            // Save answer
+
+            quizAnswers[currentQuestionIndex] = ans;
+
+            
+
+            // Render the updated question values immediately
+
+            setTimeout(() => {
+
+                const chapterIndex = Math.floor(currentQuestionIndex / 8);
+
+                
+
+                if (currentQuestionIndex % 8 === 7) {
+
+                    showChapterTransition(chapterIndex);
+
+                } else {
+
+                    currentQuestionIndex++;
+
+                    showQuestion();
+
+                }
+
+            }, 150); // quick transition delay
+
+        }
+
+        function updateQuizStatusBadges() {
+
+            // Reload latest student profile from localStorage
+
+            try {
+
+                const savedProfile = localStorage.getItem('educareer_student_profile');
+
+                if (savedProfile) {
+
+                    const parsed = JSON.parse(savedProfile);
+
+                    if (parsed && typeof parsed === 'object') {
+
+                        studentData = parsed;
+
+                    }
+
+                }
+
+            } catch(e) {}
+
+            if (!studentData) {
+
+                studentData = { riasec: {}, mbti: '', tipi: {} };
+
+            }
+
+            completedTests = {
+
+                holland: !!(studentData.riasec && Object.keys(studentData.riasec).length > 0),
+
+                mbti: !!studentData.mbti,
+
+                tipi: !!(studentData.tipi && Object.keys(studentData.tipi).length > 0)
+
+            };
+
+            const savedStatuses = localStorage.getItem('educareer_quiz_statuses');
+
+            if (savedStatuses) {
+
+                try {
+
+                    Object.assign(completedTests, JSON.parse(savedStatuses));
+
+                } catch(e) {}
+
+            }
+
+            const hollandBadge = document.getElementById('status-holland');
+
+            const mbtiBadge = document.getElementById('status-mbti');
+
+            const tipiBadge = document.getElementById('status-tipi');
+
+            if (hollandBadge) {
+
+                hollandBadge.textContent = completedTests.holland ? 'Đã hoàn thành' : 'Chưa làm';
+
+                hollandBadge.style.background = completedTests.holland ? '#E6F4EA' : '#F1F5F9';
+
+                hollandBadge.style.color = completedTests.holland ? '#137333' : 'var(--text-muted)';
+
+            }
+
+            if (mbtiBadge) {
+
+                mbtiBadge.textContent = completedTests.mbti ? 'Đã hoàn thành' : 'Chưa làm';
+
+                mbtiBadge.style.background = completedTests.mbti ? '#E6F4EA' : '#F1F5F9';
+
+                mbtiBadge.style.color = completedTests.mbti ? '#137333' : 'var(--text-muted)';
+
+            }
+
+            if (tipiBadge) {
+
+                tipiBadge.textContent = completedTests.tipi ? 'Đã hoàn thành' : 'Chưa làm';
+
+                tipiBadge.style.background = completedTests.tipi ? '#E6F4EA' : '#F1F5F9';
+
+                tipiBadge.style.color = completedTests.tipi ? '#137333' : 'var(--text-muted)';
+
+            }
+
+            const allThreeDone = completedTests.holland && completedTests.mbti && completedTests.tipi;
+
+            const btnBackToMap = document.getElementById('rpg-back-to-map-btn');
+
+            if (btnBackToMap) {
+
+                if (allThreeDone) {
+
+                    btnBackToMap.setAttribute('href', 'ban-do-nang-luc.html');
+
+                    btnBackToMap.innerHTML = `<i class="fa-solid fa-trophy" style="color: #f59e0b;"></i> Xem Bản đồ Năng lực`;
+
+                    btnBackToMap.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+                    btnBackToMap.style.color = 'white';
+
+                    btnBackToMap.style.border = 'none';
+
+                    btnBackToMap.style.boxShadow = '0 0 15px rgba(16,185,129,0.3)';
+
+                    btnBackToMap.style.animation = 'pulseGlow 2s infinite';
+
+                } else {
+
+                    btnBackToMap.setAttribute('href', 'ocr-hoc-ba.html');
+
+                    btnBackToMap.innerHTML = `<i class="fa-solid fa-arrow-left"></i> Trở lại trang học bạ`;
+
+                    btnBackToMap.style.background = '';
+
+                    btnBackToMap.style.color = '';
+
+                    btnBackToMap.style.border = '';
+
+                    btnBackToMap.style.boxShadow = '';
+
+                    btnBackToMap.style.animation = '';
+
+                }
+
+            }
+
+        }
+
+        window.handleVisualImageError = function(img, originalPath) {
+
+            if (!img.dataset.extIndex) {
+
+                img.dataset.extIndex = '0';
+
+            }
+
+            const extList = ['avif', 'webp', 'png', 'jpg', 'jpeg', 'svg'];
+
+            let nextIndex = parseInt(img.dataset.extIndex);
+
+            
+
+            if (nextIndex < extList.length) {
+
+                let cleanPath = originalPath;
+
+                if (window.location.protocol === 'file:') {
+
+                    cleanPath = cleanPath.replace('../Data/', 'Data/');
+
+                }
+
+                if (cleanPath.includes('.')) {
+
+                    cleanPath = cleanPath.substring(0, cleanPath.lastIndexOf('.'));
+
+                }
+
+                img.src = cleanPath + '.' + extList[nextIndex];
+
+                img.dataset.extIndex = (nextIndex + 1).toString();
+
+            } else {
+
+                img.onerror = null;
+
+                const parent = img.parentElement;
+
+                if (parent) {
+
+                    const q = quizQuestions[currentQuestionIndex];
+
+                    if (q) {
+
+                        const categoryIcons = { R: 'fa-screwdriver-wrench', I: 'fa-microscope', A: 'fa-palette', S: 'fa-handshake-angle', E: 'fa-chart-line', C: 'fa-folder-open' };
+
+                        const categoryColors = { R: '#EF4444', I: '#3B82F6', A: '#8B5CF6', S: '#10B981', E: '#F59E0B', C: '#06B6D4' };
+
+                        const iconClass = categoryIcons[q.category] || 'fa-compass';
+
+                        const themeColor = categoryColors[q.category] || '#3B82F6';
+
+                        
+
+                        parent.style.background = `linear-gradient(145deg, ${themeColor}08 0%, ${themeColor}15 100%)`;
+
+                        parent.style.border = `2px dashed ${themeColor}30`;
+
+                        parent.style.boxShadow = '0 25px 60px rgba(15, 23, 42, 0.08)';
+
+                        parent.innerHTML = `
+
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; gap: 20px;">
+
+                                <div style="width: 100px; height: 100px; border-radius: 50%; background: ${themeColor}15; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; color: ${themeColor};">
+
+                                    <i class="fa-solid ${iconClass}"></i>
+
+                                </div>
+
+                                <span style="font-size: 0.75rem; font-weight: 700; color: ${themeColor}; text-transform: uppercase; letter-spacing: 1px;">Khảo sát Sở thích</span>
+
+                            </div>
+
+                        `;
+
+                    }
+
+                }
+
+            }
+
+        };
+
+        window.handleMbtiImageError = function(img, option) {
+
+            if (!img.dataset.extIndex) {
+
+                img.dataset.extIndex = '0';
+
+            }
+
+            const extList = ['avif', 'webp', 'png', 'jpg', 'jpeg', 'svg'];
+
+            let nextIndex = parseInt(img.dataset.extIndex);
+
+            
+
+            const q = quizQuestions[currentQuestionIndex];
+
+            if (!q) return;
+
+            
+
+            let originalPath = (option === 'A' ? q.imageA : q.imageB) || `../Data/Tracnghiem/MBTI/${q.id}_${option}`;
+
+            if (window.location.protocol === 'file:') {
+
+                originalPath = originalPath.replace('../Data/', 'Data/');
+
+            }
+
+            
+
+            if (nextIndex < extList.length) {
+
+                img.src = originalPath + '.' + extList[nextIndex];
+
+                img.dataset.extIndex = (nextIndex + 1).toString();
+
+            } else {
+
+                img.onerror = null;
+
+                img.style.display = 'none';
+
+                
+
+                const parent = img.parentElement;
+
+                if (parent) {
+
+                    const isA = option === 'A';
+
+                    const iconClass = isA ? 'fa-user-astronaut' : 'fa-user-ninja';
+
+                    const color = isA ? '#3B82F6' : '#8B5CF6';
+
+                    parent.style.background = `linear-gradient(135deg, ${color}05 0%, ${color}10 100%)`;
+
+                    parent.innerHTML = `
+
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: ${color}; text-align: center; padding: 15px;">
+
+                            <i class="fa-solid ${iconClass}" style="font-size: 3rem; opacity: 0.85;"></i>
+
+                            <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7;">Lựa chọn ${option}</span>
+
+                        </div>
+
+                    `;
+
+                }
+
+            }
+
+        };
+
+        function startQuiz(type) {
+
+            if (!window.QUESTION_DATABASE) {
+
+                alert("Dữ liệu trắc nghiệm chưa được nạp. Vui lòng kiểm tra lại các file dữ liệu câu hỏi trong Data/Tracnghiem/.");
+
+                return;
+
+            }
+
+            SoundManager.playClick();
+
+            activeQuizType = type;
+
+            currentQuestionIndex = 0;
+
+            quizAnswers = {};
+
+            const fsContainer = document.getElementById('visual-quiz-fullscreen');
+
+            const mbtiFsContainer = document.getElementById('mbti-quiz-fullscreen');
+
+            if (type === 'holland') {
+
+                // Check for saved checkpoint
+
+                const savedCheckpoint = localStorage.getItem('educareer_rpg_checkpoint');
+
+                if (savedCheckpoint) {
+
+                    const modal = document.getElementById('rpg-resume-modal');
+
+                    if (modal) {
+
+                        modal.style.display = 'flex';
+
+                        modal.offsetHeight; // trigger reflow
+
+                        modal.classList.add('show');
+
+                        
+
+                        const btnResume = document.getElementById('rpg-modal-btn-resume');
+
+                        const btnRestart = document.getElementById('rpg-modal-btn-restart');
+
+                        
+
+                        btnResume.onclick = () => {
+
+                            SoundManager.playClick();
+
+                            closeRpgModal();
+
+                            resumeRpgCheckpoint(savedCheckpoint);
+
+                        };
+
+                        
+
+                        btnRestart.onclick = () => {
+
+                            SoundManager.playClick();
+
+                            closeRpgModal();
+
+                            localStorage.removeItem('educareer_rpg_checkpoint');
+
+                            startHollandFresh();
+
+                        };
+
+                        return; // Wait for user interaction
+
+                    }
+
+                }
+
+                startHollandFresh();
+
+                return;
+
+            } else if (type === 'mbti') {
+
+                quizQuestions = window.QUESTION_DATABASE.mbti;
+
+                if (fsContainer) fsContainer.style.display = 'none';
+
+                if (mbtiFsContainer) mbtiFsContainer.style.display = 'flex';
+
+                document.getElementById('quiz-questionnaire').style.display = 'none';
+
+                document.body.classList.add('quiz-active');
+
+                SoundManager.playBgm();
+
+            } else {
+
+                if (fsContainer) fsContainer.style.display = 'none';
+
+                if (mbtiFsContainer) mbtiFsContainer.style.display = 'none';
+
+                document.getElementById('quiz-questionnaire').style.display = 'block';
+
+                document.body.classList.remove('quiz-active');
+
+                
+
+                if (type === 'tipi') {
+
+                    quizQuestions = window.QUESTION_DATABASE.tipi;
+
+                    document.getElementById('quiz-type-title').textContent = "Khảo sát Tính cách TIPI (Big Five)";
+
+                    document.getElementById('quiz-answers-riasec').style.display = 'none';
+
+                    document.getElementById('quiz-answers-mbti').style.display = 'none';
+
+                    document.getElementById('quiz-answers-tipi').style.display = 'flex';
+
+                }
+
+                SoundManager.playBgm();
+
+            }
+
+            document.getElementById('quiz-dashboard').style.display = 'none';
+
+            document.getElementById('quiz-result-success').style.display = 'none';
+
+            showQuestion();
+
+        }
+
+        window.closeRpgModal = function() {
+
+            const modal = document.getElementById('rpg-resume-modal');
+
+            if (modal) {
+
+                modal.classList.remove('show');
+
+                setTimeout(() => {
+
+                    modal.style.display = 'none';
+
+                }, 300);
+
+            }
+
+        };
+
+        window.resumeRpgCheckpoint = function(savedCheckpoint) {
+
+            try {
+
+                const checkpoint = JSON.parse(savedCheckpoint);
+
+                const fsContainer = document.getElementById('visual-quiz-fullscreen');
+
+                const mbtiFsContainer = document.getElementById('mbti-quiz-fullscreen');
+
+                
+
+                // Restore states
+
+                currentQuestionIndex = checkpoint.currentQuestionIndex;
+
+                quizAnswers = checkpoint.quizAnswers || {};
+
+                window.rpgEmotionHistory = checkpoint.rpgEmotionHistory || {};
+
+                
+
+                // Re-compile questions database
+
+                quizQuestions = [];
+
+                if (window.QUESTION_DATABASE.riasecStory && window.QUESTION_DATABASE.riasecStory.chapters) {
+
+                    window.QUESTION_DATABASE.riasecStory.chapters.forEach(chap => {
+
+                        quizQuestions = quizQuestions.concat(chap.questions);
+
+                    });
+
+                } else {
+
+                    quizQuestions = window.QUESTION_DATABASE.riasec || [];
+
+                }
+
+                if (fsContainer) fsContainer.style.display = 'flex';
+
+                if (mbtiFsContainer) mbtiFsContainer.style.display = 'none';
+
+                document.getElementById('quiz-questionnaire').style.display = 'none';
+
+                document.body.classList.add('quiz-active');
+
+                SoundManager.playBgm();
+
+                // Determine chapter index based on currentQuestionIndex
+
+                const resumeChapterIndex = Math.floor(currentQuestionIndex / 8);
+
+                
+
+                // Show question structure and trigger chapter intro
+
+                showQuestion();
+
+                showChapterIntro(resumeChapterIndex);
+
+            } catch (e) {
+
+                console.error("Lỗi phục hồi tiến trình: ", e);
+
+                localStorage.removeItem('educareer_rpg_checkpoint');
+
+                startHollandFresh();
+
+            }
+
+        };
+
+        window.startHollandFresh = function() {
+
+            const fsContainer = document.getElementById('visual-quiz-fullscreen');
+
+            const mbtiFsContainer = document.getElementById('mbti-quiz-fullscreen');
+
+            
+
+            // Compile all questions from chapters
+
+            quizQuestions = [];
+
+            if (window.QUESTION_DATABASE.riasecStory && window.QUESTION_DATABASE.riasecStory.chapters) {
+
+                window.QUESTION_DATABASE.riasecStory.chapters.forEach(chap => {
+
+                    quizQuestions = quizQuestions.concat(chap.questions);
+
+                });
+
+                
+
+                window.rpgEmotionHistory = {};
+
+            } else {
+
+                quizQuestions = window.QUESTION_DATABASE.riasec || [];
+
+            }
+
+            if (fsContainer) fsContainer.style.display = 'flex';
+
+            if (mbtiFsContainer) mbtiFsContainer.style.display = 'none';
+
+            document.getElementById('quiz-questionnaire').style.display = 'none';
+
+            document.body.classList.add('quiz-active');
+
+            SoundManager.playBgm();
+
+            
+
+            // Show question structure first, then overlay the intro
+
+            showQuestion();
+
+            showChapterIntro(0);
+
+        };
+
+        function handleMbtiAnswer(ans) {
+
+            const cardId = ans === 'A' ? 'card-mbti-a' : 'card-mbti-b';
+
+            const card = document.getElementById(cardId);
+
+            if (card) {
+
+                card.classList.add('active');
+
+                setTimeout(() => {
+
+                    card.classList.remove('active');
+
+                    handleAnswer(ans);
+
+                }, 300);
+
+            } else {
+
+                handleAnswer(ans);
+
+            }
+
+        }
+
+        function showQuestion() {
+
+            if (currentQuestionIndex < 0 || currentQuestionIndex >= quizQuestions.length) return;
+
+            const q = quizQuestions[currentQuestionIndex];
+
+            const total = quizQuestions.length;
+
+            const progressPercent = ((currentQuestionIndex + 1) / total) * 100;
+
+            if (activeQuizType === 'holland') {
+
+                const chapterIndex = Math.floor(currentQuestionIndex / 8);
+
+                const currentChapter = window.QUESTION_DATABASE.riasecStory.chapters[chapterIndex];
+
+                
+
+                // 1. Update Chapter Badge Title
+
+                const chTitleEl = document.getElementById('rpg-chapter-title');
+
+                if (chTitleEl) chTitleEl.innerHTML = `<i class="fa-solid fa-book-open"></i> ${currentChapter.title}`;
+
+                
+
+                // 2. Update Timeline nodes & progress line
+
+                for (let i = 1; i <= 6; i++) {
+
+                    const node = document.getElementById(`rpg-node-${i}`);
+
+                    if (node) {
+
+                        if (i - 1 === chapterIndex) {
+
+                            node.className = 'rpg-node active';
+
+                        } else if (i - 1 < chapterIndex) {
+
+                            node.className = 'rpg-node completed';
+
+                        } else {
+
+                            node.className = 'rpg-node';
+
+                        }
+
+                    }
+
+                }
+
+                const mapFill = document.getElementById('rpg-map-fill');
+
+                if (mapFill) mapFill.style.width = `${(chapterIndex / 5) * 80}%`;
+
+                
+
+                
+
+                // 4. Update visual card image
+
+                const questionCard = document.getElementById('rpg-question-card');
+
+                if (questionCard) {
+
+                    if (q.image) {
+
+                        let path = q.image;
+
+                        if (window.location.protocol === 'file:') {
+
+                            path = path.replace('../Data/', 'Data/');
+
+                        }
+
+                        let initialSrc = path.includes('.') ? path : path + '.png';
+
+                        questionCard.innerHTML = `<img src="${initialSrc}" alt="Tình huống" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="window.handleVisualImageError(this, '${q.image}')">`;
+
+                    } else {
+
+                        questionCard.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 4rem; color: rgba(255,255,255,0.15);"><i class="fa-solid fa-compass"></i></div>`;
+
+                    }
+
+                }
+
+                
+
+                // 5. Update scenario title and text
+
+                const stepEl = document.getElementById('rpg-scenario-step');
+
+                if (stepEl) stepEl.textContent = `Tình huống ${currentQuestionIndex % 8 + 1} / 8`;
+
+                
+
+                const descEl = document.getElementById('rpg-scenario-desc');
+
+                if (descEl) descEl.textContent = q.text;
+
+                
+
+                // 6. Update choice buttons
+
+                const yesTextEl = document.getElementById('rpg-yes-text');
+
+                if (yesTextEl) yesTextEl.textContent = q.choiceYes || "Đồng ý thực hiện";
+
+                
+
+                const yesPreviewEl = document.getElementById('rpg-yes-preview');
+
+                if (yesPreviewEl) yesPreviewEl.innerHTML = '';
+
+                
+
+                const noTextEl = document.getElementById('rpg-no-text');
+
+                if (noTextEl) noTextEl.textContent = q.choiceNo || "Bỏ qua công việc này";
+
+                
+
+                const noPreviewEl = document.getElementById('rpg-no-preview');
+
+                if (noPreviewEl) noPreviewEl.innerHTML = '';
+
+                
+
+                // 7. Update back button status
+
+                const btnBack = document.getElementById('rpg-btn-back');
+
+                if (btnBack) {
+
+                    btnBack.disabled = (currentQuestionIndex === 0);
+
+                }
+
+            } else if (activeQuizType === 'mbti') {
+
+                const badgeEl = document.getElementById('mbti-progress-badge');
+
+                if (badgeEl) badgeEl.textContent = `${currentQuestionIndex + 1} / ${total}`;
+
+                const lineEl = document.getElementById('mbti-progress-line');
+
+                if (lineEl) lineEl.style.width = `${progressPercent}%`;
+
+                const btnMbtiBack = document.getElementById('btn-mbti-back');
+
+                if (btnMbtiBack) {
+
+                    btnMbtiBack.style.visibility = currentQuestionIndex > 0 ? 'visible' : 'hidden';
+
+                }
+
+                const questionTextEl = document.getElementById('mbti-question-text');
+
+                if (questionTextEl) questionTextEl.textContent = q.question;
+
+                const cardA = document.getElementById('card-mbti-a');
+
+                const txtA = document.getElementById('txt-mbti-a');
+
+                const wrapperA = document.getElementById('img-mbti-a-container');
+
+                
+
+                const cardB = document.getElementById('card-mbti-b');
+
+                const txtB = document.getElementById('txt-mbti-b');
+
+                const wrapperB = document.getElementById('img-mbti-b-container');
+
+                if (cardA && cardB && txtA && txtB) {
+
+                    txtA.textContent = q.optionA;
+
+                    txtB.textContent = q.optionB;
+
+                    if (wrapperA) {
+
+                        let pathA = q.imageA || `../Data/Tracnghiem/MBTI/${q.id}_A`;
+
+                        if (window.location.protocol === 'file:') {
+
+                            pathA = pathA.replace('../Data/', 'Data/');
+
+                        }
+
+                        let initialSrcA = pathA.includes('.') ? pathA : pathA + '.png';
+
+                        
+
+                        wrapperA.style.background = '#F8FAFC';
+
+                        wrapperA.innerHTML = `<img id="img-mbti-a" src="${initialSrcA}" alt="Lựa chọn A" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="window.handleMbtiImageError(this, 'A')">`;
+
+                    }
+
+                    if (wrapperB) {
+
+                        let pathB = q.imageB || `../Data/Tracnghiem/MBTI/${q.id}_B`;
+
+                        if (window.location.protocol === 'file:') {
+
+                            pathB = pathB.replace('../Data/', 'Data/');
+
+                        }
+
+                        let initialSrcB = pathB.includes('.') ? pathB : pathB + '.png';
+
+                        
+
+                        wrapperB.style.background = '#F8FAFC';
+
+                        wrapperB.innerHTML = `<img id="img-mbti-b" src="${initialSrcB}" alt="Lựa chọn B" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="window.handleMbtiImageError(this, 'B')">`;
+
+                    }
+
+                    const savedAns = quizAnswers[currentQuestionIndex];
+
+                    cardA.className = savedAns === 'A' ? 'mbti-choice-card active' : 'mbti-choice-card';
+
+                    cardB.className = savedAns === 'B' ? 'mbti-choice-card active' : 'mbti-choice-card';
+
+                }
+
+            } else {
+
+                document.getElementById('quiz-progress-text').textContent = `Câu ${currentQuestionIndex + 1} / ${total}`;
+
+                document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+
+                const btnBack = document.getElementById('btn-quiz-back-question');
+
+                if (btnBack) {
+
+                    btnBack.style.visibility = currentQuestionIndex > 0 ? 'visible' : 'hidden';
+                }
+            }
+        }
+
+        function handleVisualAnswer(ans) {
+
+            const activeCard = document.getElementById('active-visual-card');
+
+            if (activeCard) {
+
+                const className = ans === 1 ? 'swipe-right' : 'swipe-left';
+
+                activeCard.classList.add(className);
+
+                
+
+                setTimeout(() => {
+
+                    activeCard.classList.remove('swipe-left', 'swipe-right');
+
+                    handleAnswer(ans);
+
+                }, 350);
+
+            } else {
+
+                handleAnswer(ans);
+
+            }
+
+        }
+
+        function handleAnswer(ans) {
+
+            SoundManager.playAnswer();
+
+            quizAnswers[currentQuestionIndex] = ans;
+
+            
+
+            if (currentQuestionIndex === quizQuestions.length - 1) {
+
+                completeQuiz();
+
+            } else {
+
+                currentQuestionIndex++;
+
+                showQuestion();
+
+            }
+
+        }
+
+        function completeQuiz() {
+
+            SoundManager.stopBgm();
+
+            document.body.classList.remove('quiz-active');
+
+            const fsContainer = document.getElementById('visual-quiz-fullscreen');
+
+            if (fsContainer) fsContainer.style.display = 'none';
+
+            const mbtiFsContainer = document.getElementById('mbti-quiz-fullscreen');
+
+            if (mbtiFsContainer) mbtiFsContainer.style.display = 'none';
+
+            completedTests[activeQuizType] = true;
+
+            localStorage.setItem('educareer_quiz_statuses', JSON.stringify(completedTests));
+
+            updateQuizStatusBadges();
+
+            localStorage.removeItem('educareer_rpg_checkpoint');
+
+            if (activeQuizType === 'holland') {
+
+                // Holland results are already processed and displayed inside the RPG interface.
+
+                // We redirect directly to the capacity map.
+
+                window.location.href = 'ban-do-nang-luc.html';
+
+                return;
+
+            }
+
+            let successHtml = '';
+
+            if (activeQuizType === 'mbti') {
+
+                const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+                quizQuestions.forEach((q, idx) => {
+
+                    const ans = quizAnswers[idx];
+
+                    const val = ans === 'A' ? q.valueA : q.valueB;
+
+                    const char = val.toUpperCase();
+
+                    if (char in counts) {
+
+                        counts[char]++;
+
+                    }
+
+                });
+
+                const E_I = counts.E >= counts.I ? 'E' : 'I';
+
+                const S_N = counts.S >= counts.N ? 'S' : 'N';
+
+                const T_F = counts.T >= counts.F ? 'T' : 'F';
+
+                const J_P = counts.J >= counts.P ? 'J' : 'P';
+
+                const mbtiCode = `${E_I}${S_N}${T_F}${J_P}`;
+
+                
+
+                studentData.mbti = mbtiCode;
+
+                localStorage.setItem('educareer_student_profile', JSON.stringify(studentData));
+
+                const details = window.MBTI_DETAILS ? window.MBTI_DETAILS[mbtiCode] : { name: 'Chưa rõ', archetype: '' };
+
+                successHtml = `
+
+                    <div style="text-align: center; padding: 10px;">
+
+                        <span style="font-size: 2.2rem; font-weight: 900; color: var(--primary-blue); font-family: 'Plus Jakarta Sans', sans-serif;">${mbtiCode}</span>
+
+                        <h4 style="font-size: 1.1rem; color: var(--text-dark); font-weight: 800; margin-top: 6px; margin-bottom: 4px;">${details.name}</h4>
+
+                        <p style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin: 0;">${details.archetype}</p>
+
+                    </div>
+
+                `;
+
+                document.getElementById('quiz-success-desc').textContent = "Bài trắc nghiệm tính cách MBTI đã hoàn thành. Nhóm tính cách mới của bạn đã được lưu vào hồ sơ.";
+
+            } else if (activeQuizType === 'tipi') {
+
+                const answers = {};
+
+                quizQuestions.forEach((q, idx) => {
+
+                    answers[q.id] = quizAnswers[idx] || 3;
+
+                });
+
+                const extraversion = (answers.TIPI1 + (6 - answers.TIPI6)) / 2;
+
+                const agreeableness = (answers.TIPI7 + (6 - answers.TIPI2)) / 2;
+
+                const conscientiousness = (answers.TIPI3 + (6 - answers.TIPI8)) / 2;
+
+                const emotionalStability = (answers.TIPI9 + (6 - answers.TIPI4)) / 2;
+
+                const openness = (answers.TIPI5 + (6 - answers.TIPI10)) / 2;
+
+                const tipi = {
+
+                    Extraversion: extraversion,
+
+                    Agreeableness: agreeableness,
+
+                    Conscientiousness: conscientiousness,
+
+                    EmotionalStability: emotionalStability,
+
+                    Openness: openness
+
+                };
+
+                studentData.tipi = tipi;
+
+                localStorage.setItem('educareer_student_profile', JSON.stringify(studentData));
+
+                successHtml = `
+
+                    <h5 style="font-size: 0.95rem; font-weight: 800; color: var(--text-dark); margin-bottom: 12px; justify-content: center; display: flex; align-items: center; gap: 6px;">
+
+                        <i class="fa-solid fa-chart-simple" style="color: #059669;"></i> Kết quả Big Five tâm lý học của bạn:
+
+                    </h5>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.78rem; max-width: 400px; margin: 0 auto;">
+
+                        ${Object.keys(tipi).map(dim => `
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #E2E8F0; padding: 8px 15px; border-radius: 6px;">
+
+                                <span style="font-weight: 700; color: var(--text-dark);">${tipiFullNames[dim].split('(')[0].trim()}</span>
+
+                                <span style="font-weight: 800; color: ${tipiColors[dim]};">${tipi[dim].toFixed(1)}/5.0</span>
+
+                            </div>
+
+                        `).join('')}
+
+                    </div>
+
+                `;
+
+                document.getElementById('quiz-success-desc').textContent = "Khảo sát tính cách Big Five đã hoàn thành. Dữ liệu đã sẵn sàng trên Bản đồ Năng lực.";
+
+            }
+
+            document.getElementById('quiz-success-metrics-card').innerHTML = successHtml;
+
+            
+
+            const successContainer = document.getElementById('quiz-result-success');
+
+            if (successContainer) {
+
+                if (activeQuizType === 'holland') {
+
+                    successContainer.classList.add('rpg-dark-theme');
+
+                    successContainer.style.background = 'radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 60%, #020617 100%)';
+
+                    successContainer.style.color = '#f8fafc';
+
+                    successContainer.style.padding = '40px 24px';
+
+                    successContainer.style.borderRadius = '24px';
+
+                    successContainer.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.5)';
+
+                    successContainer.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+
+                    
+
+                    const titleEl = successContainer.querySelector('.quiz-title');
+
+                    if (titleEl) {
+
+                        titleEl.style.color = '#ffffff';
+
+                        titleEl.style.textShadow = '0 0 10px rgba(139, 92, 246, 0.3)';
+
+                    }
+
+                    const subEl = successContainer.querySelector('.quiz-subtitle');
+
+                    if (subEl) subEl.style.color = '#cbd5e1';
+
+                } else {
+
+                    successContainer.classList.remove('rpg-dark-theme');
+
+                    // Reset to default light theme
+
+                    successContainer.style.background = '';
+
+                    successContainer.style.color = '';
+
+                    successContainer.style.padding = '';
+
+                    successContainer.style.borderRadius = '';
+
+                    successContainer.style.boxShadow = '';
+
+                    successContainer.style.border = '';
+
+                    
+
+                    const titleEl = successContainer.querySelector('.quiz-title');
+
+                    if (titleEl) {
+
+                        titleEl.style.color = '';
+
+                        titleEl.style.textShadow = '';
+
+                    }
+
+                    const subEl = successContainer.querySelector('.quiz-subtitle');
+
+                    if (subEl) subEl.style.color = '';
+
+                }
+
+            }
+
+            // Check if all 3 tests are completed
+
+            const allThreeDone = completedTests.holland && completedTests.mbti && completedTests.tipi;
+
+            const btnDone = document.getElementById('btn-quiz-success-done');
+
+            const btnDashboard = document.getElementById('btn-quiz-success-dashboard');
+
+            
+
+            if (allThreeDone) {
+
+                document.getElementById('quiz-success-desc').innerHTML = `🎉 <strong>Tuyệt vời!</strong> Bạn đã hoàn thành trọn vẹn cả 3 bài trắc nghiệm. Hãy xem <strong>Bản đồ Năng lực</strong> tích hợp của mình ngay!`;
+
+                if (btnDone) {
+
+                    btnDone.style.display = 'flex';
+
+                    btnDone.innerHTML = `<i class="fa-solid fa-trophy" style="color: #f59e0b;"></i> Xem Bản đồ Năng lực ngay`;
+
+                    btnDone.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+                    btnDone.style.color = '#ffffff';
+
+                    btnDone.style.boxShadow = '0 0 20px rgba(16,185,129,0.4)';
+
+                    btnDone.style.animation = 'pulseGlow 2s infinite';
+
+                    btnDone.style.pointerEvents = 'auto';
+
+                }
+
+                if (btnDashboard) {
+
+                    btnDashboard.style.display = 'none';
+
+                }
+
+            } else {
+
+                let remaining = [];
+
+                if (!completedTests.holland) remaining.push('Holland');
+
+                if (!completedTests.mbti) remaining.push('MBTI');
+
+                if (!completedTests.tipi) remaining.push('Big Five (TIPI)');
+
+                
+
+                document.getElementById('quiz-success-desc').innerHTML = `Đã lưu kết quả bài làm. Bạn đã hoàn thành <strong>${3 - remaining.length}/3</strong> bài trắc nghiệm. Hãy làm tiếp các bài: <strong>${remaining.join(', ')}</strong> để mở khóa Bản đồ Năng lực nhé!`;
+
+                if (btnDone) {
+
+                    btnDone.style.display = 'none';
+
+                }
+
+                if (btnDashboard) {
+
+                    btnDashboard.style.display = 'block';
+
+                    btnDashboard.textContent = "Làm bài trắc nghiệm tiếp theo";
+
+                    btnDashboard.style.background = '#2563eb';
+
+                    btnDashboard.style.color = 'white';
+
+                }
+
+            }
+
+            document.getElementById('quiz-questionnaire').style.display = 'none';
+
+            document.getElementById('quiz-result-success').style.display = 'block';
+
+        }
+
+        function initEventListeners() {
+
+            // Test selectors
+
+            const startHolland = document.getElementById('btn-start-holland');
+
+            if (startHolland) startHolland.addEventListener('click', () => startQuiz('holland'));
+
+            const startMbti = document.getElementById('btn-start-mbti');
+
+            if (startMbti) startMbti.addEventListener('click', () => startQuiz('mbti'));
+
+            const startTipi = document.getElementById('btn-start-tipi');
+
+            if (startTipi) startTipi.addEventListener('click', () => startQuiz('tipi'));
+
+            // RPG Holland Answers
+
+            const rpgBtnYes = document.getElementById('rpg-btn-yes');
+
+            if (rpgBtnYes) rpgBtnYes.addEventListener('click', () => handleRpgAnswer(1));
+
+            const rpgBtnNo = document.getElementById('rpg-btn-no');
+
+            if (rpgBtnNo) rpgBtnNo.addEventListener('click', () => handleRpgAnswer(0));
+
+            const rpgBtnBack = document.getElementById('rpg-btn-back');
+
+            if (rpgBtnBack) {
+
+                rpgBtnBack.addEventListener('click', () => {
+
+                    if (currentQuestionIndex > 0) {
+
+                        currentQuestionIndex--;
+
+                        showQuestion();
+
+                    }
+
+                });
+
+            }
+
+            const rpgBtnAbort = document.getElementById('rpg-btn-abort');
+
+            if (rpgBtnAbort) {
+
+                rpgBtnAbort.addEventListener('click', () => {
+
+                    if (confirm("Bạn có chắc chắn muốn thoát cuộc hành trình này? Tiến trình làm bài sẽ không được lưu.")) {
+
+                        SoundManager.stopBgm();
+
+                        document.body.classList.remove('quiz-active');
+
+                        const fsContainer = document.getElementById('visual-quiz-fullscreen');
+
+                        if (fsContainer) fsContainer.style.display = 'none';
+
+                        document.getElementById('quiz-dashboard').style.display = 'block';
+
+                    }
+
+                });
+
+            }
+
+            const rpgTransitionBtn = document.getElementById('rpg-transition-btn');
+
+            if (rpgTransitionBtn) {
+
+                rpgTransitionBtn.addEventListener('click', () => {
+
+                    if (window.isHollandEndingShowed) {
+
+                        const transitionScreen = document.getElementById('rpg-transition-screen');
+
+                        if (transitionScreen) transitionScreen.classList.remove('show');
+
+                        window.isHollandEndingShowed = false;
+
+                        completeQuiz();
+
+                        return;
+
+                    }
+
+                    const isChapterIntro = (currentQuestionIndex % 8 === 0 && !quizAnswers.hasOwnProperty(currentQuestionIndex));
+
+                    if (isChapterIntro) {
+
+                        // Just hide and play
+
+                        const transitionScreen = document.getElementById('rpg-transition-screen');
+
+                        if (transitionScreen) transitionScreen.classList.remove('show');
+
+                        showQuestion(); // Cập nhật giao diện để hiển thị câu hỏi đầu tiên của chương mới!
+
+                    } else {
+
+                        // Transition Screen (Screen A) -> Show Next Chapter Intro (Screen B)
+
+                        currentQuestionIndex++;
+
+                        const nextChapterIndex = Math.floor(currentQuestionIndex / 8);
+
+                        if (nextChapterIndex >= window.QUESTION_DATABASE.riasecStory.chapters.length) {
+
+                            showHollandEnding();
+
+                        } else {
+
+                            showChapterIntro(nextChapterIndex);
+
+                        }
+
+                    }
+
+                });
+
+            }
+
+            // MBTI Fullscreen Choice Cards
+
+            const cardMbtiA = document.getElementById('card-mbti-a');
+
+            if (cardMbtiA) cardMbtiA.addEventListener('click', () => handleMbtiAnswer('A'));
+
+            const cardMbtiB = document.getElementById('card-mbti-b');
+
+            if (cardMbtiB) cardMbtiB.addEventListener('click', () => handleMbtiAnswer('B'));
+
+            const btnMbtiBack = document.getElementById('btn-mbti-back');
+
+            if (btnMbtiBack) {
+
+                btnMbtiBack.addEventListener('click', () => {
+
+                    if (currentQuestionIndex > 0) {
+
+                        currentQuestionIndex--;
+
+                        showQuestion();
+
+                    }
+
+                });
+
+            }
+
+            const btnMbtiAbort = document.getElementById('btn-mbti-abort');
+
+            if (btnMbtiAbort) {
+
+                btnMbtiAbort.addEventListener('click', () => {
+
+                    SoundManager.stopBgm();
+
+                    document.body.classList.remove('quiz-active');
+
+                    document.getElementById('mbti-quiz-fullscreen').style.display = 'none';
+
+                    document.getElementById('quiz-dashboard').style.display = 'block';
+
+                });
+
+            }
+
+            // TIPI Answers (1-5 scale)
+
+            const tipiBtns = document.querySelectorAll('.tipi-val-btn');
+
+            tipiBtns.forEach(btn => {
+
+                btn.addEventListener('click', () => {
+
+                    const val = parseInt(btn.getAttribute('data-val'));
+
+                    handleAnswer(val);
+
+                });
+
+            });
+
+            // Back button
+
+            const btnBack = document.getElementById('btn-quiz-back-question');
+
+            if (btnBack) {
+
+                btnBack.addEventListener('click', () => {
+
+                    if (currentQuestionIndex > 0) {
+
+                        currentQuestionIndex--;
+
+                        showQuestion();
+
+                    }
+
+                });
+
+            }
+
+            // Abort test
+
+            const btnAbort = document.getElementById('btn-quiz-abort');
+
+            if (btnAbort) {
+
+                btnAbort.addEventListener('click', () => {
+
+                    SoundManager.stopBgm();
+
+                    document.body.classList.remove('quiz-active');
+
+                    document.getElementById('quiz-dashboard').style.display = 'block';
+
+                    document.getElementById('quiz-questionnaire').style.display = 'none';
+
+                });
+
+            }
+
+            // Visual Fullscreen abort and back buttons
+
+            const btnVisualBack = document.getElementById('btn-visual-back');
+
+            if (btnVisualBack) {
+
+                btnVisualBack.addEventListener('click', () => {
+
+                    if (currentQuestionIndex > 0) {
+
+                        currentQuestionIndex--;
+
+                        showQuestion();
+
+                    }
+
+                });
+
+            }
+
+            const btnVisualAbort = document.getElementById('btn-visual-abort');
+
+            if (btnVisualAbort) {
+
+                btnVisualAbort.addEventListener('click', () => {
+
+                    SoundManager.stopBgm();
+
+                    document.body.classList.remove('quiz-active');
+
+                    document.getElementById('visual-quiz-fullscreen').style.display = 'none';
+
+                    document.getElementById('quiz-dashboard').style.display = 'block';
+
+                });
+
+            }
+
+            // Return to quiz choices
+
+            const btnSuccessDashboard = document.getElementById('btn-quiz-success-dashboard');
+
+            if (btnSuccessDashboard) {
+
+                btnSuccessDashboard.addEventListener('click', () => {
+
+                    SoundManager.stopBgm();
+
+                    document.body.classList.remove('quiz-active');
+
+                    document.getElementById('quiz-dashboard').style.display = 'block';
+
+                    document.getElementById('quiz-result-success').style.display = 'none';
+
+                    updateQuizStatusBadges(); // Refresh badges!
+
+                });
+
+            }
+
+            // Menu toggle mobile
+
+            const menuToggle = document.getElementById('menu-toggle');
+
+            const navLinks = document.getElementById('nav-links');
+
+            if (menuToggle && navLinks) {
+
+                menuToggle.addEventListener('click', () => {
+
+                    menuToggle.classList.toggle('active');
+
+                    navLinks.classList.toggle('active');
+
+                });
+
+            }
+
+            // Keyboard Hotkeys for laptop/desktop users
+
+            window.addEventListener('keydown', (e) => {
+
+                const fsContainer = document.getElementById('visual-quiz-fullscreen');
+
+                const mbtiFsContainer = document.getElementById('mbti-quiz-fullscreen');
+
+                
+
+                if (activeQuizType === 'holland' && fsContainer && fsContainer.style.display !== 'none') {
+
+                    // Check if transition screen is active
+
+                    const transitionScreen = document.getElementById('rpg-transition-screen');
+
+                    if (transitionScreen && transitionScreen.classList.contains('show')) {
+
+                        if (e.key === 'Enter' || e.key === ' ') {
+
+                            e.preventDefault();
+
+                            const transBtn = document.getElementById('rpg-transition-btn');
+
+                            if (transBtn) transBtn.click();
+
+                        }
+
+                        return;
+
+                    }
+
+                    
+
+                    if (e.key === 'ArrowRight') {
+
+                        e.preventDefault();
+
+                        const btnYes = document.getElementById('rpg-btn-yes');
+
+                        if (btnYes) btnYes.click();
+
+                    } else if (e.key === 'ArrowLeft') {
+
+                        e.preventDefault();
+
+                        const btnNo = document.getElementById('rpg-btn-no');
+
+                        if (btnNo) btnNo.click();
+
+                    } else if (e.key === 'ArrowUp' || e.key === 'Backspace') {
+
+                        e.preventDefault();
+
+                        const btnRpgBack = document.getElementById('rpg-btn-back');
+
+                        if (btnRpgBack && !btnRpgBack.disabled) {
+
+                            btnRpgBack.click();
+
+                        }
+
+                    }
+
+                } else if (activeQuizType === 'mbti' && mbtiFsContainer && mbtiFsContainer.style.display !== 'none') {
+
+                    if (e.key.toLowerCase() === 'a' || e.key === '1') {
+
+                        e.preventDefault();
+
+                        handleMbtiAnswer('A');
+
+                    } else if (e.key.toLowerCase() === 'b' || e.key === '2') {
+
+                        e.preventDefault();
+
+                        handleMbtiAnswer('B');
+
+                    } else if (e.key === 'ArrowUp' || e.key === 'Backspace' || e.key === 'ArrowLeft') {
+
+                        e.preventDefault();
+
+                        const btnMbtiBack = document.getElementById('btn-mbti-back');
+
+                        if (btnMbtiBack && btnMbtiBack.style.visibility !== 'hidden') {
+
+                            btnMbtiBack.click();
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+        // Initialize view
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            initEventListeners();
+
+            updateQuizStatusBadges();
+
+        });
+
+        // Auto-reload page when storage changes in another tab (e.g. from developer panel)
+
+        window.addEventListener('storage', (e) => {
+
+            if (e.key && e.key.startsWith('educareer_')) {
+
+                window.location.reload();
+
+            }
+
+        });
+
+    })();
+
+    </script>
+
+    <!-- Floating Consult Button -->
+
+    <a href="ai-tu-van.html" class="floating-consult-btn" id="floating-btn">
+
+        <i class="fa-solid fa-comment-dots"></i>
+
+        <span>Tư vấn AI</span>
+
+    </a>
+
+</body>
+
+</html>
+

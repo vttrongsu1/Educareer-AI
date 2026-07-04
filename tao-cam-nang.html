@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trình soạn thảo cẩm nang ngành nghề độc lập - EduCareer AI">
+    <title>Soạn Thảo Cẩm Nang - EduCareer AI</title>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header id="header" class="scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-wrapper">
+                <img src="images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+                <div class="logo-text">EduCareer <span>AI</span></div>
+            </a>
+            
+            <nav>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="pages/explore.html">Khám phá bản thân</a></li>
+                    <li><a href="ban-do-nang-luc.html">Bản đồ năng lực</a></li>
+                    <li><a href="cam-nang-nganh.html">Cẩm nang</a></li>
+                    <li><a href="ai-tu-van.html">AI tư vấn</a></li>
+                </ul>
+            </nav>
+
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Editor Section -->
+        <section class="section subpage-section">
+            <div class="container">
+                <div class="section-header">
+                    <div class="badge badge-orange">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Bản biên soạn tài liệu</span>
+                    </div>
+                    <h2 class="section-title">Trình Soạn Thảo <span class="gradient-text">Cẩm Nang Ngành Học</span></h2>
+                    <p class="section-desc">Công cụ tiện ích dành riêng cho quản trị viên biên soạn cẩm nang ngành nghề theo cấu trúc dàn ý chuẩn. Dữ liệu sẽ tự động lưu và cập nhật vào danh mục cẩm nang.</p>
+                </div>
+
+                <div class="creator-layout">
+                    <!-- Left Column: Form Editor -->
+                    <div class="creator-form-panel">
+                        <div class="creator-panel-header">
+                            <h3><i class="fa-solid fa-sliders"></i> Nhập thông tin ngành học</h3>
+                            <div class="header-buttons" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button class="btn btn-primary btn-sm" id="btn-ai-generate"><i class="fa-solid fa-brain"></i> Tự sinh bằng AI</button>
+                                <button class="btn btn-orange btn-sm" id="btn-load-demo"><i class="fa-solid fa-wand-magic-sparkles"></i> Nhập mẫu CNTT</button>
+                                <button class="btn btn-secondary btn-sm" id="btn-clear-form"><i class="fa-solid fa-trash-can"></i> Xóa hết</button>
+                            </div>
+                        </div>
+
+                        <form id="industry-editor-form" class="creator-form">
+                            <!-- Basic Information -->
+                            <div class="form-section-card">
+                                <h4><i class="fa-solid fa-circle-info"></i> Thông tin cơ bản</h4>
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label for="input-title">Tên ngành học *</label>
+                                        <input type="text" id="input-title" placeholder="Ví dụ: Công Nghệ Thông Tin (CNTT)" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="input-category">Phân nhóm ngành *</label>
+                                        <select id="input-category" required>
+                                            <option value="tech">Công nghệ & Kỹ thuật</option>
+                                            <option value="biz">Kinh tế & Quản lý</option>
+                                            <option value="art">Nghệ thuật & Thiết kế</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-desc">Mô tả ngắn gọn (Hiển thị ở trang danh mục) *</label>
+                                    <textarea id="input-desc" rows="2" placeholder="Tóm tắt ngắn gọn lĩnh vực này để thu hút học sinh..." required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- 1. Giới thiệu ngành -->
+                            <div class="form-section-card">
+                                <h4>1. Giới thiệu ngành</h4>
+                                <div class="form-group">
+                                    <label for="input-sec1">Ngành là gì? Vai trò của ngành & Ví dụ thực tế *</label>
+                                    <textarea id="input-sec1" rows="4" placeholder="Ví dụ: Lĩnh vực nghiên cứu chuyên sâu về máy tính... Giúp kết nối... Ví dụ: Facebook, ChatGPT..." required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- 2. Chương trình đào tạo -->
+                            <div class="form-section-card">
+                                <h4>2. Chương trình đào tạo</h4>
+                                <div class="form-group">
+                                    <label for="input-sec2">Nội dung đào tạo & môn học nổi bật *</label>
+                                    <textarea id="input-sec2" rows="4" placeholder="Ví dụ: Trang bị kiến thức từ cơ bản đến nâng cao bao gồm lập trình máy tính, cơ sở dữ liệu..." required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- 3. Tố chất phù hợp -->
+                            <div class="form-section-card">
+                                <h4>3. Tố chất phù hợp</h4>
+                                <div class="form-group">
+                                    <label for="input-sec3">Sở thích, đặc điểm & kỹ năng cần thiết *</label>
+                                    <textarea id="input-sec3" rows="4" placeholder="Ví dụ: Đam mê công nghệ, tư duy logic, sự kiên nhẫn khi gõ code..." required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- 4. Triển vọng nghề nghiệp -->
+                            <div class="form-section-card">
+                                <h4>4. Triển vọng nghề nghiệp</h4>
+                                <div class="form-group">
+                                    <label for="input-sec4">Các vị trí công việc & môi trường làm việc sau tốt nghiệp *</label>
+                                    <textarea id="input-sec4" rows="4" placeholder="Ví dụ: Lập trình viên, Kỹ sư phần mềm, Chuyên gia AI..." required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- 5. Mức lương tham khảo -->
+                            <div class="form-section-card">
+                                <h4>5. Mức lương tham khảo</h4>
+                                <div class="form-row-3">
+                                    <div class="form-group">
+                                        <label for="input-salary-intern">Thực tập sinh</label>
+                                        <input type="text" id="input-salary-intern" placeholder="Ví dụ: 3 - 6 triệu đồng/tháng">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="input-salary-fresh">Mới tốt nghiệp *</label>
+                                        <input type="text" id="input-salary-fresh" placeholder="Ví dụ: 8 - 15 triệu đồng/tháng" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="input-salary-exp">Có kinh nghiệm *</label>
+                                        <input type="text" id="input-salary-exp" placeholder="Ví dụ: 15 - 30 triệu đồng/tháng" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input-salary-notes">Giải thích thêm về khả năng tăng thu nhập</label>
+                                    <textarea id="input-salary-notes" rows="2" placeholder="Ví dụ: Tùy thuộc vào năng lực chuyên môn và khả năng ngoại ngữ..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- 6. Xu hướng hiện nay -->
+                            <div class="form-section-card">
+                                <h4>6. Xu hướng và độ hot của ngành</h4>
+                                <div class="form-group">
+                                    <label for="input-sec6">Sự phát triển, nhu cầu & xu hướng tương lai *</label>
+                                    <textarea id="input-sec6" rows="4" placeholder="Ví dụ: Chuyển đổi số mạnh mẽ thúc đẩy nhu cầu cao. Xu hướng AI, IoT tăng trưởng..." required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- 7. Mức độ cạnh tranh -->
+                            <div class="form-section-card">
+                                <h4>7. Mức độ cạnh tranh</h4>
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label for="input-comp-level">Đánh giá mức độ</label>
+                                        <select id="input-comp-level">
+                                            <option value="Cao">Cao</option>
+                                            <option value="Trung bình">Trung bình</option>
+                                            <option value="Thấp">Thấp</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="input-sec7">Lý do & Cách tạo lợi thế vượt trội *</label>
+                                        <input type="text" id="input-sec7" placeholder="Ví dụ: Cạnh tranh cao vì lượng học sinh đông. Lợi thế: Thành thạo tiếng Anh..." required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 8. Đánh giá tổng quan (Stars) -->
+                            <div class="form-section-card">
+                                <h4>8. Đánh giá tổng quan (Xếp hạng từ 1 - 5 sao)</h4>
+                                <div class="star-rating-editor">
+                                    <div class="star-group">
+                                        <span>Nhu cầu nhân lực</span>
+                                        <div class="stars-picker" data-rating-id="rating-demand">
+                                            <i class="fa-regular fa-star" data-value="1"></i>
+                                            <i class="fa-regular fa-star" data-value="2"></i>
+                                            <i class="fa-regular fa-star" data-value="3"></i>
+                                            <i class="fa-regular fa-star" data-value="4"></i>
+                                            <i class="fa-regular fa-star" data-value="5"></i>
+                                        </div>
+                                    </div>
+                                    <div class="star-group">
+                                        <span>Mức lương trung bình</span>
+                                        <div class="stars-picker" data-rating-id="rating-salary">
+                                            <i class="fa-regular fa-star" data-value="1"></i>
+                                            <i class="fa-regular fa-star" data-value="2"></i>
+                                            <i class="fa-regular fa-star" data-value="3"></i>
+                                            <i class="fa-regular fa-star" data-value="4"></i>
+                                            <i class="fa-regular fa-star" data-value="5"></i>
+                                        </div>
+                                    </div>
+                                    <div class="star-group">
+                                        <span>Cơ hội phát triển</span>
+                                        <div class="stars-picker" data-rating-id="rating-growth">
+                                            <i class="fa-regular fa-star" data-value="1"></i>
+                                            <i class="fa-regular fa-star" data-value="2"></i>
+                                            <i class="fa-regular fa-star" data-value="3"></i>
+                                            <i class="fa-regular fa-star" data-value="4"></i>
+                                            <i class="fa-regular fa-star" data-value="5"></i>
+                                        </div>
+                                    </div>
+                                    <div class="star-group">
+                                        <span>Độ cạnh tranh</span>
+                                        <div class="stars-picker" data-rating-id="rating-comp">
+                                            <i class="fa-regular fa-star" data-value="1"></i>
+                                            <i class="fa-regular fa-star" data-value="2"></i>
+                                            <i class="fa-regular fa-star" data-value="3"></i>
+                                            <i class="fa-regular fa-star" data-value="4"></i>
+                                            <i class="fa-regular fa-star" data-value="5"></i>
+                                        </div>
+                                    </div>
+                                    <div class="star-group">
+                                        <span>Áp lực học tập</span>
+                                        <div class="stars-picker" data-rating-id="rating-stress">
+                                            <i class="fa-regular fa-star" data-value="1"></i>
+                                            <i class="fa-regular fa-star" data-value="2"></i>
+                                            <i class="fa-regular fa-star" data-value="3"></i>
+                                            <i class="fa-regular fa-star" data-value="4"></i>
+                                            <i class="fa-regular fa-star" data-value="5"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 9. Kết luận -->
+                            <div class="form-section-card">
+                                <h4>9. Kết luận</h4>
+                                <div class="form-group">
+                                    <label for="input-sec9">Tóm tắt ưu điểm & Lời khuyên cho học sinh *</label>
+                                    <textarea id="input-sec9" rows="4" placeholder="Ví dụ: Đây là lĩnh vực đáng học... Lời khuyên: Học sinh nên rèn luyện tư duy tự học..." required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Save / Submit -->
+                            <div class="form-actions-block">
+                                <button type="submit" class="btn btn-primary btn-lg" id="btn-save-industry"><i class="fa-solid fa-floppy-disk"></i> Lưu & Cập nhật Cẩm nang</button>
+                                <span class="save-status-msg" id="save-status-msg"></span>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Right Column: Instant Preview and actions -->
+                    <div class="creator-preview-panel">
+                        <div class="creator-panel-header">
+                            <h3><i class="fa-solid fa-eye"></i> Xem trước trực quan (Render Preview)</h3>
+                        </div>
+                        <div class="live-preview-content" id="live-preview-content">
+                            <div class="preview-empty-state">
+                                <i class="fa-solid fa-file-invoice"></i>
+                                <p>Điền thông tin ở biểu mẫu bên trái và bấm <strong>"Xem trước"</strong> (hoặc bấm nút "Nhập mẫu CNTT") để hiển thị kết quả render bài mẫu ở đây.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo-wrapper">
+                        <img src="images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+                        <div class="logo-text" style="color: white;">EduCareer <span>AI</span></div>
+                    </a>
+                    <p style="margin-top: 14px;">
+                        Hệ thống hướng nghiệp thông minh hàng đầu dành cho học sinh Việt Nam, kiến tạo tương lai vững chắc dựa trên trí tuệ nhân tạo và dữ liệu khoa học đa chiều.
+                    </p>
+                </div>
+                
+                <div class="footer-links-col">
+                    <h4>Đường dẫn nhanh</h4>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="cam-nang-nganh.html">Cẩm nang</a></li>
+                        <li><a href="pages/explore.html">Khám phá bản thân</a></li>
+                        <li><a href="ban-do-nang-luc.html">Bản đồ năng lực</a></li>
+                        <li><a href="ai-tu-van.html">AI tư vấn</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links-col">
+                    <h4>Thông tin liên hệ</h4>
+                    <div class="footer-contact">
+                        <div class="contact-item">
+                            <i class="fa-solid fa-people-group"></i>
+                            <span>Đội thi: <strong>KgLorious</strong> - HackAIthon 2026</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>Trưởng nhóm: Nguyễn Nhật Long & Trần Anh Khoa</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>longnnce200633@gmail.com <br> khoatace200187@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>Hotline: 0949 737 951</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 EduCareer AI. Bản quyền thuộc về đội thi KgLorious. Dự án tham gia Vietnamese Student HackAIthon 2026.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Điều khoản sử dụng</a>
+                    <a href="#">Chính sách bảo mật</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Consult Button -->
+    <a href="ai-tu-van.html" class="floating-consult-btn" id="floating-btn">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span>Tư vấn AI</span>
+    </a>
+
+    <!-- Interactivity Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="industries-data.js"></script>
+    <script src="app.js?v=2.5"></script>
+</body>
+</html>

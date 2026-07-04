@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chi tiết cẩm nang ngành học - EduCareer AI">
+    <title>Chi Tiết Ngành Học - EduCareer AI</title>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header id="header" class="scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-wrapper">
+                <img src="images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+                <div class="logo-text">EduCareer <span>AI</span></div>
+            </a>
+            
+            <nav>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="pages/explore.html">Khám phá bản thân</a></li>
+                    <li><a href="ban-do-nang-luc.html">Bản đồ năng lực</a></li>
+                    <li><a href="cam-nang-nganh.html" class="active">Cẩm nang</a></li>
+                    <li><a href="ai-tu-van.html">AI tư vấn</a></li>
+                </ul>
+            </nav>
+            
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Detail Header -->
+        <section class="section subpage-section" style="padding-bottom: 20px;">
+            <div class="container">
+                <div class="back-link-wrapper">
+                    <a href="cam-nang-nganh.html" class="back-catalog-link"><i class="fa-solid fa-arrow-left"></i> Quay lại danh mục cẩm nang</a>
+                </div>
+                
+                <div class="detail-header-block" id="detail-header" style="overflow: hidden; padding: 0;">
+                    <div class="detail-banner-img-wrapper" style="width: 100%; height: 320px; overflow: hidden; position: relative;">
+                        <img src="" id="display-banner-img" alt="Industry Banner" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="banner-gradient-overlay" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.7) 40%, rgba(255,255,255,0) 100%);"></div>
+                    </div>
+                    <div class="detail-header-text" style="padding: 0 40px 30px 40px; margin-top: -40px; position: relative; z-index: 2;">
+                        <h1 class="detail-title" id="display-title">Đang tải thông tin...</h1>
+                        <div class="detail-meta">
+                            <span class="detail-badge" id="display-category">Chuyên ngành</span>
+                            <span class="detail-date"><i class="fa-solid fa-calendar-check"></i> Cập nhật: 2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <section class="section" style="padding-top: 0; background-color: #f8fafc;">
+            <div class="container">
+                <div class="detail-layout">
+                    
+                    <!-- Left Column: The 9 sections -->
+                    <div class="detail-content-card" id="detail-body-content">
+                        <!-- Filled dynamically by JavaScript -->
+                    </div>
+                    
+                    <!-- Right Column: Visual evaluations and Quick Actions -->
+                    <div class="detail-sidebar">
+                        <div class="sidebar-card valuation-card">
+                            <h3><i class="fa-solid fa-chart-simple"></i> Đánh giá tổng quan</h3>
+                            <div class="valuation-list" id="display-ratings">
+                                <!-- Star ratings will be loaded here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo-wrapper">
+                        <img src="images/logo_icon.png" alt="EduCareer AI Logo" class="logo-img">
+                        <div class="logo-text" style="color: white;">EduCareer <span>AI</span></div>
+                    </a>
+                    <p style="margin-top: 14px;">
+                        Hệ thống hướng nghiệp thông minh hàng đầu dành cho học sinh Việt Nam, kiến tạo tương lai vững chắc dựa trên trí tuệ nhân tạo và dữ liệu khoa học đa chiều.
+                    </p>
+                </div>
+                
+                <div class="footer-links-col">
+                    <h4>Đường dẫn nhanh</h4>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="cam-nang-nganh.html">Cẩm nang</a></li>
+                        <li><a href="pages/explore.html">Khám phá bản thân</a></li>
+                        <li><a href="ban-do-nang-luc.html">Bản đồ năng lực</a></li>
+                        <li><a href="ai-tu-van.html">AI tư vấn</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links-col">
+                    <h4>Thông tin liên hệ</h4>
+                    <div class="footer-contact">
+                        <div class="contact-item">
+                            <i class="fa-solid fa-people-group"></i>
+                            <span>Đội thi: <strong>KgLorious</strong> - HackAIthon 2026</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>Trưởng nhóm: Nguyễn Nhật Long & Trần Anh Khoa</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>longnnce200633@gmail.com <br> khoatace200187@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>Hotline: 0949 737 951</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 EduCareer AI. Bản quyền thuộc về đội thi KgLorious. Dự án tham gia Vietnamese Student HackAIthon 2026.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Điều khoản sử dụng</a>
+                    <a href="#">Chính sách bảo mật</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Consult Button -->
+    <a href="ai-tu-van.html" class="floating-consult-btn" id="floating-btn">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span>Tư vấn AI</span>
+    </a>
+
+    <!-- Interactivity Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="industries-data.js"></script>
+    <script src="app.js?v=2.5"></script>
+</body>
+</html>

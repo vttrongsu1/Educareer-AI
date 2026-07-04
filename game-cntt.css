@@ -1,0 +1,517 @@
+/* ===== CSS CHO GAME CODE QUEST ===== */
+
+.game-cntt-page {
+    background-color: #0d1117; /* Dark theme */
+    color: #c9d1d9;
+}
+
+.game-main {
+    padding-top: 100px;
+    padding-bottom: 50px;
+    min-height: 80vh;
+}
+
+.game-container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Common UI */
+.game-screen {
+    background: #161b22;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid #30363d;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.game-screen.hidden {
+    display: none;
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.game-screen.active {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.game-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.game-desc {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #8b949e;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 15px;
+}
+
+.game-stats {
+    display: flex;
+    gap: 15px;
+}
+
+.stat-box {
+    background: #21262d;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-box.timer {
+    color: #58a6ff;
+}
+
+.stat-box.combo-box {
+    color: #ff7b72;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.3s ease;
+}
+
+/* =========================================
+   MÀN 1: CODE SPRINT
+========================================= */
+.terminal-wrapper {
+    background: #000;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    overflow: hidden;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.terminal-header {
+    background: #161b22;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #30363d;
+}
+
+.terminal-header .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+.dot.red { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #27c93f; }
+
+.terminal-title {
+    margin-left: 10px;
+    color: #8b949e;
+    font-size: 0.85rem;
+}
+
+.terminal-body {
+    padding: 20px;
+}
+
+.terminal-instruction {
+    color: #58a6ff;
+    margin-bottom: 15px;
+}
+
+.target-text-container {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    color: #8b949e;
+}
+
+.target-char {
+    transition: color 0.1s;
+}
+
+.target-char.correct {
+    color: #3fb950;
+    text-shadow: 0 0 5px rgba(63, 185, 80, 0.5);
+}
+
+.target-char.wrong {
+    color: #f85149;
+    background: rgba(248, 81, 73, 0.2);
+}
+
+.terminal-input-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 0 20px 20px 20px;
+}
+
+.prompt-symbol {
+    color: #3fb950;
+    font-size: 1.5rem;
+    margin-right: 15px;
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: #c9d1d9;
+    font-size: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    outline: none;
+}
+
+/* =========================================
+   MÀN 2: LOGIC BUILDER
+========================================= */
+.logic-workspace {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .logic-workspace {
+        flex-direction: column;
+    }
+}
+
+.logic-editor {
+    flex: 2;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.logic-instruction {
+    color: #8b949e;
+    margin-bottom: 20px;
+}
+
+.logic-statement {
+    font-size: 1.2rem;
+    line-height: 2;
+    margin-bottom: 30px;
+}
+
+.drop-slot {
+    display: inline-block;
+    width: 150px;
+    height: 40px;
+    border: 2px dashed #58a6ff;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin: 0 10px;
+    background: rgba(88, 166, 255, 0.1);
+    transition: all 0.2s;
+    text-align: center;
+    line-height: 36px;
+}
+
+.drop-slot.drag-over {
+    background: rgba(88, 166, 255, 0.3);
+    border-color: #79c0ff;
+    transform: scale(1.05);
+}
+
+.drop-slot.filled {
+    border-style: solid;
+    border-color: #3fb950;
+    background: rgba(63, 185, 80, 0.1);
+}
+
+.logic-toolbox {
+    flex: 1;
+    background: #21262d;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.logic-toolbox h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #8b949e;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.toolbox-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.draggable-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: grab;
+    user-select: none;
+    font-size: 0.95rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.draggable-card:active {
+    cursor: grabbing;
+}
+
+.draggable-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    border-color: #8b949e;
+}
+
+/* =========================================
+   MÀN 3: RELEASE RUSH
+========================================= */
+.release-instruction {
+    color: #f85149;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .kanban-board {
+        grid-template-columns: 1fr;
+    }
+}
+
+.kanban-col {
+    background: #0d1117;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    display: flex;
+    flex-direction: column;
+}
+
+.kanban-col-header {
+    padding: 12px 15px;
+    font-weight: bold;
+    border-bottom: 1px solid #30363d;
+    border-radius: 8px 8px 0 0;
+}
+
+.priority-high .kanban-col-header { background: rgba(248, 81, 73, 0.1); color: #f85149; }
+.priority-med .kanban-col-header { background: rgba(88, 166, 255, 0.1); color: #58a6ff; }
+.priority-low .kanban-col-header { background: rgba(139, 148, 158, 0.1); color: #8b949e; }
+
+.kanban-dropzone {
+    flex-grow: 1;
+    min-height: 150px;
+    padding: 10px;
+    transition: background 0.2s;
+}
+
+.kanban-dropzone.drag-over {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.release-tasks-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #21262d;
+    padding: 20px;
+    border-radius: 8px;
+    min-height: 80px;
+}
+
+.task-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: grab;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.task-card:hover {
+    border-color: #58a6ff;
+}
+
+/* =========================================
+   POPUP VÀ TRANSITION
+========================================= */
+.transition-popup {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(13, 17, 23, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.transition-popup.hidden {
+    display: none;
+}
+
+.popup-content {
+    background: #161b22;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #30363d;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    max-width: 400px;
+}
+
+.popup-icon {
+    font-size: 4rem;
+    color: #3fb950;
+    margin-bottom: 20px;
+}
+
+#popup-text {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+/* =========================================
+   MÀN TỔNG KẾT
+========================================= */
+.result-card {
+    text-align: center;
+}
+
+.result-score-circle {
+    width: 150px;
+    margin: 0 auto 30px auto;
+    position: relative;
+}
+
+.circular-chart {
+    display: block;
+    margin: 0 auto;
+    max-width: 80%;
+    max-height: 250px;
+}
+.circle-bg {
+    fill: none;
+    stroke: #30363d;
+    stroke-width: 2.5;
+}
+.circle {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1.5s ease-out;
+}
+/* Colors based on score */
+.score-high .circle { stroke: #3fb950; }
+.score-med .circle { stroke: #ffbd2e; }
+.score-low .circle { stroke: #f85149; }
+
+.percentage {
+    fill: #c9d1d9;
+    font-family: sans-serif;
+    font-size: 0.5em;
+    text-anchor: middle;
+    font-weight: bold;
+}
+
+.result-title {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.score-high .result-title { color: #3fb950; }
+.score-med .result-title { color: #ffbd2e; }
+.score-low .result-title { color: #f85149; }
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+@media (max-width: 600px) {
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.skill-item .skill-name {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #8b949e;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #30363d;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #58a6ff, #a371f7);
+    transition: width 1s ease-out;
+}
+
+.badge-display {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(163, 113, 247, 0.1);
+    border: 1px solid #a371f7;
+    border-radius: 8px;
+    display: inline-block;
+    color: #d2a8ff;
+    font-weight: bold;
+}
+
+.final-feedback {
+    font-style: italic;
+    color: #8b949e;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}

@@ -1,0 +1,471 @@
+{
+	"info": {
+		"_postman_id": "27f5df55-cfb7-491e-8024-47bab4df6d6f",
+		"name": "API OCR -Hackathon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21139148"
+	},
+	"item": [
+		{
+			"name": "API upload file Copy 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"pm.globals.set(\"hash_1\", jsonData.object.hash);\r",
+							"pm.globals.set(\"type\", jsonData.object.fileType);\r",
+							"//postman.setNextRequest(\"ocr/van-ban-hanh-chinh\")"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Token-id",
+						"value": ""
+					},
+					{
+						"key": "Token-key",
+						"value": ""
+					},
+					{
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "mac-address",
+						"value": "EGOV-DIGDOC-WEB-API"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "title",
+							"value": "Hashing document",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Hashing document",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.idg.vnpt.vn/file-service/v1/addFile",
+					"protocol": "https",
+					"host": [
+						"api",
+						"idg",
+						"vnpt",
+						"vn"
+					],
+					"path": [
+						"file-service",
+						"v1",
+						"addFile"
+					]
+				},
+				"description": "Dùng để upload ảnh lên Server media và trả về chuỗi hash duy nhất của ảnh.\nChuỗi hash này là đầu vào cho các API OCR, type, compare"
+			},
+			"response": []
+		},
+		{
+			"name": "OCR cơ bản ocr/scan",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Token-id",
+						"value": ""
+					},
+					{
+						"key": "Token-key",
+						"value": ""
+					},
+					{
+						"key": "mac-address",
+						"value": "mac-address"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"file_hash\": \"idg20240708-e4e94e46-31a6-27fe-e053-4604a80a044f/IDG01_314c6200-3cf8-11ef-9574-2b8ec0170ab5\",\r\n    \"file_type\": \"pdf\",\r\n    \"token\": \"8928skjhfa89298jahga1771vbvb\",\r\n    \"client_session\": \"00-14-22-01-23-45-1548211589291\",\r\n    \"details\": true\r\n}"
+				},
+				"url": {
+					"raw": "https://api.idg.vnpt.vn/rpa-service/aidigdoc/v1/ocr/scan",
+					"protocol": "https",
+					"host": [
+						"api",
+						"idg",
+						"vnpt",
+						"vn"
+					],
+					"path": [
+						"rpa-service",
+						"aidigdoc",
+						"v1",
+						"ocr",
+						"scan"
+					]
+				},
+				"description": "OCR trên dev\n\n- Tốc độ chậm hơn nhiều so với trên production."
+			},
+			"response": []
+		},
+		{
+			"name": "OCR nâng cao ocr/scan table",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Token-id",
+						"value": ""
+					},
+					{
+						"key": "Token-key",
+						"value": ""
+					},
+					{
+						"key": "mac-address",
+						"value": "mac-address"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"file_hash\": \"idg20240716-0d9d0c18-1226-3a5b-e063-62199f0af83a/IDG01_64c29daa-435d-11ef-9f3b-d9cdac588ded\",\r\n    \"file_type\": \"pdf\",\r\n    \"token\": \"8928skjhfa89298jahga1771vbvb\",\r\n    \"client_session\": \"00-14-22-01-23-45-1548211589291\",\r\n    \"details\": true\r\n}"
+				},
+				"url": {
+					"raw": "https://api.idg.vnpt.vn/rpa-service/aidigdoc/v1/ocr/scan-table",
+					"protocol": "https",
+					"host": [
+						"api",
+						"idg",
+						"vnpt",
+						"vn"
+					],
+					"path": [
+						"rpa-service",
+						"aidigdoc",
+						"v1",
+						"ocr",
+						"scan-table"
+					]
+				},
+				"description": "OCR trên dev\n\n- Tốc độ chậm hơn nhiều so với trên production."
+			},
+			"response": []
+		},
+		{
+			"name": "OCR nâng cao BĐB scan-table",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"pm.globals.set(\"session_id\", jsonData.object.session_id);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "Token-id",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "Token-key",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "mac-address",
+						"value": "mac-address",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"file_hash\": \"{{hash_1}}\",\n    \"file_type\": \"pdf\",\n    \"token\": \"8928skjhfa89298jahga1771vbvb\",\n    \"client_session\": \"00-14-22-01-23-45-1548211589291\",\n    \"details\": true,\n    \"exporter\": \"json\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.idg.vnpt.vn/rpa-service/aidigdoc/v1/integration/ocr/scan-table",
+					"protocol": "https",
+					"host": [
+						"api",
+						"idg",
+						"vnpt",
+						"vn"
+					],
+					"path": [
+						"rpa-service",
+						"aidigdoc",
+						"v1",
+						"integration",
+						"ocr",
+						"scan-table"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OCR nâng cao BĐB scan-table lấy kết quả",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "Token-id",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "Token-key",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "mac-address",
+						"value": "mac-address",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n     \"session_id\":\"4de638b8-1ab9-4c83-a0a9-39a74999bce7\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.idg.vnpt.vn/rpa-service/aidigdoc/v1/integration/ocr/scan-table/result",
+					"protocol": "https",
+					"host": [
+						"api",
+						"idg",
+						"vnpt",
+						"vn"
+					],
+					"path": [
+						"rpa-service",
+						"aidigdoc",
+						"v1",
+						"integration",
+						"ocr",
+						"scan-table",
+						"result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OCR nâng cao BĐB scan-table cancel Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "Token-id",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "Token-key",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "mac-address",
+						"value": "mac-address",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n     \"session_id\": \"4e1235e0-03ba-4921-b111-a44e9edd3045\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.idg.vnpt.vn/rpa-service/aidigdoc/v1/integration/ocr/scan-table/cancel",
+					"protocol": "https",
+					"host": [
+						"api",
+						"idg",
+						"vnpt",
+						"vn"
+					],
+					"path": [
+						"rpa-service",
+						"aidigdoc",
+						"v1",
+						"integration",
+						"ocr",
+						"scan-table",
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
