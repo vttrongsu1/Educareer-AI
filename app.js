@@ -79,7 +79,34 @@ async function initSupabaseSession() {
         if (!sb) return;
 
         const { data: { session } } = await sb.auth.getSession();
-        if (!session) return;
+        if (!session) {
+            // Cập nhật nút navbar thành "Đăng nhập"
+            const profileLink = document.getElementById('nav-profile-link');
+            if (profileLink) {
+                const isSubDir = window.location.pathname.includes('/pages/');
+                profileLink.href = isSubDir ? '../ho-so-hoc-sinh.html' : 'ho-so-hoc-sinh.html';
+                profileLink.innerHTML = `<i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập`;
+            }
+
+            // Danh sách các trang bắt buộc đăng nhập để sử dụng tính năng
+            const protectedPages = [
+                'ocr-hoc-ba.html',
+                'ban-do-nang-luc.html',
+                'ai-tu-van.html',
+                'explore.html',
+                'career-games.html',
+                'tao-cam-nang.html'
+            ];
+
+            // Tách lấy tên file HTML hiện tại
+            const currentPage = window.location.pathname.split('/').pop();
+            if (protectedPages.includes(currentPage)) {
+                alert("Vui lòng đăng ký hoặc đăng nhập tài khoản để sử dụng tính năng này!");
+                const isSubDir = window.location.pathname.includes('/pages/');
+                window.location.href = isSubDir ? '../ho-so-hoc-sinh.html' : 'ho-so-hoc-sinh.html';
+            }
+            return;
+        }
 
         // Tải hồ sơ từ bảng students
         const { data, error } = await sb.from("students").select("*").eq("id", session.user.id).maybeSingle();
