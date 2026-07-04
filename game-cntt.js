@@ -522,7 +522,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Init ---
-    document.getElementById('btn-start-game').addEventListener('click', () => {
+    document.getElementById('btn-start-game').addEventListener('click', async () => {
+        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (sb) {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) {
+                alert("Bạn cần đăng nhập để sử dụng tính năng này.");
+                window.location.href = "../ho-so-hoc-sinh.html";
+                return;
+            }
+        }
         showScreen('sprint');
         initSprint();
     });

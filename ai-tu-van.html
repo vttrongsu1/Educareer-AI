@@ -967,6 +967,17 @@
 
         // Chat Submit handler
         async function handleChatSubmit() {
+            // Kiểm tra trạng thái đăng nhập bảo mật
+            const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+            if (sb) {
+                const { data: { session } } = await sb.auth.getSession();
+                if (!session) {
+                    alert("Bạn cần đăng nhập để sử dụng tính năng này.");
+                    window.location.href = "ho-so-hoc-sinh.html";
+                    return;
+                }
+            }
+
             const query = chatInput.value.trim();
             if (query === '') return;
 

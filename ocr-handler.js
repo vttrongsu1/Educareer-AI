@@ -368,6 +368,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function runOcrScanning(file) {
+        // Kiểm tra đăng nhập bảo mật trước khi xử lý tệp
+        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (sb) {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) {
+                alert("Bạn cần đăng nhập để sử dụng tính năng này.");
+                window.location.href = "ho-so-hoc-sinh.html";
+                return;
+            }
+        }
+
         dropZone.classList.add('scanning');
         sheetStatus.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI đang phân tích biểu mẫu...';
         sheetStatus.style.background = 'rgba(14, 165, 233, 0.08)';
