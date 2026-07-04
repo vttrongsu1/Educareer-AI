@@ -925,6 +925,8 @@
         function renderQuickQueries() {
             if (!quickQueriesContainer) return;
 
+            const { hasHolland, hasMbti } = getProfileFlags();
+
             let queries = [
                 { text: "So sánh Khoa học máy tính & Kỹ thuật PM", q: "So sánh khoa học máy tính và kỹ thuật phần mềm" },
                 { text: "Học Công nghệ Bán dẫn ra trường làm gì?", q: "Cơ hội việc làm của ngành công nghệ bán dẫn" }
