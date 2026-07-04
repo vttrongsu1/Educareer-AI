@@ -612,8 +612,15 @@
             btnLogout.addEventListener("click", async () => {
                 if (sb) {
                     await sb.auth.signOut();
-                    // Clear local cached studentData
-                    localStorage.removeItem("educareer_student_data");
+                    // Clear local cached studentData and grades
+                    localStorage.removeItem("educareer_student_profile");
+                    localStorage.removeItem("educareer_v2_thpt_lop10");
+                    localStorage.removeItem("educareer_v2_thpt_lop11");
+                    localStorage.removeItem("educareer_v2_thpt_lop12");
+                    localStorage.removeItem("educareer_v2_thcs_lop6");
+                    localStorage.removeItem("educareer_v2_thcs_lop7");
+                    localStorage.removeItem("educareer_v2_thcs_lop8");
+                    localStorage.removeItem("educareer_v2_thcs_lop9");
                     localStorage.removeItem("custom_industries");
                     window.location.reload();
                 }

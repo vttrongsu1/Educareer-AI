@@ -80,6 +80,16 @@ async function initSupabaseSession() {
 
         const { data: { session } } = await sb.auth.getSession();
         if (!session) {
+            // Xóa sạch dữ liệu hồ sơ cũ của phiên đăng nhập trước để tránh lộ dữ liệu
+            localStorage.removeItem('educareer_student_profile');
+            localStorage.removeItem('educareer_v2_thpt_lop10');
+            localStorage.removeItem('educareer_v2_thpt_lop11');
+            localStorage.removeItem('educareer_v2_thpt_lop12');
+            localStorage.removeItem('educareer_v2_thcs_lop6');
+            localStorage.removeItem('educareer_v2_thcs_lop7');
+            localStorage.removeItem('educareer_v2_thcs_lop8');
+            localStorage.removeItem('educareer_v2_thcs_lop9');
+
             // Cập nhật nút navbar thành "Đăng nhập"
             const profileLink = document.getElementById('nav-profile-link');
             if (profileLink) {
