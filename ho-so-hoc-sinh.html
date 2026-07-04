@@ -379,18 +379,6 @@
     </header>
 
     <main>
-        <!-- AUTH REQUIRED PROMPT (Show first if not logged in) -->
-        <section id="auth-prompt-section" class="container" style="display: none; padding-top: 100px; padding-bottom: 50px;">
-            <div class="auth-container" style="text-align: center; padding: 40px 20px;">
-                <i class="fa-solid fa-user-lock" style="font-size: 3.5rem; color: #2563eb; margin-bottom: 20px;"></i>
-                <h2 style="font-weight: 800; font-size: 1.8rem; margin-bottom: 10px; font-family: 'Plus Jakarta Sans', sans-serif;">Yêu Cầu Đăng Nhập</h2>
-                <p style="color: var(--text-muted); font-weight: 600; margin-bottom: 24px;">Vui lòng đăng nhập tài khoản học sinh để xem thông tin cá nhân, học bạ OCR và kết quả trắc nghiệm hướng nghiệp.</p>
-                <button id="btn-show-auth-form" class="login-btn-style" style="cursor: pointer; border: none; font-size: 1rem; padding: 12px 30px !important;">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập học sinh
-                </button>
-            </div>
-        </section>
-
         <!-- AUTH SECTION (Show if not logged in) -->
         <section id="auth-section" class="container" style="display: none; padding-top: 100px; padding-bottom: 50px;">
             <div class="auth-container">
@@ -400,8 +388,8 @@
                     <p id="auth-subtitle">Nhập tài khoản để đồng bộ học bạ và lưu kết quả trắc nghiệm.</p>
                 </div>
 
-                <div id="auth-error-msg" class="save-status-msg error"></div>
-                <div id="auth-success-msg" class="save-status-msg success"></div>
+                <div id="auth-error-msg" class="save-status-msg error" style="display: none;"></div>
+                <div id="auth-success-msg" class="save-status-msg success" style="display: none;"></div>
 
                 <form id="auth-form">
                     <div class="form-group" id="group-name" style="display: none;">
@@ -641,37 +629,20 @@
 
         // 4. Load Profile Dashboard
         async function loadProfileDashboard() {
-            const authPromptSection = document.getElementById("auth-prompt-section");
-            const btnShowAuthForm = document.getElementById("btn-show-auth-form");
-
-            if (btnShowAuthForm && authPromptSection) {
-                btnShowAuthForm.addEventListener("click", () => {
-                    authPromptSection.style.display = "none";
-                    authSection.style.display = "block";
-                });
-            }
-
             if (!sb) {
-                if (authPromptSection) authPromptSection.style.display = "block";
-                authSection.style.display = "none";
+                authSection.style.display = "block";
                 return;
             }
 
             const { data: { session } } = await sb.auth.getSession();
             if (!session) {
-                // Not logged in -> Show auth prompt first
-                if (authPromptSection) {
-                    authPromptSection.style.display = "block";
-                    authSection.style.display = "none";
-                } else {
-                    authSection.style.display = "block";
-                }
+                // Not logged in -> Show auth form directly
+                authSection.style.display = "block";
                 profileSection.style.display = "none";
                 return;
             }
 
             // Logged in -> Show dashboard
-            if (authPromptSection) authPromptSection.style.display = "none";
             authSection.style.display = "none";
             profileSection.style.display = "block";
 
