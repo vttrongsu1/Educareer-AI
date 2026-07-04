@@ -134,6 +134,111 @@ function injectNavbarStyles() {
     document.head.appendChild(style);
 }
 
+function showAuthOverlay() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .auth-overlay-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .auth-overlay-card {
+            background: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 50px rgba(37, 99, 235, 0.15);
+            border-radius: 28px;
+            padding: 48px 32px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            animation: authOverlayUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes authOverlayUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .auth-overlay-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+            color: #2563eb;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+        }
+        .auth-overlay-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+        .auth-overlay-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        .auth-overlay-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+            color: white;
+            padding: 14px 36px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+        }
+        .auth-overlay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.4);
+        }
+        body {
+            overflow: hidden !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'auth-overlay-backdrop';
+    const isSubDir = window.location.pathname.includes('/pages/') || window.location.pathname.includes('/game/');
+    const loginLink = isSubDir ? '../ho-so-hoc-sinh.html' : 'ho-so-hoc-sinh.html';
+
+    overlay.innerHTML = `
+        <div class="auth-overlay-card">
+            <div class="auth-overlay-icon">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h2 class="auth-overlay-title">Tính năng yêu cầu đăng nhập</h2>
+            <p class="auth-overlay-desc">Vui lòng đăng nhập tài khoản học sinh để sử dụng tính năng này.</p>
+            <a href="${loginLink}" class="auth-overlay-btn">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập ngay
+            </a>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
 async function initSupabaseSession() {
     try {
         const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
@@ -162,6 +267,23 @@ async function initSupabaseSession() {
                 profileLink.innerHTML = `<i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập`;
                 profileLink.classList.remove('logged-in-style');
                 profileLink.classList.add('login-btn-style');
+            }
+
+            // Kiểm tra nếu đang truy cập các trang tính năng yêu cầu đăng nhập (loại trừ Bản đồ năng lực)
+            const protectedPages = [
+                'ocr-hoc-ba.html',
+                'ai-tu-van.html',
+                'career-games.html',
+                'tao-cam-nang.html',
+                'trac-nghiem - Truyen.html',
+                'game-cntt.html',
+                'game-result.html'
+            ];
+            const currentPage = decodeURIComponent(window.location.pathname.split('/').pop());
+            const isInsideGameFolder = window.location.pathname.includes('/game/');
+
+            if (protectedPages.includes(currentPage) || isInsideGameFolder) {
+                showAuthOverlay();
             }
 
             return;
