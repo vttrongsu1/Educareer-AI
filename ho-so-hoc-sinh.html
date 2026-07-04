@@ -508,7 +508,7 @@
         let isLoginMode = true;
 
         // Initialize Supabase client
-        const sb = getSupabaseClient();
+        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
 
         // 1. Toggle Login / Register form
         authToggleBtn.addEventListener("click", (e) => {

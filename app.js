@@ -807,7 +807,7 @@ async function loadAllIndustriesAsync() {
     
     // Add custom industries (Supabase cloud with LocalStorage fallback)
     let allList = [...DEFAULT_INDUSTRIES];
-    const sb = getSupabaseClient();
+    const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     let customList = [];
     
     if (sb) {
@@ -2218,7 +2218,7 @@ function initIndustryCreator() {
         localStorage.setItem("custom_industries", JSON.stringify(customList));
 
         // Save to Supabase Cloud Database (Primary Storage)
-        const sb = getSupabaseClient();
+        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
         if (sb) {
             statusMsg.textContent = "Đang gửi lên cơ sở dữ liệu đám mây Supabase...";
             statusMsg.className = "save-status-msg warning";
