@@ -658,11 +658,6 @@
             console.error("Error loading student profile:", e);
         }
 
-        // Nếu localStorage trống và chưa reset, dùng dữ liệu mẫu demo
-        const hasRealData = studentData.studentName && studentData.studentName !== 'Học sinh mới';
-        if (!hasRealData && !isReset && window.HOC_SINH_PROFILE) {
-            studentData = window.HOC_SINH_PROFILE;
-        }
 
         // DOM elements
         const sidebar = document.getElementById('advisor-profile-sidebar');
