@@ -653,6 +653,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         localStorage.setItem('educareer_student_profile', JSON.stringify(profile));
 
+        // Đồng bộ hồ sơ học sinh lên Supabase nếu đã đăng nhập
+        if (typeof window.syncStudentDataToCloud === 'function') {
+            window.syncStudentDataToCloud(profile);
+        }
+
         console.log(`Saved dynamic grades for ${activeLevel} - ${activeYear} to localStorage under key ${storageKey}:`, gradesList);
         showSaveSuccessModal();
     });

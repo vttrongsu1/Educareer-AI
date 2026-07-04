@@ -35,10 +35,81 @@ function initApp() {
     }
 }
 
+// ============================================================
+// SUPABASE AUTH: Session Check + Cloud Sync cho hồ sơ học sinh
+// ============================================================
+
+/**
+ * Đồng bộ dữ liệu hồ sơ học sinh lên Supabase nếu đã đăng nhập.
+ * Gọi hàm này mỗi khi học sinh quét xong học bạ hoặc làm xong trắc nghiệm.
+ * @param {Object} updatedData - Dữ liệu hồ sơ mới (academic, mbti, riasec...)
+ */
+async function syncStudentDataToCloud(updatedData) {
+    try {
+        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (!sb) return;
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) return;
+
+        const studentName = updatedData.studentName || "Học sinh";
+
+        await sb.from("students").upsert({
+            id: session.user.id,
+            name: studentName,
+            data: updatedData
+        });
+
+        console.log("[EduCareer Sync] Đã đồng bộ hồ sơ học sinh lên đám mây Supabase thành công.");
+    } catch (err) {
+        console.error("[EduCareer Sync] Lỗi khi đồng bộ lên Supabase:", err);
+    }
+}
+
+// Gán ra window để các file khác (ocr-handler.js, trac-nghiem.html) có thể gọi được
+window.syncStudentDataToCloud = syncStudentDataToCloud;
+
+/**
+ * Khi trang web khởi động: kiểm tra phiên đăng nhập Supabase.
+ * Nếu đã đăng nhập, tải hồ sơ học sinh từ cloud về localStorage.
+ * Đồng thời cập nhật giao diện navbar hiển thị tên học sinh.
+ */
+async function initSupabaseSession() {
+    try {
+        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (!sb) return;
+
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) return;
+
+        // Tải hồ sơ từ bảng students
+        const { data, error } = await sb.from("students").select("*").eq("id", session.user.id).maybeSingle();
+
+        if (data && data.data) {
+            // Ghi đè localStorage bằng dữ liệu đám mây (cloud luôn là nguồn sự thật)
+            localStorage.setItem('educareer_student_profile', JSON.stringify(data.data));
+            console.log("[EduCareer Sync] Đã tải hồ sơ học sinh từ đám mây:", data.name);
+        }
+
+        // Cập nhật nút navbar "Hồ sơ của tôi" -> hiện tên học sinh
+        const profileLink = document.getElementById('nav-profile-link');
+        if (profileLink) {
+            const displayName = (data && data.name) ? data.name : session.user.email;
+            profileLink.innerHTML = `<i class="fa-solid fa-user-check"></i> ${displayName}`;
+        }
+
+    } catch (err) {
+        console.error("[EduCareer Sync] Lỗi kiểm tra phiên đăng nhập:", err);
+    }
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded', () => {
+        initApp();
+        initSupabaseSession();
+    });
 } else {
     initApp();
+    initSupabaseSession();
 }
 
 // 1. Header Scroll effect

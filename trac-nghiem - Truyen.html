@@ -3528,6 +3528,7 @@
                     <li><a href="ban-do-nang-luc.html">Bản đồ năng lực</a></li>
                     <li><a href="cam-nang-nganh.html">Cẩm nang</a></li>
                     <li><a href="ai-tu-van.html">AI tư vấn</a></li>
+                    <li><a href="ho-so-hoc-sinh.html" id="nav-profile-link"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a></li>
                 </ul>
 
             </nav>
@@ -4581,6 +4582,11 @@
             studentData.riasec = riasec;
 
             localStorage.setItem('educareer_student_profile', JSON.stringify(studentData));
+
+            // Đồng bộ kết quả Holland lên Supabase
+            if (typeof window.syncStudentDataToCloud === 'function') {
+                window.syncStudentDataToCloud(studentData);
+            }
 
             const sortedCategories = Object.keys(riasec).sort((a, b) => riasec[b] - riasec[a]);
 
@@ -5807,6 +5813,11 @@
 
                 localStorage.setItem('educareer_student_profile', JSON.stringify(studentData));
 
+                // Đồng bộ kết quả MBTI lên Supabase
+                if (typeof window.syncStudentDataToCloud === 'function') {
+                    window.syncStudentDataToCloud(studentData);
+                }
+
                 const details = window.MBTI_DETAILS ? window.MBTI_DETAILS[mbtiCode] : { name: 'Chưa rõ', archetype: '' };
 
                 successHtml = `
@@ -5862,6 +5873,11 @@
                 studentData.tipi = tipi;
 
                 localStorage.setItem('educareer_student_profile', JSON.stringify(studentData));
+
+                // Đồng bộ kết quả TIPI/Big Five lên Supabase
+                if (typeof window.syncStudentDataToCloud === 'function') {
+                    window.syncStudentDataToCloud(studentData);
+                }
 
                 successHtml = `
 
