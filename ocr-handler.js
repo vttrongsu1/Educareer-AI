@@ -682,9 +682,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadGradesForLevelAndYear(level, year) {
         const storageKey = `educareer_v2_${level}_${year}`;
-        const savedData = localStorage.getItem(storageKey);
+        let savedData = localStorage.getItem(storageKey);
         
         tableBody.innerHTML = ""; // Clear table
+
+        // Đọc hồ sơ học sinh chính từ localStorage (đã đồng bộ từ Supabase)
+        let studentProfile = null;
+        try {
+            const profileStr = localStorage.getItem('educareer_student_profile');
+            if (profileStr) {
+                studentProfile = JSON.parse(profileStr);
+            }
+        } catch (e) {}
+
+        // Kiểm tra xem hồ sơ chính đã có điểm học tập nào chưa
+        const hasAcademicData = studentProfile && studentProfile.academic && Object.keys(studentProfile.academic).length > 0;
+
+        // Nếu trong hồ sơ chính không có điểm học tập (tài khoản mới), ta xóa bỏ cache điểm cũ và đặt lại bảng điểm = 0.0
+        if (!hasAcademicData) {
+            localStorage.removeItem(storageKey);
+            savedData = null;
+        }
 
         if (demoToggleSwitch && demoToggleSwitch.checked) {
             syncElectronicTranscriptSilent();
