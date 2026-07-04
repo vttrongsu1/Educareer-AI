@@ -1378,8 +1378,8 @@
 
         const isReset = localStorage.getItem('educareer_reset_flag') === 'true';
 
-        // Student Data setup with local storage persistence
-        let studentData = (!isReset && window.HOC_SINH_PROFILE) ? window.HOC_SINH_PROFILE : {
+        // Student Data setup: ưu tiên localStorage (đồng bộ từ Supabase) trước, nếu không có mới dùng dữ liệu mẫu
+        let studentData = {
             studentId: 'HS0000',
             studentName: 'Học sinh chưa đăng ký',
             school: 'Chưa cập nhật',
@@ -1394,17 +1394,23 @@
             recommendedCareers: []
         };
 
-        // Try to load student profile from localStorage
+        // 1. Ưu tiên đọc từ localStorage (dữ liệu thật từ Supabase hoặc OCR)
         try {
             const savedProfile = localStorage.getItem('educareer_student_profile');
             if (savedProfile) {
                 const parsed = JSON.parse(savedProfile);
-                if (parsed && typeof parsed === 'object') {
+                if (parsed && typeof parsed === 'object' && (parsed.studentName || parsed.academic || parsed.mbti)) {
                     studentData = parsed;
                 }
             }
         } catch(e) {
             console.error("Error loading student profile:", e);
+        }
+
+        // 2. Nếu localStorage trống và chưa reset, dùng dữ liệu mẫu demo
+        const hasRealData = studentData.studentName && studentData.studentName !== 'Học sinh chưa đăng ký';
+        if (!hasRealData && !isReset && window.HOC_SINH_PROFILE) {
+            studentData = window.HOC_SINH_PROFILE;
         }
 
         // Merge latest dynamic grades from ocr-hoc-ba if available

@@ -633,7 +633,7 @@
     (function() {
         // 1. Check bypass flag to block static mock loading
         const isReset = localStorage.getItem('educareer_reset_flag') === 'true';
-        let studentData = (!isReset && window.HOC_SINH_PROFILE) ? window.HOC_SINH_PROFILE : {
+        let studentData = {
             studentId: 'HS2026',
             studentName: 'Học sinh mới',
             school: 'Chưa cập nhật trường',
@@ -645,16 +645,23 @@
             tipi: {}
         };
 
+        // Ưu tiên đọc từ localStorage (dữ liệu thật từ Supabase hoặc OCR)
         try {
             const stored = localStorage.getItem('educareer_student_profile');
             if (stored) {
                 const parsed = JSON.parse(stored);
-                if (parsed && typeof parsed === 'object') {
+                if (parsed && typeof parsed === 'object' && (parsed.studentName || parsed.academic || parsed.mbti)) {
                     studentData = parsed;
                 }
             }
         } catch(e) {
             console.error("Error loading student profile:", e);
+        }
+
+        // Nếu localStorage trống và chưa reset, dùng dữ liệu mẫu demo
+        const hasRealData = studentData.studentName && studentData.studentName !== 'Học sinh mới';
+        if (!hasRealData && !isReset && window.HOC_SINH_PROFILE) {
+            studentData = window.HOC_SINH_PROFILE;
         }
 
         // DOM elements
