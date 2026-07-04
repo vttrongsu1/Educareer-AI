@@ -22,4 +22,4 @@ function getSupabaseClient() {
     }
     return null;
 }
-// Force refresh deployment hook after permission reset
+// Force rebuild trigger to retry failed GitHub Pages deployment
