@@ -667,16 +667,21 @@
         const sendBtn = document.getElementById('adv-chat-send');
         const quickQueriesContainer = document.getElementById('adv-quick-queries');
 
-        // Render Sidebar
-        function renderSidebar() {
-            if (!sidebar) return;
-            
-            // Tính toán động dựa trên studentData hiện tại
+        // Hàm tiện ích lấy trạng thái hồ sơ học sinh
+        function getProfileFlags() {
             const hasGrades = studentData.academic && Object.keys(studentData.academic).length > 0;
             const hasHolland = studentData.riasec && Object.keys(studentData.riasec).length > 0;
             const hasMbti = !!studentData.mbti;
             const hasBigfive = studentData.tipi && Object.keys(studentData.tipi).length > 0;
             const isProfileEmpty = !hasGrades && !hasHolland && !hasMbti && !hasBigfive;
+            return { hasGrades, hasHolland, hasMbti, hasBigfive, isProfileEmpty };
+        }
+
+        // Render Sidebar
+        function renderSidebar() {
+            if (!sidebar) return;
+            
+            const { hasGrades, hasHolland, hasMbti, hasBigfive, isProfileEmpty } = getProfileFlags();
 
             const currentName = studentData.studentName || 'Học Sinh Mới';
             const currentSchool = (studentData.gradeClass && studentData.school) 
@@ -767,6 +772,8 @@
             const container = document.getElementById('personalized-prompts-container');
             if (!container) return;
 
+            const { hasGrades, hasHolland, hasMbti } = getProfileFlags();
+
             let prompts = [];
 
             if (hasMbti) {
@@ -807,6 +814,8 @@
         function initWelcomeMessage() {
             const welcomeBubble = document.getElementById('adv-welcome-message');
             if (!welcomeBubble) return;
+
+            const { hasGrades, hasHolland, hasMbti, isProfileEmpty } = getProfileFlags();
 
             if (isProfileEmpty) {
                 welcomeBubble.innerHTML = `Chào em! Anh là Cố vấn học tập AI của EduCareer AI. 
