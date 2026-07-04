@@ -709,15 +709,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Fallback: load default curriculum list if no saved data is found
-        const isReset = localStorage.getItem('educareer_reset_flag') === 'true';
+        // Fallback: load default curriculum list with 0.0 if no saved data is found
         const defaults = curriculums[level];
         defaults.forEach(item => {
-            let score = "0.0";
-            if (!isReset && window.HOC_SINH_PROFILE && window.HOC_SINH_PROFILE.academic && window.HOC_SINH_PROFILE.academic[item.key] !== undefined) {
-                score = window.HOC_SINH_PROFILE.academic[item.key].toFixed(1);
-            }
-            appendGradeRow(item.name, item.code, item.key, score, score);
+            appendGradeRow(item.name, item.code, item.key, "0.0", "0.0");
         });
         calculateGPA();
         updateAddableSubjectsDropdown();
