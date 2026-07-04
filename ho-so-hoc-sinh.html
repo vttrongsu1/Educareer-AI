@@ -434,53 +434,39 @@
                 <!-- Main dashboard content -->
                 <div class="profile-main-content">
                     
-                    <!-- Academics / Transcript Card -->
+                    <!-- Personal Info Card -->
                     <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <h4><i class="fa-solid fa-graduation-cap"></i> Kết Quả Học Bạ (GPA)</h4>
-                            <a href="ocr-hoc-ba.html" class="card-action-link">Cập nhật học bạ <i class="fa-solid fa-chevron-right"></i></a>
+                        <div class="dashboard-card-header" style="border-bottom: 1.5px dashed rgba(37, 99, 235, 0.08); padding-bottom: 16px; margin-bottom: 24px;">
+                            <h4 style="font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; color: var(--text-dark); margin: 0;">
+                                <i class="fa-regular fa-id-card" style="color: var(--primary-blue);"></i> Hồ Sơ Cá Nhân Học Sinh
+                            </h4>
                         </div>
-                        <div id="grades-container">
-                            <!-- Show if grades exist -->
-                            <div class="grades-grid" id="grades-display-list" style="display: none;"></div>
-                            
-                            <!-- Show if no grades -->
-                            <div class="profile-empty-text" id="grades-empty-state">
-                                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.2rem; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
-                                Em chưa tải học bạ lên hồ sơ trực tuyến.<br>
-                                <a href="ocr-hoc-ba.html" style="color: var(--primary-blue); font-weight: 700; text-decoration: none;">Bấm vào đây</a> để quét học bạ bằng AI và tự động đồng bộ.
-                            </div>
-                        </div>
-                    </div>
+                        
+                        <div id="info-success-msg" class="save-status-msg success" style="display: none; margin-bottom: 20px;"></div>
+                        <div id="info-error-msg" class="save-status-msg error" style="display: none; margin-bottom: 20px;"></div>
 
-                    <!-- Personality Tests Card -->
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-header">
-                            <h4><i class="fa-solid fa-brain"></i> Kết Quả Trắc Nghiệm</h4>
-                            <a href="pages/explore.html" class="card-action-link">Làm bài test mới <i class="fa-solid fa-chevron-right"></i></a>
-                        </div>
-                        <div id="personality-container">
-                            <div class="personality-results-row" id="personality-display-list" style="display: none;">
-                                <!-- MBTI Box -->
-                                <div class="personality-result-box" id="mbti-result-box">
-                                    <div class="personality-code" id="mbti-code">INTJ</div>
-                                    <div class="personality-title" id="mbti-title">Nhà Hoạch Định</div>
-                                    <div class="personality-summary" id="mbti-desc">Thích tư duy logic, hoạch định chiến lược và có tính tự giác rất cao.</div>
-                                </div>
-                                <!-- Holland Box -->
-                                <div class="personality-result-box" id="holland-result-box">
-                                    <div class="personality-code" id="holland-code">I</div>
-                                    <div class="personality-title" id="holland-title">Nhóm Nghiên Cứu</div>
-                                    <div class="personality-summary" id="holland-desc">Thích tìm tòi học hỏi, phân tích, đánh giá và giải quyết các bài toán hóc búa.</div>
-                                </div>
+                        <form id="profile-info-form" style="display: flex; flex-direction: column; gap: 20px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="info-name">Họ và tên học sinh</label>
+                                <input type="text" id="info-name" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="info-dob">Ngày, tháng, năm sinh</label>
+                                <input type="date" id="info-dob" class="form-control" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="info-grade">Học lớp mấy</label>
+                                <input type="text" id="info-grade" class="form-control" placeholder="Ví dụ: Lớp 12A1" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="info-school">Trường học</label>
+                                <input type="text" id="info-school" class="form-control" placeholder="Ví dụ: THPT Nguyễn Huệ" required>
                             </div>
 
-                            <div class="profile-empty-text" id="personality-empty-state">
-                                <i class="fa-solid fa-compass-drafting" style="font-size: 2.2rem; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
-                                Em chưa làm các bài trắc nghiệm định hướng nghề nghiệp.<br>
-                                <a href="pages/explore.html" style="color: var(--primary-blue); font-weight: 700; text-decoration: none;">Bấm vào đây</a> để làm bài test MBTI / Holland và nhận tư vấn cá nhân hóa.
-                            </div>
-                        </div>
+                            <button type="submit" id="btn-save-info" class="btn btn-primary" style="width: 100%; border: none; padding: 14px; font-size: 0.95rem; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu Thông Tin
+                            </button>
+                        </form>
                     </div>
 
                 </div>
@@ -665,154 +651,85 @@
             sidebarStudentName.textContent = nameVal;
             sidebarAvatarLetter.textContent = nameVal.charAt(0).toUpperCase();
 
-            // Populate dashboard widgets
+            // Populate form inputs
             if (dbData) {
-                // A. Populate Grades
-                const academic = dbData.academic || {};
-                const subjects = Object.keys(academic);
+                document.getElementById("info-name").value = dbData.studentName || nameVal;
+                document.getElementById("info-dob").value = dbData.dob || "";
+                document.getElementById("info-grade").value = dbData.gradeClass || "";
+                document.getElementById("info-school").value = dbData.school || "";
+            }
 
-                if (subjects.length > 0) {
-                    gradesEmptyState.style.display = "none";
-                    gradesDisplayList.style.display = "grid";
+            // Register form submit handler for updating info
+            const profileInfoForm = document.getElementById("profile-info-form");
+            const btnSaveInfo = document.getElementById("btn-save-info");
+            const infoSuccessMsg = document.getElementById("info-success-msg");
+            const infoErrorMsg = document.getElementById("info-error-msg");
 
-                    const subjectLabels = {
-                        math: "Toán học",
-                        phys: "Vật lý",
-                        chem: "Hóa học",
-                        bio: "Sinh học",
-                        lit: "Ngữ văn",
-                        eng: "Tiếng Anh",
-                        hist: "Lịch sử",
-                        geog: "Địa lý",
-                        civics: "GDCD",
-                        tech: "Công nghệ",
-                        comp: "Tin học"
-                    };
+            if (profileInfoForm) {
+                profileInfoForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    infoSuccessMsg.style.display = "none";
+                    infoErrorMsg.style.display = "none";
+                    btnSaveInfo.disabled = true;
+                    btnSaveInfo.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...`;
 
-                    gradesDisplayList.innerHTML = subjects.map(sub => {
-                        const val = academic[sub];
-                        // Extract semester values if nested structure, else primitive
-                        let scoreDisplay = "";
-                        let fillPercent = 0;
+                    try {
+                        const name = document.getElementById("info-name").value.trim();
+                        const dob = document.getElementById("info-dob").value;
+                        const grade = document.getElementById("info-grade").value.trim();
+                        const school = document.getElementById("info-school").value.trim();
 
-                        if (typeof val === 'object' && val !== null) {
-                            // Dual semesters
-                            const hk1 = val.hk1 ? parseFloat(val.hk1) : null;
-                            const hk2 = val.hk2 ? parseFloat(val.hk2) : null;
-                            
-                            if (hk1 && hk2) {
-                                scoreDisplay = `HK1: ${hk1.toFixed(1)} | HK2: ${hk2.toFixed(1)}`;
-                                fillPercent = ((hk1 + hk2) / 2) * 10;
-                            } else if (hk1) {
-                                scoreDisplay = `HK1: ${hk1.toFixed(1)}`;
-                                fillPercent = hk1 * 10;
-                            } else if (hk2) {
-                                scoreDisplay = `HK2: ${hk2.toFixed(1)}`;
-                                fillPercent = hk2 * 10;
-                            }
-                        } else {
-                            const score = parseFloat(val);
-                            scoreDisplay = score.toFixed(1);
-                            fillPercent = score * 10;
+                        if (!dbData) {
+                            dbData = {
+                                studentId: "HS" + Math.floor(1000 + Math.random() * 9000),
+                                studentName: name,
+                                school: school,
+                                gradeClass: grade,
+                                level: "thpt",
+                                academic: {},
+                                riasec: {},
+                                mbti: "",
+                                tipi: {}
+                            };
                         }
 
-                        const subName = subjectLabels[sub] || sub.toUpperCase();
+                        dbData.studentName = name;
+                        dbData.dob = dob;
+                        dbData.gradeClass = grade;
+                        dbData.school = school;
 
-                        return `
-                            <div class="grade-progress-item">
-                                <div class="grade-label-row">
-                                    <span class="grade-subject-name">${subName}</span>
-                                    <span class="grade-value">${scoreDisplay}</span>
-                                </div>
-                                <div class="progress-bar-bg">
-                                    <div class="progress-bar-fill" style="width: ${fillPercent}%"></div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    gradesEmptyState.style.display = "block";
-                    gradesDisplayList.style.display = "none";
-                }
+                        // Save locally
+                        localStorage.setItem('educareer_student_profile', JSON.stringify(dbData));
 
-                // B. Populate Personality
-                const hasMbti = !!dbData.mbti;
-                const riasec = dbData.riasec || {};
-                const hasHolland = Object.keys(riasec).length > 0;
+                        // Sync to Supabase
+                        if (typeof window.syncStudentDataToCloud === 'function') {
+                            await window.syncStudentDataToCloud(dbData);
+                        }
 
-                if (hasMbti || hasHolland) {
-                    personalityEmptyState.style.display = "none";
-                    personalityDisplayList.style.display = "grid";
+                        // Update sidebar UI values
+                        sidebarStudentName.textContent = name;
+                        sidebarAvatarLetter.textContent = name.charAt(0).toUpperCase();
 
-                    // MBTI Details
-                    const mbtiCodeElement = document.getElementById("mbti-code");
-                    const mbtiTitleElement = document.getElementById("mbti-title");
-                    const mbtiDescElement = document.getElementById("mbti-desc");
-                    const mbtiBox = document.getElementById("mbti-result-box");
+                        // Update navbar link name
+                        const profileLink = document.getElementById('nav-profile-link');
+                        if (profileLink) {
+                            profileLink.innerHTML = `<i class="fa-solid fa-user-check"></i> ${name}`;
+                        }
 
-                    if (hasMbti) {
-                        mbtiBox.style.display = "block";
-                        const mbtiCode = dbData.mbti;
-                        mbtiCodeElement.textContent = mbtiCode;
-
-                        // Fetch localized MBTI label/description
-                        const mbtiDetails = {
-                            "INTJ": { title: "Nhà Hoạch Định", desc: "Tư duy logic, thích giải bài toán khó và cực kỳ kỷ luật." },
-                            "INTP": { title: "Nhà Logic Học", desc: "Tò mò tìm tòi lý thuyết, đam mê sáng tạo khoa học công nghệ." },
-                            "ENTJ": { title: "Nhà Chỉ Huy", desc: "Mạnh mẽ quyết đoán, tố chất lãnh đạo tổ chức dự án lớn." },
-                            "ENTP": { title: "Người Tranh Biện", desc: "Thích thử thách, ứng biến nhanh và cực kỳ sáng tạo ý tưởng." },
-                            "INFJ": { title: "Nhà Bảo Vệ", desc: "Nhạy cảm, lý tưởng hóa và định hướng vì cộng đồng xã hội." },
-                            "INFP": { title: "Người Hòa Giải", desc: "Nhân văn sâu sắc, nghệ sĩ, thiên hướng cảm xúc phong phú." },
-                            "ENFJ": { title: "Người Chỉ Dẫn", desc: "Lôi cuốn truyền cảm hứng, thích giảng dạy và hỗ trợ người khác." },
-                            "ENFP": { title: "Người Truyền Cảm Hứng", desc: "Nhiệt huyết tự do, thích khám phá khả năng của mọi người." },
-                            "ISTJ": { title: "Người Thực Thi", desc: "Trung thành, chi tiết thực tế và cực kỳ đáng tin cậy." },
-                            "ISFJ": { title: "Người Bảo Hộ", desc: "Ân cần chu đáo, thích chăm sóc bảo vệ người xung quanh." },
-                            "ESTJ": { title: "Người Quản Lý", desc: "Thực tế ngăn nắp, tổ chức công việc vô cùng hiệu quả." },
-                            "ESFJ": { title: "Người Quan Tâm", desc: "Thân thiện nhiệt tình, thích giúp đỡ và giữ hòa khí nhóm." },
-                            "ISTP": { title: "Kỹ Nghệ Gia", desc: "Thực hành chế tạo tốt, thích vận hành máy móc thiết bị thực tế." },
-                            "ISFP": { title: "Nghệ Sĩ", desc: "Yêu cái đẹp, thích trải nghiệm không gian nghệ thuật tự do." },
-                            "ESTP": { title: "Người Khởi Xướng", desc: "Thích hành động ngay, chịu được áp lực cao, thực tế." },
-                            "ESFP": { title: "Người Trình Diễn", desc: "Lạc quan yêu đời, truyền năng lượng tích cực cho tập thể." }
-                        };
-
-                        const details = mbtiDetails[mbtiCode.toUpperCase()] || { title: "Kiểu Tính Cách", desc: "Em đã hoàn thành bài trắc nghiệm tính cách MBTI." };
-                        mbtiTitleElement.textContent = details.title;
-                        mbtiDescElement.textContent = details.desc;
-                    } else {
-                        mbtiBox.style.display = "none";
+                        infoSuccessMsg.textContent = "Cập nhật thông tin hồ sơ học sinh thành công!";
+                        infoSuccessMsg.style.display = "block";
+                        
+                        // Scroll to success message
+                        infoSuccessMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } catch (err) {
+                        console.error(err);
+                        infoErrorMsg.textContent = "Lỗi khi cập nhật hồ sơ: " + err.message;
+                        infoErrorMsg.style.display = "block";
+                    } finally {
+                        btnSaveInfo.disabled = false;
+                        btnSaveInfo.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Lưu Thông Tin`;
                     }
-
-                    // Holland Details
-                    const hollandCodeElement = document.getElementById("holland-code");
-                    const hollandTitleElement = document.getElementById("holland-title");
-                    const hollandDescElement = document.getElementById("holland-desc");
-                    const hollandBox = document.getElementById("holland-result-box");
-
-                    if (hasHolland) {
-                        hollandBox.style.display = "block";
-                        const sortedRiasec = Object.keys(riasec).sort((a,b) => riasec[b] - riasec[a]);
-                        const topCode = sortedRiasec[0];
-                        hollandCodeElement.textContent = topCode;
-
-                        const hollandDetails = {
-                            "R": { title: "Kỹ Thuật (Realistic)", desc: "Thích thực hành tay chân, lắp ráp, vận hành máy móc, chip bán dẫn." },
-                            "I": { title: "Nghiên Cứu (Investigative)", desc: "Thích nghiên cứu thuật toán, phân tích dữ liệu khoa học, AI." },
-                            "A": { title: "Nghệ Thuật (Artistic)", desc: "Sáng tạo tự do, thích thiết kế đồ họa, vẽ tranh, biên soạn nội dung." },
-                            "S": { title: "Xã Hội (Social)", desc: "Thích giảng dạy, tư vấn, giúp đỡ, chăm sóc người khác." },
-                            "E": { title: "Quản Lý (Enterprising)", desc: "Tố chất kinh doanh, thuyết phục khách hàng, quản trị dự án." },
-                            "C": { title: "Nghiệp Vụ (Conventional)", desc: "Chi tiết tỉ mỉ, thích làm việc với các bảng dữ liệu Excel, kế toán." }
-                        };
-
-                        const details = hollandDetails[topCode] || { title: "Nhóm Sở Thích", desc: "Em đã hoàn thành trắc nghiệm sở thích Holland." };
-                        hollandTitleElement.textContent = details.title;
-                        hollandDescElement.textContent = details.desc;
-                    } else {
-                        hollandBox.style.display = "none";
-                    }
-                } else {
-                    personalityEmptyState.style.display = "block";
-                    personalityDisplayList.style.display = "none";
-                }
+                });
             }
         }
 
