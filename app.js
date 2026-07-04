@@ -1713,7 +1713,7 @@ function initIndustryCreator() {
             statusMsg.className = "save-status-msg warning";
 
             try {
-                const response = await fetch("http://127.0.0.1:5000/api/generate-career-guide", {
+                const response = await fetch("https://educareer-ai.onrender.com/api/generate-career-guide", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -1832,7 +1832,7 @@ function initIndustryCreator() {
                 console.error(err);
                 statusMsg.textContent = `Thất bại khi sinh AI: ${err.message}`;
                 statusMsg.className = "save-status-msg error";
-                alert(`Lỗi sinh dữ liệu cẩm nang: ${err.message}\n\nHãy chắc chắn bạn đã khởi chạy server Python cổng 5000 bằng lệnh: python vnpt_proxy_example.py`);
+                alert(`Lỗi sinh dữ liệu cẩm nang: ${err.message}\n\nHãy chắc chắn bạn đã khởi chạy server Python online tại địa chỉ https://educareer-ai.onrender.com`);
             } finally {
                 aiBtn.innerHTML = originalText;
                 aiBtn.disabled = false;

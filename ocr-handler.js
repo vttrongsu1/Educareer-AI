@@ -423,9 +423,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout
 
-            console.log("Connecting to local API proxy server at http://localhost:5000/api/scan-transcript...");
+            console.log("Connecting to online API proxy server at https://educareer-ai.onrender.com/api/scan-transcript...");
             
-            const response = await fetch('http://localhost:5000/api/scan-transcript', {
+            const response = await fetch('https://educareer-ai.onrender.com/api/scan-transcript', {
                 method: 'POST',
                 body: formData,
                 signal: controller.signal

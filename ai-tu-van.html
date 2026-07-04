@@ -960,8 +960,8 @@
             }
 
             try {
-                // Call local FastAPI server consult-bot API
-                const response = await fetch("http://127.0.0.1:5000/api/consult-bot", {
+                // Call online FastAPI server consult-bot API
+                const response = await fetch("https://educareer-ai.onrender.com/api/consult-bot", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
