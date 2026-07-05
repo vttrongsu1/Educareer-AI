@@ -2216,9 +2216,11 @@ function initIndustryCreator() {
                 
                 let category = "tech";
                 const slug = result.slug;
-                if (slug.includes("marketing") || slug.includes("kinh_te") || slug.includes("biz") || slug.includes("quan_tri") || slug.includes("logistics")) {
+                const bizKeywords = ["marketing", "kinh_te", "biz", "quan_tri", "logistics", "ke_toan", "tai_chinh", "ngan_hang", "thuong_mai", "luat", "bao_hiem", "bat_dong_san", "nhan_su", "kinh_doanh", "xuat_nhap_khau", "du_lich", "nha_hang", "khach_san"];
+                const artKeywords = ["thiet_ke", "art", "do_hoa", "kien_truc", "my_thuat", "am_nhac", "dien_anh", "nhieu_anh", "thoi_trang", "truyen_thong"];
+                if (bizKeywords.some(k => slug.includes(k))) {
                     category = "biz";
-                } else if (slug.includes("thiet_ke") || slug.includes("art") || slug.includes("do_hoa")) {
+                } else if (artKeywords.some(k => slug.includes(k))) {
                     category = "art";
                 }
                 document.getElementById("input-category").value = category;
