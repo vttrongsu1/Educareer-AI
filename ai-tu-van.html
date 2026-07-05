@@ -992,6 +992,7 @@
             }
 
             try {
+                console.log("[EduCareer Chat] Dữ liệu học sinh gửi lên API Chatbot:", studentData);
                 // Call online FastAPI server consult-bot API
                 const response = await fetch("https://educareer-ai.onrender.com/api/consult-bot", {
                     method: "POST",
