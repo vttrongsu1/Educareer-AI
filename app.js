@@ -1101,11 +1101,6 @@ async function initIndustryCatalog() {
                     badgeText = "Mỹ thuật";
                 }
 
-                if (isCustom) {
-                    badgeClass = "custom";
-                    badgeText = badgeText + " (Tự soạn)";
-                }
-
                 let iconHtml = '<i class="fa-solid fa-laptop-code catalog-card-icon"></i>';
                 if (ind.category === 'biz') iconHtml = '<i class="fa-solid fa-chart-line catalog-card-icon"></i>';
                 if (ind.category === 'art') iconHtml = '<i class="fa-solid fa-palette catalog-card-icon"></i>';
