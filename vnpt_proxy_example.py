@@ -775,13 +775,28 @@ async def consult_bot(req: ChatRequest):
             if sorted_riasec:
                 s_holland = sorted_riasec[0]
                 
-        # Parse academic scores dictionary
+        # Parse academic scores dictionary with translation
         academic_data = req.student_data.get("academic") or {}
+        subject_translation = {
+            "math": "Toán",
+            "physics": "Vật lý",
+            "chemistry": "Hóa học",
+            "biology": "Sinh học",
+            "english": "Tiếng Anh",
+            "literature": "Ngữ văn",
+            "history": "Lịch sử",
+            "geography": "Địa lý",
+            "civics": "GDCD",
+            "technology": "Công nghệ",
+            "it": "Tin học"
+        }
         scores_list = []
         if isinstance(academic_data, dict):
             for subject, score in academic_data.items():
                 if score:
-                    scores_list.append(f"{subject}: {score}")
+                    # Translate to Vietnamese if mapped, else keep capitalize
+                    vi_subject = subject_translation.get(subject.lower(), subject.capitalize())
+                    scores_list.append(f"{vi_subject}: {score}")
         scores_summary = ", ".join(scores_list) if scores_list else "Chưa nhập điểm"
         
         student_context = f"[Ngữ cảnh: Học sinh tên {s_name}, đang học lớp {s_grade}. Kết quả trắc nghiệm hướng nghiệp Holland: {s_holland}; trắc nghiệm MBTI: {s_mbti}. Điểm số học bạ tiêu biểu: {scores_summary}. Hãy luôn ghi nhớ hồ sơ này để cá nhân hóa, tư vấn hướng nghiệp chính xác khi trả lời học sinh. Tránh nhắc lại nguyên văn cấu trúc hồ sơ thô này trừ khi được hỏi.]\n"
