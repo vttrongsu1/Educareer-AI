@@ -674,11 +674,16 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/consult-bot")
 async def consult_bot(req: ChatRequest):
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-    if not GEMINI_API_KEY:
+    SMARTBOT_URL = os.getenv("SMARTBOT_URL", "https://assistant-stream.vnpt.vn/v1/conversation")
+    SMARTBOT_BOT_ID = os.getenv("SMARTBOT_BOT_ID", "73008010-7606-11f1-8ff8-dfa790a1e2db")
+    SMARTBOT_TOKEN_ID = os.getenv("SMARTBOT_TOKEN_ID", "")
+    SMARTBOT_TOKEN_KEY = os.getenv("SMARTBOT_TOKEN_KEY", "")
+    SMARTBOT_ACCESS_TOKEN = os.getenv("SMARTBOT_ACCESS_TOKEN", "")
+
+    if not SMARTBOT_ACCESS_TOKEN or not SMARTBOT_BOT_ID:
         raise HTTPException(
             status_code=500,
-            detail="GEMINI_API_KEY is not configured in .env file."
+            detail="Server authentication misconfigured: SMARTBOT_ACCESS_TOKEN or SMARTBOT_BOT_ID is missing in .env"
         )
 
     user_message = req.message.strip()
@@ -688,90 +693,68 @@ async def consult_bot(req: ChatRequest):
             detail="Message cannot be empty."
         )
 
-    # 1. Thu thập dữ liệu cẩm nang ngành nghề để làm RAG context
-    handbook_context = ""
-    nganh_dir = os.path.join("Data", "Nganh")
-    if os.path.exists(nganh_dir):
-        for fname in os.listdir(nganh_dir):
-            if fname.endswith(".js") and fname != "list.js" and fname != "industries-data.js":
-                fpath = os.path.join(nganh_dir, fname)
-                try:
-                    with open(fpath, "r", encoding="utf-8") as f:
-                        content = f.read()
-                    json_match = re.search(r'window\.CAREER_DATA_[a-zA-Z0-9_]+\s*=\s*(\{.*\});', content, re.DOTALL)
-                    if json_match:
-                        parsed = json.loads(json_match.group(1))
-                        # Tóm tắt thông tin ngành học làm ngữ cảnh RAG
-                        handbook_context += f"- Ngành {parsed.get('ten_nganh')}:\n"
-                        handbook_context += f"  + Điểm chuẩn đại học: {parsed.get('lop_12', {}).get('diem_chuan_dai_hoc', '')}\n"
-                        handbook_context += f"  + Học phí dự kiến: {parsed.get('lop_12', {}).get('hoc_phi_du_kien', '')}\n"
-                        handbook_context += f"  + Cơ hội việc làm: {parsed.get('lop_12', {}).get('co_hoi_viec_lam', {}).get('mo_dau', '')}\n"
-                        handbook_context += f"  + Mức lương mới ra trường: {parsed.get('lop_12', {}).get('muc_luong', {}).get('theo_cap_bac', [{}])[1].get('muc_luong', 'N/A')} triệu/tháng.\n\n"
-                except Exception as ex:
-                    print(f"Lỗi nạp context từ {fname}: {ex}")
-
-    # 2. Xây dựng System Instruction cá nhân hóa dựa trên học bạ / trắc nghiệm học sinh
-    system_instruction = "Bạn là Cố vấn học tập AI thông minh của EduCareer AI. Nhiệm vụ của bạn là tư vấn, định hướng nghề nghiệp, giải đáp thông tin tuyển sinh chính xác cho học sinh Việt Nam.\n"
-    
+    # Maintain conversation context per student if studentId is provided
+    session_id = "anonymous_session"
+    sender_id = "anonymous_user"
     if req.student_data:
-        sd = req.student_data
-        system_instruction += f"\nThông tin hồ sơ học sinh hiện tại:\n"
-        if sd.get("studentName"):
-            system_instruction += f"- Tên học sinh: {sd['studentName']}\n"
-        if sd.get("mbti"):
-            system_instruction += f"- Tính cách MBTI: {sd['mbti']}\n"
-        if sd.get("riasec"):
-            sorted_riasec = sorted(sd['riasec'].items(), key=lambda x: x[1], reverse=True)
-            system_instruction += f"- Sở thích Holland trội: Nhóm {sorted_riasec[0][0]}\n"
-        if sd.get("academic"):
-            system_instruction += f"- Điểm GPA Học bạ các môn chính: {json.dumps(sd['academic'], ensure_ascii=False)}\n"
-            
-    system_instruction += f"\nDưới đây là ngữ cảnh thông tin cẩm nang tuyển sinh thực tế đã nạp (RAG Context):\n{handbook_context}\n"
-    system_instruction += "Hãy tư vấn nhiệt tình, sử dụng ngôn ngữ thân thiện, xưng hô 'Anh' và gọi học sinh là 'Em'. Phân tích điểm học bạ hoặc tính cách của em ấy nếu em ấy có nạp hồ sơ để chỉ ra thế mạnh nghề nghiệp phù hợp. Luôn luôn trích dẫn thông tin thật từ RAG Context nếu có."
-
-    # 3. Gọi Gemini API
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
-    payload = {
-        "contents": [
-            {
-                "parts": [
-                    {
-                        "text": user_message
-                    }
-                ]
-            }
-        ],
-        "systemInstruction": {
-            "parts": [
-                {
-                    "text": system_instruction
-                }
-            ]
-        }
-    }
+        student_id = req.student_data.get("studentId") or req.student_data.get("id")
+        if student_id:
+            session_id = str(student_id)
+            sender_id = str(student_id)
 
     headers = {
+        "Authorization": SMARTBOT_ACCESS_TOKEN if SMARTBOT_ACCESS_TOKEN.startswith("Bearer ") else f"Bearer {SMARTBOT_ACCESS_TOKEN}",
+        "Token-id": SMARTBOT_TOKEN_ID,
+        "Token-key": SMARTBOT_TOKEN_KEY,
         "Content-Type": "application/json"
     }
 
+    payload = {
+        "bot_id": SMARTBOT_BOT_ID,
+        "sender_id": sender_id,
+        "text": user_message,
+        "input_channel": "livechat",
+        "session_id": session_id,
+        "metadata": {"button_variables": []}
+    }
+
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=60)
-        if response.status_code != 200:
-            raise Exception(f"Gemini API returned status code {response.status_code}: {response.text}")
-            
-        res_data = response.json()
-        reply_text = res_data["candidates"][0]["content"]["parts"][0]["text"]
+        print(f"Sending message to VNPT SmartBot ({SMARTBOT_BOT_ID})...")
+        response = requests.post(SMARTBOT_URL, headers=headers, json=payload, timeout=30)
         
-        # Convert markdown text response to safe HTML linebreaks / strong format
-        formatted_reply = reply_text.replace('\n', '<br>')
+        if response.status_code != 200:
+            raise Exception(f"VNPT SmartBot API returned status code {response.status_code}: {response.text}")
+            
+        reply_parts = []
+        for line in response.text.split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("data:"):
+                json_str = line[5:].strip()
+                try:
+                    data = json.loads(json_str)
+                    sb_obj = data.get("object", {}).get("sb", {})
+                    card_data = sb_obj.get("card_data", [])
+                    for card in card_data:
+                        text_content = card.get("text", "")
+                        if text_content:
+                            reply_parts.append(text_content)
+                except Exception as je:
+                    print(f"Parse error for line: {line} - Error: {je}")
+
+        full_reply = "\n".join(reply_parts) if reply_parts else "Rất tiếc, Chatbot không phản hồi nội dung văn bản."
+        
+        # Convert newline to <br> for HTML rendering in frontend
+        formatted_reply = full_reply.replace('\n', '<br>')
         
         return {
             "success": True,
             "reply": formatted_reply
         }
     except Exception as e:
-        print(f"Lỗi Chatbot Gemini: {e}")
+        print(f"Lỗi kết nối VNPT SmartBot: {e}")
         return {
             "success": False,
-            "reply": "Rất tiếc, cố vấn AI đang gặp sự cố kết nối máy chủ. Em vui lòng hỏi lại sau giây lát nhé!"
+            "reply": "Rất tiếc, cố vấn AI đang gặp sự cố kết nối máy chủ VNPT. Em vui lòng hỏi lại sau giây lát nhé!"
         }
