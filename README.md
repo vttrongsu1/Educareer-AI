@@ -11,7 +11,6 @@
     *   *(Ban giám khảo cũng có thể tự đăng ký tài khoản học sinh mới bằng bất kỳ email cá nhân nào).*
 *   **Tài khoản Quản trị viên (Admin)**:
     *   *Email*: `admin@gmail.com` | *Mật khẩu*: `123456`
-    *   *Cơ chế tự động*: Hệ thống cấu hình tự động phân quyền Admin cho các tài khoản đăng ký bằng email: `admin@educareer.vn`, `admin@gmail.com`, `vttrongsu1@gmail.com`, `longnnce200633@gmail.com`, `khoatace200187@gmail.com`.
 
 ---
 
