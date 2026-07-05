@@ -619,8 +619,7 @@ async def generate_career_guide(req: GenerationRequest):
     
     prompt = f"""
 Hãy tạo cẩm nang hướng nghiệp bằng tiếng Việt dưới định dạng JSON cho ngành học/nghề nghiệp sau: {career_name}
-Chú ý: Bạn BẮT BUỘC phải sử dụng công cụ Google Search (Grounding) để tìm kiếm các thông tin tuyển sinh thật (điểm chuẩn năm 2024/2025 mới nhất, học phí, các trường đại học tại 3 miền Bắc, Trung, Nam) của Việt Nam và chèn link tuyển sinh thật đang hoạt động.
-Không dùng liên kết giả lập placeholder.
+Chú ý: Bạn BẮT BUỘC phải sử dụng công cụ Google Search (Grounding) để tìm kiếm các thông tin tuyển sinh thật (điểm chuẩn năm 2024/2025 mới nhất, học phí, các trường đại học tại 3 miền Bắc, Trung, Nam) của Việt Nam.
 """
 
     payload = {

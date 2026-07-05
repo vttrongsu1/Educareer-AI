@@ -1335,18 +1335,6 @@ async function initIndustryDetails() {
                 <div id="layered-content-pane">
                     <!-- Dynamic content will be injected here -->
                 </div>
-                
-                <!-- Shared References Section (Always visible at the bottom) -->
-                <div class="detail-section" style="border-top: 1px solid #E2E8F0; margin-top: 30px; padding-top: 20px;">
-                    <h2><i class="fa-solid fa-circle-info"></i> Tài liệu & Nguồn tham khảo</h2>
-                    <ul style="padding-left: 20px; font-size: 0.82rem; display: flex; flex-direction: column; gap: 6px;">
-                        ${raw.chung.nguon_tham_khao.map(ref => `
-                            <li>
-                                <strong>${ref.chu_de}:</strong> 
-                                ${ref.link.startsWith('http') ? `<a href="${ref.link}" target="_blank" style="color: var(--primary-blue); text-decoration: underline;">${ref.link}</a>` : `<span style="color: var(--text-muted);">${ref.link}</span>`}
-                            </li>
-                        `).join('')}
-                    </ul>
                 </div>
             `;
 
@@ -1718,18 +1706,7 @@ async function initIndustryDetails() {
                         `).join('')}
                     </div>
                 </div>
-                
-                <div class="detail-section">
-                    <h2><i class="fa-solid fa-circle-info"></i> 11. Tài liệu & Nguồn tham khảo</h2>
-                    <ul style="padding-left: 20px; font-size: 0.82rem; display: flex; flex-direction: column; gap: 6px;">
-                        ${raw["11_nguon_tham_khao"].map(ref => `
-                            <li>
-                                <strong>${ref.chu_de}:</strong> 
-                                ${ref.link.startsWith('http') ? `<a href="${ref.link}" target="_blank" style="color: var(--primary-blue); text-decoration: underline;">${ref.link}</a>` : `<span style="color: var(--text-muted);">${ref.link}</span>`}
-                            </li>
-                        `).join('')}
-                    </ul>
-                </div>
+
                 
                 <div class="detail-section" style="border-bottom: none; padding-bottom: 0;">
                     <h2><i class="fa-solid fa-quote-left"></i> 12. Lời khuyên & Kết luận</h2>
