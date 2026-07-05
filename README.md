@@ -5,6 +5,14 @@
 
 🌐 **Trải nghiệm trực tuyến (Live Website)**: [https://vttrongsu1.github.io/Educareer-AI/](https://vttrongsu1.github.io/Educareer-AI/)
 
+🔑 **Tài khoản dùng thử (Test Credentials)**:
+*   **Tài khoản Học sinh (User/Student)**:
+    *   Ban giám khảo có thể đăng ký tài khoản mới trực tiếp và nhanh chóng tại mục **"Hồ sơ học sinh"** bằng bất kỳ email cá nhân nào.
+    *   *Tài khoản dùng thử sẵn*: Email: `student@gmail.com` | Mật khẩu: `123456`
+*   **Tài khoản Quản trị viên (Admin)**:
+    *   *Tài khoản dùng thử sẵn*: Email: `admin@educareer.vn` | Mật khẩu: `Admin@EduCareer2025!`
+    *   *Phân quyền tự động*: Hệ thống cấu hình tự động phân quyền Admin cho các tài khoản đăng ký bằng email: `admin@educareer.vn`, `admin@gmail.com`, `vttrongsu1@gmail.com`, `longnnce200633@gmail.com`, `khoatace200187@gmail.com`.
+
 ---
 
 ## 🌟 1. Giới thiệu dự án
