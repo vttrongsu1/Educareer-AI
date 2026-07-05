@@ -753,11 +753,32 @@ async def consult_bot(req: ChatRequest):
     # Maintain conversation context per student if studentId is provided
     session_id = "anonymous_session"
     sender_id = "anonymous_user"
+    student_context = ""
+    
     if req.student_data:
         student_id = req.student_data.get("studentId") or req.student_data.get("id")
         if student_id:
             session_id = str(student_id)
             sender_id = str(student_id)
+            
+        # Build a concise student profile context for VNPT SmartBot
+        s_name = req.student_data.get("studentName") or "Học sinh"
+        s_grade = req.student_data.get("classNumber") or "Chưa rõ"
+        s_holland = req.student_data.get("hollandResult") or "Chưa làm trắc nghiệm"
+        s_mbti = req.student_data.get("mbtiResult") or "Chưa làm trắc nghiệm"
+        
+        # Parse scores dictionary to a concise string
+        scores_data = req.student_data.get("scores") or {}
+        scores_list = []
+        if isinstance(scores_data, dict):
+            for subject, score in scores_data.items():
+                if score:
+                    scores_list.append(f"{subject}: {score}")
+        scores_summary = ", ".join(scores_list) if scores_list else "Chưa nhập điểm"
+        
+        student_context = f"[Ngữ cảnh: Học sinh tên {s_name}, đang học lớp {s_grade}. Kết quả trắc nghiệm hướng nghiệp Holland: {s_holland}; trắc nghiệm MBTI: {s_mbti}. Điểm số học bạ tiêu biểu: {scores_summary}. Hãy luôn ghi nhớ hồ sơ này để cá nhân hóa, tư vấn hướng nghiệp chính xác khi trả lời học sinh. Tránh nhắc lại nguyên văn cấu trúc hồ sơ thô này trừ khi được hỏi.]\n"
+
+    final_text = f"{student_context}{user_message}" if student_context else user_message
 
     headers = {
         "Authorization": SMARTBOT_ACCESS_TOKEN if SMARTBOT_ACCESS_TOKEN.startswith("Bearer ") else f"Bearer {SMARTBOT_ACCESS_TOKEN}",
@@ -769,7 +790,7 @@ async def consult_bot(req: ChatRequest):
     payload = {
         "bot_id": SMARTBOT_BOT_ID,
         "sender_id": sender_id,
-        "text": user_message,
+        "text": final_text,
         "input_channel": "livechat",
         "session_id": session_id,
         "metadata": {"button_variables": []}
