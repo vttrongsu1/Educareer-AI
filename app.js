@@ -1156,6 +1156,7 @@ function formatBulletList(text) {
         }
         // convert bold tags
         trimmed = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        trimmed = trimmed.replace(/\*\*/g, '');
         html += `<li style="margin-bottom: 6px;">${trimmed}</li>`;
     });
     html += '</ul>';
@@ -1165,7 +1166,8 @@ function formatBulletList(text) {
 // Helper to parse inline markdown (**bold**) into HTML <strong> tags
 function parseInlineMarkdown(text) {
     if (!text) return "";
-    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    let rendered = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    return rendered.replace(/\*\*/g, '');
 }
 
 // 3. Detail Page Logic (chi-tiet-nganh.html)
