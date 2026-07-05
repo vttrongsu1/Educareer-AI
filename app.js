@@ -407,6 +407,14 @@ if (document.readyState === 'loading') {
 function initHeaderScroll() {
     const header = document.getElementById('header');
     if (!header) return;
+    
+    // Always apply scrolled style if it's not the homepage
+    const isHomepage = document.body.classList.contains('homepage-html') || document.body.classList.contains('homepage-one-screen');
+    if (!isHomepage) {
+        header.classList.add('scrolled');
+        return;
+    }
+    
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
             header.classList.add('scrolled');
