@@ -1094,13 +1094,16 @@ async function initIndustryCatalog() {
                 const isCustom = ind.id.startsWith("custom_");
                 let badgeClass = ind.category;
                 let badgeText = "Công nghệ";
-                if (isCustom) {
-                    badgeClass = "custom";
-                    badgeText = "Tự tạo";
-                } else if (ind.category === "biz") {
+                
+                if (ind.category === "biz") {
                     badgeText = "Kinh tế";
                 } else if (ind.category === "art") {
                     badgeText = "Mỹ thuật";
+                }
+
+                if (isCustom) {
+                    badgeClass = "custom";
+                    badgeText = badgeText + " (Tự soạn)";
                 }
 
                 let iconHtml = '<i class="fa-solid fa-laptop-code catalog-card-icon"></i>';
