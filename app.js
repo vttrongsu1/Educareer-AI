@@ -2381,8 +2381,6 @@ function initIndustryCreator() {
                     const ten = parts[0].replace(/\*\*/g, '').trim();
                     const mo_ta = parts.slice(1).join(':').trim();
                     result.push({ ten: ten, mo_ta: mo_ta });
-                } else {
-                    result.push({ ten: "Chuyên ngành", mo_ta: trimmed });
                 }
             }
         });
@@ -2403,8 +2401,6 @@ function initIndustryCreator() {
                     const to_chat = parts[0].replace(/\*\*/g, '').trim();
                     const giai_thich = parts.slice(1).join(':').trim();
                     result.push({ to_chat: to_chat, giai_thich: giai_thich });
-                } else {
-                    result.push({ to_chat: "Tố chất", giai_thich: trimmed });
                 }
             }
         });
@@ -2426,8 +2422,6 @@ function initIndustryCreator() {
                     const ten_vi_tri = parts[0].replace(/\*\*/g, '').trim();
                     const mo_ta = parts.slice(1).join(':').trim();
                     result.push({ ten_vi_tri: ten_vi_tri, mo_ta: mo_ta });
-                } else {
-                    result.push({ ten_vi_tri: "Vị trí", mo_ta: trimmed });
                 }
             }
         });
@@ -2448,8 +2442,6 @@ function initIndustryCreator() {
                     const cap_do = parts[0].replace(/\*\*/g, '').trim();
                     const mo_ta = parts.slice(1).join(':').trim();
                     result.push({ cap_do: cap_do, mo_ta: mo_ta });
-                } else {
-                    result.push({ cap_do: "Tổng quan", mo_ta: trimmed });
                 }
             }
         });
