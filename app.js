@@ -2397,14 +2397,14 @@ function initIndustryCreator() {
             if (!trimmed) return;
             if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
                 trimmed = trimmed.substring(1).trim();
-            }
-            const parts = trimmed.split(':');
-            if (parts.length >= 2) {
-                const ten = parts[0].replace(/\*\*/g, '').trim();
-                const mo_ta = parts.slice(1).join(':').trim();
-                result.push({ ten: ten, mo_ta: mo_ta });
-            } else {
-                result.push({ ten: "Chuyên ngành", mo_ta: trimmed });
+                const parts = trimmed.split(':');
+                if (parts.length >= 2) {
+                    const ten = parts[0].replace(/\*\*/g, '').trim();
+                    const mo_ta = parts.slice(1).join(':').trim();
+                    result.push({ ten: ten, mo_ta: mo_ta });
+                } else {
+                    result.push({ ten: "Chuyên ngành", mo_ta: trimmed });
+                }
             }
         });
         return result;
@@ -2419,14 +2419,14 @@ function initIndustryCreator() {
             if (!trimmed) return;
             if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
                 trimmed = trimmed.substring(1).trim();
-            }
-            const parts = trimmed.split(':');
-            if (parts.length >= 2) {
-                const to_chat = parts[0].replace(/\*\*/g, '').trim();
-                const giai_thich = parts.slice(1).join(':').trim();
-                result.push({ to_chat: to_chat, giai_thich: giai_thich });
-            } else {
-                result.push({ to_chat: "Tố chất", giai_thich: trimmed });
+                const parts = trimmed.split(':');
+                if (parts.length >= 2) {
+                    const to_chat = parts[0].replace(/\*\*/g, '').trim();
+                    const giai_thich = parts.slice(1).join(':').trim();
+                    result.push({ to_chat: to_chat, giai_thich: giai_thich });
+                } else {
+                    result.push({ to_chat: "Tố chất", giai_thich: trimmed });
+                }
             }
         });
         return result;
@@ -2441,14 +2441,37 @@ function initIndustryCreator() {
             if (!trimmed) return;
             if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
                 trimmed = trimmed.substring(1).trim();
+                if (trimmed.toLowerCase().includes("nhận xét chung")) return;
+                const parts = trimmed.split(':');
+                if (parts.length >= 2) {
+                    const ten_vi_tri = parts[0].replace(/\*\*/g, '').trim();
+                    const mo_ta = parts.slice(1).join(':').trim();
+                    result.push({ ten_vi_tri: ten_vi_tri, mo_ta: mo_ta });
+                } else {
+                    result.push({ ten_vi_tri: "Vị trí", mo_ta: trimmed });
+                }
             }
-            const parts = trimmed.split(':');
-            if (parts.length >= 2) {
-                const ten_vi_tri = parts[0].replace(/\*\*/g, '').trim();
-                const mo_ta = parts.slice(1).join(':').trim();
-                result.push({ ten_vi_tri: ten_vi_tri, mo_ta: mo_ta });
-            } else {
-                result.push({ ten_vi_tri: "Vị trí", mo_ta: trimmed });
+        });
+        return result;
+    }
+
+    function parseBulletListToJSONCanhTranh(text) {
+        if (!text) return [];
+        const lines = text.split('\n');
+        const result = [];
+        lines.forEach(line => {
+            let trimmed = line.trim();
+            if (!trimmed) return;
+            if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+                trimmed = trimmed.substring(1).trim();
+                const parts = trimmed.split(':');
+                if (parts.length >= 2) {
+                    const cap_do = parts[0].replace(/\*\*/g, '').trim();
+                    const mo_ta = parts.slice(1).join(':').trim();
+                    result.push({ cap_do: cap_do, mo_ta: mo_ta });
+                } else {
+                    result.push({ cap_do: "Tổng quan", mo_ta: trimmed });
+                }
             }
         });
         return result;
@@ -2592,9 +2615,7 @@ function initIndustryCreator() {
                     ],
                     muc_do_canh_tranh: {
                         mo_dau: `Mức độ cạnh tranh ngành: ${compLevel}`,
-                        chi_tiet: [
-                            { cap_do: "Tổng quan tuyển sinh", mo_ta: sec7 }
-                        ]
+                        chi_tiet: parseBulletListToJSONCanhTranh(sec7)
                     },
                     ket_luan: {
                         doan_1: sec9.substring(0, Math.floor(sec9.length/2)) || sec9,
@@ -2611,7 +2632,8 @@ function initIndustryCreator() {
                 if (rawData.chung.xu_huong_trien_vong) rawData.chung.xu_huong_trien_vong.noi_dung = sec6;
             }
             if (rawData.lop_9) {
-                if (rawData.lop_9.co_hoi_viec_lam) rawData.lop_9.co_hoi_viec_lam.vi_tri = parseBulletListToJSONViTri(sec4);
+                // Keep lop_9.co_hoi_viec_lam.vi_tri intact unless creating from scratch
+                // because class 9 has simple jobs and class 12 has complex jobs, and form only edits class 12.
                 if (rawData.lop_9.muc_luong && rawData.lop_9.muc_luong.theo_cap_bac) {
                     rawData.lop_9.muc_luong.theo_cap_bac[0].muc_luong = salaryIntern;
                     rawData.lop_9.muc_luong.theo_cap_bac[1].muc_luong = salaryFresh;
@@ -2642,9 +2664,7 @@ function initIndustryCreator() {
                 }
                 if (rawData.lop_12.muc_do_canh_tranh) {
                     rawData.lop_12.muc_do_canh_tranh.mo_dau = `Mức độ cạnh tranh ngành: ${compLevel}`;
-                    if (rawData.lop_12.muc_do_canh_tranh.chi_tiet && rawData.lop_12.muc_do_canh_tranh.chi_tiet[0]) {
-                        rawData.lop_12.muc_do_canh_tranh.chi_tiet[0].mo_ta = sec7;
-                    }
+                    rawData.lop_12.muc_do_canh_tranh.chi_tiet = parseBulletListToJSONCanhTranh(sec7);
                 }
                 if (rawData.lop_12.ket_luan) {
                     rawData.lop_12.ket_luan.doan_1 = sec9;
