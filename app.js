@@ -2193,6 +2193,9 @@ function initIndustryCreator() {
                     throw new Error("Dữ liệu trả về từ AI không đúng cấu trúc phân tầng mới.");
                 }
 
+                // Store AI generated raw JSON globally
+                window.CURRENT_AI_RAW = data;
+
                 // Step 2 success -> Step 3
                 step1.className = "ai-progress-item success";
                 step1.querySelector("i").className = "fa-solid fa-circle-check";
@@ -2353,6 +2356,7 @@ function initIndustryCreator() {
     // --- F. Clear Form ---
     clearBtn.addEventListener("click", (e) => {
         e.preventDefault();
+        window.CURRENT_AI_RAW = null;
         form.reset();
         
         // Reset stars picker
@@ -2378,6 +2382,73 @@ function initIndustryCreator() {
     });
 
     // --- G. Save Industry (Form Submit) ---
+    // Helper parser functions to convert bullet list strings to JSON structures
+    function parseBulletListToJSON(text) {
+        if (!text) return [];
+        const lines = text.split('\n');
+        const result = [];
+        lines.forEach(line => {
+            let trimmed = line.trim();
+            if (!trimmed) return;
+            if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+                trimmed = trimmed.substring(1).trim();
+            }
+            const parts = trimmed.split(':');
+            if (parts.length >= 2) {
+                const ten = parts[0].replace(/\*\*/g, '').trim();
+                const mo_ta = parts.slice(1).join(':').trim();
+                result.push({ ten: ten, mo_ta: mo_ta });
+            } else {
+                result.push({ ten: "Chuyên ngành", mo_ta: trimmed });
+            }
+        });
+        return result;
+    }
+
+    function parseBulletListToJSONToChat(text) {
+        if (!text) return [];
+        const lines = text.split('\n');
+        const result = [];
+        lines.forEach(line => {
+            let trimmed = line.trim();
+            if (!trimmed) return;
+            if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+                trimmed = trimmed.substring(1).trim();
+            }
+            const parts = trimmed.split(':');
+            if (parts.length >= 2) {
+                const to_chat = parts[0].replace(/\*\*/g, '').trim();
+                const giai_thich = parts.slice(1).join(':').trim();
+                result.push({ to_chat: to_chat, giai_thich: giai_thich });
+            } else {
+                result.push({ to_chat: "Tố chất", giai_thich: trimmed });
+            }
+        });
+        return result;
+    }
+
+    function parseBulletListToJSONViTri(text) {
+        if (!text) return [];
+        const lines = text.split('\n');
+        const result = [];
+        lines.forEach(line => {
+            let trimmed = line.trim();
+            if (!trimmed) return;
+            if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+                trimmed = trimmed.substring(1).trim();
+            }
+            const parts = trimmed.split(':');
+            if (parts.length >= 2) {
+                const ten_vi_tri = parts[0].replace(/\*\*/g, '').trim();
+                const mo_ta = parts.slice(1).join(':').trim();
+                result.push({ ten_vi_tri: ten_vi_tri, mo_ta: mo_ta });
+            } else {
+                result.push({ ten_vi_tri: "Vị trí", mo_ta: trimmed });
+            }
+        });
+        return result;
+    }
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         
@@ -2429,6 +2500,154 @@ function initIndustryCreator() {
             }
         }
 
+        // Sync or build the full raw JSON object conformant with huongdan.md template
+        let rawData = window.CURRENT_AI_RAW || null;
+        if (!rawData) {
+            rawData = {
+                _meta: {
+                    version: "2.0",
+                    mo_ta: `Tài liệu hướng nghiệp ngành ${title} - tự soạn`,
+                    luong_don_vi: "triệu đồng/tháng",
+                    nam_du_lieu: "2026"
+                },
+                ten_nganh: title,
+                chung: {
+                    "1_tong_quan": { mo_ta: sec1 },
+                    chuyen_nganh: parseBulletListToJSON(sec2),
+                    to_chat_phu_hop: parseBulletListToJSONToChat(sec3),
+                    xu_huong_trien_vong: { noi_dung: sec6 },
+                    nguon_tham_khao: [
+                        { chu_de: "Thông tin tuyển sinh", link: "(Không có thông tin)" }
+                    ]
+                },
+                lop_9: {
+                    lo_trinh_chuan_bi: {
+                        mo_ta: `Chuẩn bị cho ngành ${title}`,
+                        theo_nam: [
+                            { giai_doan: "Lớp 9", viec_can_lam: "Đọc thêm sách báo, tìm hiểu sở thích bản thân" }
+                        ]
+                    },
+                    mon_can_hoc_gioi: {
+                        mo_dau: "Các môn học phổ thông quan trọng",
+                        danh_sach: [
+                            { mon: "Toán học", ly_do: "Tư duy logic tốt" }
+                        ]
+                    },
+                    co_hoi_viec_lam: {
+                        mo_dau: "Lớn lên học ngành này xong em có thể làm nhiều công việc thú vị",
+                        vi_tri: parseBulletListToJSONViTri(sec4),
+                        nhan_xet_chung: ""
+                    },
+                    muc_luong: {
+                        ghi_chu: "Mức lương tham khảo",
+                        theo_cap_bac: [
+                            { cap_bac: "Thực tập sinh", muc_luong: salaryIntern },
+                            { cap_bac: "Mới tốt nghiệp", muc_luong: salaryFresh },
+                            { cap_bac: "Có kinh nghiệm", muc_luong: salaryExp }
+                        ]
+                    },
+                    ket_luan: {
+                        doan_1: sec9.substring(0, Math.floor(sec9.length/2)) || sec9,
+                        doan_2: sec9.substring(Math.floor(sec9.length/2)) || ""
+                    }
+                },
+                lop_12: {
+                    co_hoi_viec_lam: {
+                        mo_dau: "Nhu cầu tuyển dụng thực tế hiện nay",
+                        vi_tri: parseBulletListToJSONViTri(sec4),
+                        nhan_xet_chung: ""
+                    },
+                    muc_luong: {
+                        ghi_chu: "Mức lương tham khảo thực tế",
+                        theo_cap_bac: [
+                            { cap_bac: "Thực tập sinh (Intern) / Part-time", muc_luong: salaryIntern },
+                            { cap_bac: "Mới ra trường (Fresher)", muc_luong: salaryFresh },
+                            { cap_bac: "1–3 năm kinh nghiệm (Junior)", muc_luong: salaryFresh },
+                            { cap_bac: "3–5 năm kinh nghiệm (Middle/Senior)", muc_luong: salaryExp },
+                            { cap_bac: "Cấp cao / Quản lý", muc_luong: salaryExp }
+                        ]
+                    },
+                    to_hop_mon: {
+                        mo_ta: "Tổ hợp xét tuyển phổ biến",
+                        cac_to_hop: [
+                            { ma_to_hop: "A00", mon_thi: "Toán – Vật lý – Hóa học", pho_bien: true },
+                            { ma_to_hop: "D01", mon_thi: "Toán – Ngữ văn – Tiếng Anh", pho_bien: true }
+                        ],
+                        ghi_chu: ""
+                    },
+                    truong_dao_tao: [
+                        { ten_truong: "Đại học Bách Khoa", diem_chuan: "24-26 điểm", to_hop_xet_tuyen: "A00, A01", hoc_phi_uoc_tinh: "Chưa cập nhật", ghi_chu: "Trường hàng đầu" }
+                    ],
+                    danh_gia_do_kho: [
+                        { tieu_chi: "Điểm đầu vào", muc_do: "⭐".repeat(ratingValues["rating-demand"] || 3), ghi_chu: "" },
+                        { tieu_chi: "Khối lượng kiến thức", muc_do: "⭐".repeat(ratingValues["rating-stress"] || 3), ghi_chu: "" },
+                        { tieu_chi: "Kỹ năng thực tế cần thiết", muc_do: "⭐".repeat(ratingValues["rating-growth"] || 3), ghi_chu: "" },
+                        { tieu_chi: "Áp lực công việc", muc_do: "⭐".repeat(ratingValues["rating-comp"] || 3), ghi_chu: "" },
+                        { tieu_chi: "Yêu cầu ngoại ngữ", muc_do: "⭐".repeat(ratingValues["rating-salary"] || 3), ghi_chu: "" }
+                    ],
+                    muc_do_canh_tranh: {
+                        mo_dau: `Mức độ cạnh tranh ngành: ${compLevel}`,
+                        chi_tiet: [
+                            { cap_do: "Tổng quan tuyển sinh", mo_ta: sec7 }
+                        ]
+                    },
+                    ket_luan: {
+                        doan_1: sec9.substring(0, Math.floor(sec9.length/2)) || sec9,
+                        doan_2: sec9.substring(Math.floor(sec9.length/2)) || ""
+                    }
+                }
+            };
+        } else {
+            rawData.ten_nganh = title;
+            if (rawData.chung) {
+                if (rawData.chung["1_tong_quan"]) rawData.chung["1_tong_quan"].mo_ta = sec1;
+                rawData.chung.chuyen_nganh = parseBulletListToJSON(sec2);
+                rawData.chung.to_chat_phu_hop = parseBulletListToJSONToChat(sec3);
+                if (rawData.chung.xu_huong_trien_vong) rawData.chung.xu_huong_trien_vong.noi_dung = sec6;
+            }
+            if (rawData.lop_9) {
+                if (rawData.lop_9.co_hoi_viec_lam) rawData.lop_9.co_hoi_viec_lam.vi_tri = parseBulletListToJSONViTri(sec4);
+                if (rawData.lop_9.muc_luong && rawData.lop_9.muc_luong.theo_cap_bac) {
+                    rawData.lop_9.muc_luong.theo_cap_bac[0].muc_luong = salaryIntern;
+                    rawData.lop_9.muc_luong.theo_cap_bac[1].muc_luong = salaryFresh;
+                    rawData.lop_9.muc_luong.theo_cap_bac[2].muc_luong = salaryExp;
+                }
+                if (rawData.lop_9.ket_luan) {
+                    rawData.lop_9.ket_luan.doan_1 = sec9;
+                    rawData.lop_9.ket_luan.doan_2 = "";
+                }
+            }
+            if (rawData.lop_12) {
+                if (rawData.lop_12.co_hoi_viec_lam) rawData.lop_12.co_hoi_viec_lam.vi_tri = parseBulletListToJSONViTri(sec4);
+                if (rawData.lop_12.muc_luong && rawData.lop_12.muc_luong.theo_cap_bac) {
+                    rawData.lop_12.muc_luong.theo_cap_bac[0].muc_luong = salaryIntern;
+                    rawData.lop_12.muc_luong.theo_cap_bac[1].muc_luong = salaryFresh;
+                    if (rawData.lop_12.muc_luong.theo_cap_bac[2]) rawData.lop_12.muc_luong.theo_cap_bac[2].muc_luong = salaryFresh;
+                    if (rawData.lop_12.muc_luong.theo_cap_bac[3]) rawData.lop_12.muc_luong.theo_cap_bac[3].muc_luong = salaryExp;
+                    if (rawData.lop_12.muc_luong.theo_cap_bac[4]) rawData.lop_12.muc_luong.theo_cap_bac[4].muc_luong = salaryExp;
+                }
+                if (rawData.lop_12.danh_gia_do_kho) {
+                    rawData.lop_12.danh_gia_do_kho = [
+                        { tieu_chi: "Điểm đầu vào", muc_do: "⭐".repeat(ratingValues["rating-demand"] || 3), ghi_chu: "" },
+                        { tieu_chi: "Khối lượng kiến thức", muc_do: "⭐".repeat(ratingValues["rating-stress"] || 3), ghi_chu: "" },
+                        { tieu_chi: "Kỹ năng thực tế cần thiết", muc_do: "⭐".repeat(ratingValues["rating-growth"] || 3), ghi_chu: "" },
+                        { tieu_chi: "Áp lực công việc", muc_do: "⭐".repeat(ratingValues["rating-comp"] || 3), ghi_chu: "" },
+                        { tieu_chi: "Yêu cầu ngoại ngữ", muc_do: "⭐".repeat(ratingValues["rating-salary"] || 3), ghi_chu: "" }
+                    ];
+                }
+                if (rawData.lop_12.muc_do_canh_tranh) {
+                    rawData.lop_12.muc_do_canh_tranh.mo_dau = `Mức độ cạnh tranh ngành: ${compLevel}`;
+                    if (rawData.lop_12.muc_do_canh_tranh.chi_tiet && rawData.lop_12.muc_do_canh_tranh.chi_tiet[0]) {
+                        rawData.lop_12.muc_do_canh_tranh.chi_tiet[0].mo_ta = sec7;
+                    }
+                }
+                if (rawData.lop_12.ket_luan) {
+                    rawData.lop_12.ket_luan.doan_1 = sec9;
+                    rawData.lop_12.ket_luan.doan_2 = "";
+                }
+            }
+        }
+
         const newIndustry = {
             id: slug,
             title: title,
@@ -2453,6 +2672,7 @@ function initIndustryCreator() {
                 stress: ratingValues["rating-stress"]
             },
             sec9: sec9,
+            raw: rawData,
             created_by: userId,
             created_by_email: userEmail,
             created_at: new Date().toISOString()
@@ -2630,6 +2850,7 @@ function initIndustryCreator() {
 
     // Helper to load a handbook back into the form fields
     function loadIndustryToForm(ind) {
+        window.CURRENT_AI_RAW = ind.raw || null;
         document.getElementById("input-title").value = ind.title || "";
         document.getElementById("input-category").value = ind.category || "tech";
         document.getElementById("input-desc").value = ind.desc || "";
