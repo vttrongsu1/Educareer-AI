@@ -1170,6 +1170,52 @@ function parseInlineMarkdown(text) {
     return rendered.replace(/\*\*/g, '');
 }
 
+// Helper to parse complex multiline markdown (paragraphs, lists, bold/italics)
+function parseMultilineMarkdown(text) {
+    if (!text) return "";
+    const lines = text.split('\n');
+    let inList = false;
+    let html = "";
+    
+    lines.forEach(line => {
+        let trimmed = line.trim();
+        if (!trimmed) {
+            if (inList) {
+                html += "</ul>";
+                inList = false;
+            }
+            return;
+        }
+        
+        // Parse bold and italics first
+        let rendered = trimmed
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\*\*/g, ''); // strip remaining stray stars
+            
+        // Check if bullet point
+        if (rendered.startsWith('-') || rendered.startsWith('*') || rendered.startsWith('•')) {
+            rendered = rendered.substring(1).trim();
+            if (!inList) {
+                html += '<ul style="padding-left: 20px; margin: 6px 0;">';
+                inList = true;
+            }
+            html += `<li style="margin-bottom: 4px;">${rendered}</li>`;
+        } else {
+            if (inList) {
+                html += "</ul>";
+                inList = false;
+            }
+            html += `<p style="margin: 4px 0; line-height: 1.5;">${rendered}</p>`;
+        }
+    });
+    
+    if (inList) {
+        html += "</ul>";
+    }
+    return html;
+}
+
 // 3. Detail Page Logic (chi-tiet-nganh.html)
 async function initIndustryDetails() {
     const titleEl = document.getElementById("display-title");
@@ -1531,7 +1577,7 @@ async function initIndustryDetails() {
                                     <p style="font-size: 0.78rem; margin: 4px 0;"><strong>Điểm chuẩn THPT:</strong> <span style="color: #EF4444; font-weight: 700;">${t.diem_chuan}</span></p>
                                     ${t.hoc_phi_uoc_tinh ? `<p style="font-size: 0.78rem; margin: 4px 0;"><strong>Học phí ước tính:</strong> <span style="color: var(--primary-blue); font-weight: 700;">${t.hoc_phi_uoc_tinh}</span></p>` : ''}
                                     <p style="font-size: 0.78rem; margin: 4px 0;"><strong>Tổ hợp môn:</strong> ${t.to_hop_xet_tuyen}</p>
-                                    <p style="font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin: 0; border-top: 1px dashed #F1F5F9; padding-top: 4px; margin-top: 6px;">${t.ghi_chu}</p>
+                                    <p style="font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin: 0; border-top: 1px dashed #F1F5F9; padding-top: 4px; margin-top: 6px;">${parseMultilineMarkdown(t.ghi_chu)}</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -1670,7 +1716,7 @@ async function initIndustryDetails() {
                             <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 14px; border-radius: 10px;">
                                 <h4 style="font-size: 0.85rem; color: var(--primary-blue); font-weight: 800; margin-bottom: 4px;">${t.ten_truong}</h4>
                                 <p style="font-size: 0.78rem; margin: 2px 0;"><strong>Điểm chuẩn:</strong> <span style="color: #EF4444; font-weight: 700;">${t.diem_chuan_2024 || t.diem_chuan || 'Chưa công bố'}</span> | <strong>Tổ hợp xét tuyển:</strong> ${t.to_hop_xet_tuyen}</p>
-                                <p style="font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin: 0;">${t.ghi_chu}</p>
+                                <p style="font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin: 0;">${parseMultilineMarkdown(t.ghi_chu)}</p>
                             </div>
                         `).join('')}
                     </div>
