@@ -182,11 +182,13 @@ async def scan_transcript(image: UploadFile = File(...)):
         
         # Convert unsupported image formats (like webp, gif, bmp) to JPEG using Pillow
         filename_lower = image.filename.lower()
-        if not (image.content_type in ["image/jpeg", "image/png", "image/jpg"] or filename_lower.endswith((".jpg", ".jpeg", ".png"))):
+        upload_filename = image.filename
+        upload_content_type = image.content_type
+        if not (upload_content_type in ["image/jpeg", "image/png", "image/jpg"] or filename_lower.endswith((".jpg", ".jpeg", ".png"))):
             try:
                 from PIL import Image
                 import io
-                print(f"Converting unsupported format {image.content_type} to image/jpeg...")
+                print(f"Converting unsupported format {upload_content_type} to image/jpeg...")
                 img = Image.open(io.BytesIO(file_bytes))
                 if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
                     background = Image.new('RGB', img.size, (255, 255, 255))
@@ -201,14 +203,14 @@ async def scan_transcript(image: UploadFile = File(...)):
                 out_io = io.BytesIO()
                 img.save(out_io, format="JPEG", quality=90)
                 file_bytes = out_io.getvalue()
-                image.filename = image.filename.rsplit(".", 1)[0] + ".jpg"
-                image.content_type = "image/jpeg"
+                upload_filename = upload_filename.rsplit(".", 1)[0] + ".jpg"
+                upload_content_type = "image/jpeg"
                 print(f"Converted successfully to JPEG. New size: {len(file_bytes)} bytes")
             except Exception as conv_err:
                 print(f"Warning: Failed to convert image format: {conv_err}. Attempting raw upload.")
 
         file_len = len(file_bytes)
-        print(f"DEBUG Incoming file name: {image.filename}, size: {file_len} bytes")
+        print(f"DEBUG Incoming file name: {upload_filename}, size: {file_len} bytes")
 
         # Mock Fallback for S1/HK1 image (size ~387205 bytes or containing S1/HK1 tokens)
         if 380000 <= file_len <= 395000 or "hk1" in image.filename.lower() or "1783181293406" in image.filename:
@@ -283,8 +285,8 @@ async def scan_transcript(image: UploadFile = File(...)):
             upload_url, 
             upload_headers, 
             file_bytes=file_bytes, 
-            filename=image.filename, 
-            content_type=image.content_type
+            filename=upload_filename, 
+            content_type=upload_content_type
         )
         
         upload_data = json.loads(stdout)
@@ -373,22 +375,44 @@ async def scan_transcript(image: UploadFile = File(...)):
         details_data = res_details.json()
 
         # --- STEP 4: Parse detailed JSON and compute grades ---
-        phrases = details_data.get("object", {}).get("phrases", [])
-        paragraphs = details_data.get("object", {}).get("paragraphs", [])
+        # Recursively search for the subject grades table HTML in details_data
+        def find_table_html(obj):
+            if isinstance(obj, dict):
+                if obj.get("type") == "Table" and "html" in obj:
+                    html_content = obj.get("html", "")
+                    # Prioritize the main subject grades table containing "Môn học" or "Toán" or "Văn"
+                    if any(k in html_content.lower() for k in ["môn học", "toán", "văn", "lý", "hóa", "sinh", "anh"]):
+                        return html_content
+                for v in obj.values():
+                    res = find_table_html(v)
+                    if res:
+                        return res
+            elif isinstance(obj, list):
+                for item in obj:
+                    res = find_table_html(item)
+                    if res:
+                        return res
+            return None
+
+        table_html = find_table_html(details_data)
         
-        table_html = None
-        # Search in phrases first
-        for phrase in phrases:
-            if phrase.get("type") == "Table" and "html" in phrase:
-                table_html = phrase["html"]
-                break
-                
-        # Fallback to searching in paragraphs if not found
+        # Fallback if no specific subject table was found, take any Table html
         if not table_html:
-            for p in paragraphs:
-                if p.get("type") == "Table" and "html" in p:
-                    table_html = p["html"]
-                    break
+            def find_any_table_html(obj):
+                if isinstance(obj, dict):
+                    if obj.get("type") == "Table" and "html" in obj:
+                        return obj.get("html")
+                    for v in obj.values():
+                        res = find_any_table_html(v)
+                        if res:
+                            return res
+                elif isinstance(obj, list):
+                    for item in obj:
+                        res = find_any_table_html(item)
+                        if res:
+                            return res
+                return None
+            table_html = find_any_table_html(details_data)
                 
         print("DEBUG table_html found:", table_html is not None)
         if table_html:
