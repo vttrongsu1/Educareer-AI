@@ -799,7 +799,7 @@ async def consult_bot(req: ChatRequest):
                     scores_list.append(f"{vi_subject}: {score}")
         scores_summary = ", ".join(scores_list) if scores_list else "Chưa nhập điểm"
         
-        student_context = f"(Thông tin của em để anh tư vấn: Em tên là {s_name}, học lớp {s_grade}. Tính cách trắc nghiệm RIASEC Holland của em là nhóm {s_holland}; nhóm trắc nghiệm MBTI là {s_mbti}. Điểm số học lực học bạ của em là {scores_summary}.)\n"
+        student_context = f"(Hồ sơ của em: Tên {s_name}, Lớp {s_grade}, Holland nhóm {s_holland}, MBTI {s_mbti}, Điểm học bạ: {scores_summary}. Hãy chỉ sử dụng hồ sơ này khi em hỏi về định hướng nghề nghiệp cá nhân hoặc hỏi về thế mạnh của bản thân. Nếu em hỏi các câu hỏi chung hoặc hỏi cái khác, hãy trả lời thẳng vào vấn đề một cách ngắn gọn và không nhắc lại hồ sơ này nhé.)\n"
 
     final_text = f"{student_context}{user_message}" if student_context else user_message
 
