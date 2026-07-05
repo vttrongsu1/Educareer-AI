@@ -26,3 +26,4 @@ Thumbs.db
 
 # 6. Chặn thư mục chứa ảnh/học bạ chạy thử nội bộ (Bảo mật)
 test_data/
+HUONG_DAN_CAI_DAT_VA_CHAY_THU.txt
