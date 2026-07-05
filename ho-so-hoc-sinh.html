@@ -469,6 +469,38 @@
                         </form>
                     </div>
 
+                    <!-- Điểm số Học bạ đã số hóa (OCR) -->
+                    <div class="dashboard-card" style="margin-top: 30px;">
+                        <div class="dashboard-card-header" style="border-bottom: 1.5px dashed rgba(37, 99, 235, 0.08); padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                            <h4 style="font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; color: var(--text-dark); margin: 0;">
+                                <i class="fa-solid fa-graduation-cap" style="color: var(--primary-blue);"></i> Kết Quả Học Tập (Học Bạ OCR)
+                            </h4>
+                            <a href="ocr-hoc-ba.html" class="card-action-link" style="color: var(--primary-blue); font-weight: 700; text-decoration: none; font-size: 0.88rem;"><i class="fa-solid fa-camera"></i> Quét học bạ mới</a>
+                        </div>
+                        <div id="grades-empty-state" class="profile-empty-text">
+                            Bạn chưa quét học bạ nào. <a href="ocr-hoc-ba.html" style="color: var(--primary-blue); font-weight: 700;">Quét học bạ ngay</a> để xem kết quả điểm số!
+                        </div>
+                        <div id="grades-display-list" class="grades-grid" style="display: none;">
+                            <!-- Sẽ render bằng JS -->
+                        </div>
+                    </div>
+
+                    <!-- Kết quả Trắc nghiệm Tính cách -->
+                    <div class="dashboard-card" style="margin-top: 30px;">
+                        <div class="dashboard-card-header" style="border-bottom: 1.5px dashed rgba(37, 99, 235, 0.08); padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                            <h4 style="font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; color: var(--text-dark); margin: 0;">
+                                <i class="fa-solid fa-puzzle-piece" style="color: var(--primary-blue);"></i> Kết Quả Đánh Giá Tính Cách
+                            </h4>
+                            <a href="pages/explore.html" class="card-action-link" style="color: var(--primary-blue); font-weight: 700; text-decoration: none; font-size: 0.88rem;"><i class="fa-solid fa-play"></i> Làm trắc nghiệm mới</a>
+                        </div>
+                        <div id="personality-empty-state" class="profile-empty-text">
+                            Bạn chưa hoàn thành bài trắc nghiệm tính cách nào. <a href="pages/explore.html" style="color: var(--primary-blue); font-weight: 700;">Bắt đầu ngay</a> để khám phá cá tính bản thân!
+                        </div>
+                        <div id="personality-display-list" class="personality-results-row" style="display: none;">
+                            <!-- Sẽ render bằng JS -->
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -478,6 +510,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="industries-data.js"></script>
+    <script src="Data/bandonangluc/mbti_details.js"></script>
     <script src="app.js?v=3.5"></script>
 
     <!-- Auth & Profile Page controller script -->
@@ -677,6 +710,114 @@
                 document.getElementById("info-dob").value = dbData.dob || "";
                 document.getElementById("info-grade").value = dbData.gradeClass || "";
                 document.getElementById("info-school").value = dbData.school || "";
+                
+                // Vẽ Điểm số và Tính cách lên giao diện
+                renderAcademicAndPersonality(dbData);
+            } else {
+                renderAcademicAndPersonality(null);
+            }
+
+            // Hàm vẽ dữ liệu Học bạ và Trắc nghiệm tính cách lên giao diện
+            function renderAcademicAndPersonality(profile) {
+                // 1. Render Điểm số
+                if (profile && profile.academic && Object.keys(profile.academic).length > 0) {
+                    gradesEmptyState.style.display = "none";
+                    gradesDisplayList.style.display = "grid";
+                    gradesDisplayList.innerHTML = "";
+
+                    const subjectNames = {
+                        "Math": "Toán học",
+                        "Physics": "Vật lý",
+                        "Chemistry": "Hóa học",
+                        "Biology": "Sinh học",
+                        "Literature": "Ngữ văn",
+                        "History": "Lịch sử",
+                        "Geography": "Địa lý",
+                        "English": "Tiếng Anh",
+                        "Informatics": "Tin học",
+                        "Civics": "Giáo dục công dân",
+                        "Technology": "Công nghệ"
+                    };
+
+                    Object.entries(profile.academic).forEach(([sub, val]) => {
+                        const name = subjectNames[sub] || sub;
+                        const score = parseFloat(val) || 0.0;
+                        const percent = score * 10;
+
+                        const item = document.createElement("div");
+                        item.className = "grade-progress-item";
+                        item.innerHTML = `
+                            <div class="grade-label-row">
+                                <span class="grade-subject-name">${name}</span>
+                                <span class="grade-value">${score.toFixed(1)}</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                            </div>
+                        `;
+                        gradesDisplayList.appendChild(item);
+                    });
+                } else {
+                    gradesEmptyState.style.display = "block";
+                    gradesDisplayList.style.display = "none";
+                }
+
+                // 2. Render Trắc nghiệm tính cách (Holland + MBTI)
+                const hasHolland = profile && profile.riasec && Object.keys(profile.riasec).length > 0;
+                const hasMbti = profile && profile.mbti;
+
+                if (hasHolland || hasMbti) {
+                    personalityEmptyState.style.display = "none";
+                    personalityDisplayList.style.display = "grid";
+                    personalityDisplayList.innerHTML = "";
+
+                    // Render MBTI
+                    if (hasMbti) {
+                        const mbtiCode = profile.mbti.toUpperCase();
+                        const details = (window.MBTI_DETAILS && window.MBTI_DETAILS[mbtiCode]) ? window.MBTI_DETAILS[mbtiCode] : { name: "Chưa rõ", archetype: "Chưa cập nhật chi tiết" };
+                        
+                        const mbtiBox = document.createElement("div");
+                        mbtiBox.className = "personality-result-box";
+                        mbtiBox.innerHTML = `
+                            <div class="personality-code">${mbtiCode}</div>
+                            <div class="personality-title">Tính cách MBTI: ${details.name}</div>
+                            <div class="personality-summary" style="margin-top: 10px;">${details.archetype}</div>
+                        `;
+                        personalityDisplayList.appendChild(mbtiBox);
+                    }
+
+                    // Render Holland
+                    if (hasHolland) {
+                        const riasecScores = Object.entries(profile.riasec)
+                            .map(([key, val]) => ({ key, val: parseFloat(val) || 0 }))
+                            .sort((a, b) => b.val - a.val);
+                        
+                        const top3Code = riasecScores.slice(0, 3).map(item => item.key).join("");
+                        
+                        const hollandNames = {
+                            "R": "Kỹ thuật (Realistic)",
+                            "I": "Nghiên cứu (Investigative)",
+                            "A": "Nghệ thuật (Artistic)",
+                            "S": "Xã hội (Social)",
+                            "E": "Quản lý (Enterprising)",
+                            "C": "Nghệ thuật nghiệp vụ (Conventional)"
+                        };
+
+                        const topNames = riasecScores.slice(0, 3).map(item => hollandNames[item.key] || item.key).join(", ");
+
+                        const hollandBox = document.createElement("div");
+                        hollandBox.className = "personality-result-box";
+                        hollandBox.innerHTML = `
+                            <div class="personality-code" style="background: linear-gradient(135deg, #10B981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${top3Code}</div>
+                            <div class="personality-title">Holland: ${topNames}</div>
+                            <div class="personality-summary" style="margin-top: 10px;">Top 3 nhóm năng lực tính cách nổi trội nhất của bạn theo hướng nghiệp Holland.</div>
+                        `;
+                        personalityDisplayList.appendChild(hollandBox);
+                    }
+                } else {
+                    personalityEmptyState.style.display = "block";
+                    personalityDisplayList.style.display = "none";
+                }
             }
 
             // Register form submit handler for updating info
