@@ -98,11 +98,5 @@ graph TD
         *Server sẽ chạy tại địa chỉ mặc định: `http://127.0.0.1:8000`*
 
 ---
-
-## 👥 6. Đội ngũ phát triển (KgLorious)
-*   **Vũ Thành Trong** - Trưởng nhóm / Fullstack Developer
-*   **Nguyễn Ngọc Long** - AI & Backend Engineer
-*   **Trần Anh Khoa** - Frontend Developer & UI/UX Designer
-
 ---
 *Dự án được bảo trợ kỹ thuật bởi các API thông minh từ VNPT AI và Google Gemini Pro.*
