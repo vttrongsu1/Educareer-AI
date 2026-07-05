@@ -499,6 +499,12 @@ async def scan_transcript(image: UploadFile = File(...)):
         raise e
     except Exception as e:
         print(f"Error parsing OCR: {e}")
+        # Print stdout/stderr if they exist in local scope for troubleshooting
+        local_vars = locals()
+        if "stdout" in local_vars:
+            print(f"DEBUG raw curl stdout: {local_vars['stdout']}")
+        if "stderr" in local_vars:
+            print(f"DEBUG raw curl stderr: {local_vars['stderr']}")
         raise HTTPException(
             status_code=400, 
             detail="Không tìm thấy dữ liệu học bạ hoặc bảng điểm bị thiếu thông tin."
