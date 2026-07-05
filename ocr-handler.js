@@ -320,13 +320,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 8. Dropzone uploading and drag actions
-    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('click', (e) => {
+        if (e.target.closest('#clear-image-btn')) {
+            return; // Don't trigger file input selection if clicking 'Xóa ảnh' button
+        }
+        fileInput.click();
+    });
 
     fileInput.addEventListener('change', () => {
         if (fileInput.files.length > 0) {
             handleUploadedFile(fileInput.files[0]);
         }
     });
+
+    // Handle clear image button click
+    const clearImageBtn = document.getElementById('clear-image-btn');
+    if (clearImageBtn) {
+        clearImageBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Stop event bubbling
+            
+            // Reset preview elements
+            imagePreview.src = "#";
+            previewContainer.style.display = 'none';
+            uploadText.style.display = 'block';
+            fileInput.value = "";
+            
+            // Reset scan status to default
+            sheetStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Sẵn sàng nhập liệu';
+            sheetStatus.style.background = 'rgba(16, 185, 129, 0.08)';
+            sheetStatus.style.color = '#10b981';
+            
+            dropZone.classList.remove('scanning');
+        });
+    }
 
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -365,6 +391,9 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
 
         runOcrScanning(file);
+        
+        // Reset fileInput value so change event will fire even when same file is selected again
+        fileInput.value = "";
     }
 
     async function runOcrScanning(file) {
@@ -448,18 +477,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.json();
                 console.log("OCR Grades loaded successfully from proxy server:", result);
                 
+                // Check if any valid grades were returned
+                const scannedGrades = result.grades || {};
+                const hasGrades = Object.keys(scannedGrades).some(key => {
+                    const val = scannedGrades[key];
+                    if (typeof val === 'object' && val !== null) {
+                        return (val.hk1 !== undefined && val.hk1 !== null && parseFloat(val.hk1) > 0) || 
+                               (val.hk2 !== undefined && val.hk2 !== null && parseFloat(val.hk2) > 0);
+                    }
+                    return val !== undefined && val !== null && parseFloat(val) > 0;
+                });
+
+                if (!hasGrades) {
+                    throw new Error("NO_GRADES_FOUND");
+                }
+
                 // Repopulate spreadsheet rows based on OCR grades returned
-                repopulateFromOcr(result.grades);
+                repopulateFromOcr(scannedGrades);
 
                 sheetStatus.innerHTML = '<i class="fa-solid fa-check"></i> Đã đồng bộ bằng VNPT SmartReader';
                 sheetStatus.style.background = 'rgba(16, 185, 129, 0.08)';
                 sheetStatus.style.color = '#10b981';
             } else {
-                throw new Error("Local proxy server error. Status: " + response.status);
+                throw new Error("SERVER_HTTP_ERROR_" + response.status);
             }
 
         } catch (error) {
-            console.error("OCR Request failed or server offline. Disabling simulation fallback.");
+            console.error("OCR Request failed:", error);
             
             // Clean up scan state
             dropZone.classList.remove('scanning');
@@ -468,12 +512,27 @@ document.addEventListener('DOMContentLoaded', () => {
             inputs1.forEach(input => input.disabled = false);
             inputs2.forEach(input => input.disabled = false);
             
-            // Alert user that scanning failed / was not found
-            sheetStatus.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Không tìm thấy dữ liệu học bạ';
-            sheetStatus.style.background = 'rgba(239, 68, 68, 0.08)';
-            sheetStatus.style.color = '#ef4444';
+            let errTitle = "";
+            let errMessage = "";
 
-            showOcrErrorModal();
+            if (error.message === "NO_GRADES_FOUND") {
+                errTitle = "Không tìm thấy dữ liệu học bạ";
+                errMessage = 'Hệ thống đã nhận diện ảnh thành công nhưng không tìm thấy thông tin điểm số hợp lệ của môn học nào. Vui lòng kiểm tra xem ảnh chụp học bạ có đầy đủ, rõ nét và đúng chiều hay không, hoặc chọn chế độ <strong>"Nhập tay"</strong>.';
+                
+                sheetStatus.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Không tìm thấy dữ liệu';
+                sheetStatus.style.background = 'rgba(245, 158, 11, 0.08)';
+                sheetStatus.style.color = '#d97706';
+            } else {
+                // Connection or HTTP server error
+                errTitle = "Không thể kết nối máy chủ AI";
+                errMessage = 'Không thể kết nối đến máy chủ xử lý học bạ AI lúc này (server bận hoặc mạng không ổn định). Vui lòng thử lại sau, kiểm tra đường truyền internet, hoặc sử dụng tính năng <strong>"Nhập tay"</strong> để tự điền điểm.';
+                
+                sheetStatus.innerHTML = '<i class="fa-solid fa-wifi"></i> Kết nối máy chủ thất bại';
+                sheetStatus.style.background = 'rgba(239, 68, 68, 0.08)';
+                sheetStatus.style.color = '#ef4444';
+            }
+
+            showOcrErrorModal(errTitle, errMessage);
         }
     }
 
@@ -799,7 +858,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function showOcrErrorModal() {
+    function showOcrErrorModal(title, message) {
+        title = title || "Không tìm thấy dữ liệu học bạ";
+        message = message || 'Không tìm thấy thông tin điểm số hợp lệ trên ảnh học bạ tải lên. Vui lòng kiểm tra lại chất lượng hình ảnh hoặc chuyển sang chế độ <strong>"Nhập tay"</strong> để tự điền điểm số.';
+
         const modal = document.createElement('div');
         modal.style.position = 'fixed';
         modal.style.top = '0';
@@ -819,8 +881,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(239,68,68,0.1); color: #ef4444; font-size: 2.2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; color: var(--bg-dark); margin-bottom: 10px;">Không tìm thấy dữ liệu học bạ</h3>
-                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">Không tìm thấy thông tin điểm số hợp lệ trên ảnh học bạ tải lên. Vui lòng kiểm tra lại chất lượng hình ảnh hoặc chuyển sang chế độ <strong>"Nhập tay"</strong> để tự điền điểm số.</p>
+                <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; color: var(--bg-dark); margin-bottom: 10px;">${title}</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">${message}</p>
                 <button class="btn btn-secondary" style="width: 100%; border-radius: 12px; padding: 12px; cursor: pointer; border-color: rgba(37,99,235,0.1);" id="modal-err-close-btn">Tôi đã hiểu</button>
             </div>
         `;

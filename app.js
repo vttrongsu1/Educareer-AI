@@ -53,15 +53,21 @@ async function syncStudentDataToCloud(updatedData) {
 
         const studentName = updatedData.studentName || "Học sinh";
 
-        await sb.from("students").upsert({
+        const { error } = await sb.from("students").upsert({
             id: session.user.id,
             name: studentName,
             data: updatedData
         });
 
+        if (error) {
+            console.error("[EduCareer Sync] Lỗi chi tiết từ Supabase:", error);
+            throw new Error(error.message || JSON.stringify(error));
+        }
+
         console.log("[EduCareer Sync] Đã đồng bộ hồ sơ học sinh lên đám mây Supabase thành công.");
     } catch (err) {
         console.error("[EduCareer Sync] Lỗi khi đồng bộ lên Supabase:", err);
+        throw err;
     }
 }
 

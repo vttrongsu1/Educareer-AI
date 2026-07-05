@@ -5,6 +5,8 @@ window.SUPABASE_URL = "https://cvlxmxfvqjahetibtrdg.supabase.co";
 window.SUPABASE_ANON_KEY = "sb_publishable_Y11Yd_53mL_9jbGQDSLzBQ_z5ZNM-fP";
 
 // Hàm hỗ trợ khởi tạo và kiểm tra kết nối Supabase
+let cachedSupabaseClient = null;
+
 function getSupabaseClient() {
     if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY || 
         window.SUPABASE_URL.includes("DÁN_PROJECT_URL") || 
@@ -13,9 +15,14 @@ function getSupabaseClient() {
         return null;
     }
     
+    if (cachedSupabaseClient) {
+        return cachedSupabaseClient;
+    }
+    
     try {
         if (typeof supabase !== 'undefined') {
-            return supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+            cachedSupabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+            return cachedSupabaseClient;
         }
     } catch (e) {
         console.error("Lỗi khi kết nối với thư viện Supabase client:", e);

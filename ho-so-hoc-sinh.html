@@ -576,20 +576,25 @@
                      });
                      if (error) throw error;
 
-                    const user = data.user;
-                    if (user) {
-                        // Create profile record in 'students' table with studentName
-                        const emptyData = {
-                            studentName: name,
-                            mbti: "",
-                            riasec: {},
-                            academic: {}
-                        };
-                        const { error: dbErr } = await sb.from("students").insert({
-                            id: user.id,
-                            name: name,
-                            data: emptyData
-                        });
+                     const user = data.user;
+                     if (user) {
+                         // Create profile record in 'students' table with studentName
+                         const emptyData = {
+                             studentId: "HS" + Math.floor(1000 + Math.random() * 9000),
+                             studentName: name,
+                             school: "Chưa cập nhật",
+                             gradeClass: "Chưa cập nhật",
+                             level: "thpt",
+                             mbti: "",
+                             riasec: {},
+                             academic: {},
+                             tipi: {}
+                         };
+                         const { error: dbErr } = await sb.from("students").insert({
+                             id: user.id,
+                             name: name,
+                             data: emptyData
+                         });
                         if (dbErr) console.error("Lỗi khi ghi thông tin học sinh ban đầu:", dbErr);
                     }
 
