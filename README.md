@@ -3,6 +3,8 @@
 >
 > *Dự án đạt chuẩn MVP tham gia Vietnamese Student HackAIthon 2026 bởi đội thi **KgLorious**.*
 
+🌐 **Trải nghiệm trực tuyến (Live Website)**: [https://vttrongsu1.github.io/Educareer-AI/](https://vttrongsu1.github.io/Educareer-AI/)
+
 ---
 
 ## 🌟 1. Giới thiệu dự án
