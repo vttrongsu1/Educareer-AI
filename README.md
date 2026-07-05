@@ -112,8 +112,7 @@ graph TD
 ---
 
 ## 👥 6. Đội ngũ phát triển (KgLorious)
-*   **Vũ Thành Trong** - Trưởng nhóm / Fullstack Developer
-*   **Nguyễn Ngọc Long** - AI & Backend Engineer
+*   **Nguyễn Nhật Long** - AI & Backend Engineer
 *   **Trần Anh Khoa** - Frontend Developer & UI/UX Designer
 
 ---
