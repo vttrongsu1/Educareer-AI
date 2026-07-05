@@ -172,9 +172,9 @@ async def root_health_check():
 
 @app.post("/api/scan-transcript")
 async def scan_transcript(image: UploadFile = File(...)):
-    VNPT_ACCESS_TOKEN = os.getenv("VNPT_ACCESS_TOKEN", "")
-    VNPT_TOKEN_ID = os.getenv("VNPT_TOKEN_ID", "")
-    VNPT_TOKEN_KEY = os.getenv("VNPT_TOKEN_KEY", "")
+    SMARTREADER_ACCESS_TOKEN = os.getenv("SMARTREADER_ACCESS_TOKEN", "")
+    SMARTREADER_TOKEN_ID = os.getenv("SMARTREADER_TOKEN_ID", "")
+    SMARTREADER_TOKEN_KEY = os.getenv("SMARTREADER_TOKEN_KEY", "")
     
     try:
         # Read file bytes
@@ -229,14 +229,14 @@ async def scan_transcript(image: UploadFile = File(...)):
                 }
             }
 
-        if not VNPT_ACCESS_TOKEN:
+        if not SMARTREADER_ACCESS_TOKEN:
             raise HTTPException(
                 status_code=500, 
-                detail="Server authentication misconfigured: VNPT_ACCESS_TOKEN is missing in .env"
+                detail="Server authentication misconfigured: SMARTREADER_ACCESS_TOKEN is missing in .env"
             )
         
         # Setup common headers
-        auth_header = VNPT_ACCESS_TOKEN
+        auth_header = SMARTREADER_ACCESS_TOKEN
         if not auth_header.startswith("Bearer "):
             auth_header = f"Bearer {auth_header}"
 
@@ -246,8 +246,8 @@ async def scan_transcript(image: UploadFile = File(...)):
         
         upload_headers = {
             'Authorization': auth_header,
-            'Token-id': VNPT_TOKEN_ID,
-            'Token-key': VNPT_TOKEN_KEY,
+            'Token-id': SMARTREADER_TOKEN_ID,
+            'Token-key': SMARTREADER_TOKEN_KEY,
             'mac-address': 'EGOV-DIGDOC-WEB-API'
         }
         
@@ -274,8 +274,8 @@ async def scan_transcript(image: UploadFile = File(...)):
         
         scan_headers = {
             'Authorization': auth_header,
-            'Token-id': VNPT_TOKEN_ID,
-            'Token-key': VNPT_TOKEN_KEY,
+            'Token-id': SMARTREADER_TOKEN_ID,
+            'Token-key': SMARTREADER_TOKEN_KEY,
             'mac-address': 'mac-address',
             'Content-Type': 'application/json'
         }
