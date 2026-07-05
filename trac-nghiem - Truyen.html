@@ -5092,9 +5092,11 @@
             
 
             if (nextIndex < extList.length) {
-
-                img.src = originalPath + '.' + extList[nextIndex];
-
+                let cleanPath = originalPath;
+                if (cleanPath.includes('.')) {
+                    cleanPath = cleanPath.substring(0, cleanPath.lastIndexOf('.'));
+                }
+                img.src = cleanPath + '.' + extList[nextIndex];
                 img.dataset.extIndex = (nextIndex + 1).toString();
 
             } else {
