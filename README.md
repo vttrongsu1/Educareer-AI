@@ -12,6 +12,10 @@
 *   **Tài khoản Quản trị viên (Admin)**:
     *   *Email*: `admin@gmail.com` | *Mật khẩu*: `123456`
 
+📸 **Ảnh học bạ mẫu chạy thử OCR (Demo Image)**:
+*   Dự án chuẩn bị sẵn một ảnh học bạ mẫu tại: [images/demo_transcript.png](images/demo_transcript.png) (nằm ngay trong repo GitHub).
+*   Ban giám khảo có thể tải ảnh này về để upload kiểm thử tính năng **Quét học bạ OCR** của hệ thống.
+
 ⚠️ **Lưu ý quan trọng đối với máy chủ Backend (Render Free Tier)**:
 *   Do hệ thống Backend của dự án được triển khai trên nền tảng **Render.com** phiên bản **miễn phí (Free Tier)**, máy chủ sẽ tự động chuyển sang chế độ "ngủ đông" (spin down) khi không có lượt truy cập trong một khoảng thời gian.
 *   **Khi sử dụng lần đầu tiên hoặc sau một thời gian dài quay lại**, máy chủ sẽ mất khoảng **1 - 2 phút** để tự động khởi động lại (spin up). Trong thời gian này, các tính năng sử dụng API (như **Quét OCR học bạ** hoặc **Chatbot AI tư vấn**) có thể phản hồi chậm hoặc bị lỗi kết nối tạm thời. Kính mong Ban giám khảo kiên nhẫn đợi 1 - 2 phút cho lượt chạy đầu tiên để server kích hoạt hoàn tất!
