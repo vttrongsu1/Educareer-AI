@@ -23,3 +23,6 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
+
+# 6. Chặn thư mục chứa ảnh/học bạ chạy thử nội bộ (Bảo mật)
+test_data/

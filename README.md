@@ -95,8 +95,26 @@ graph TD
         ```bash
         python career_server.py
         ```
-        *Server sẽ chạy tại địa chỉ mặc định: `http://127.0.0.1:8000`*
+        *Server sẽ chạy tại địa chỉ mặc định: `http://127.0.0.1:5001`*
+
+4.  **Chạy thử nghiệm tự động (Automated Testing)**:
+    *   Hệ thống cung cấp một script kiểm thử tự động toàn bộ API Endpoint của backend.
+    *   Sau khi khởi chạy máy chủ backend ở Bước 3, bạn mở một terminal mới và chạy lệnh:
+        ```bash
+        python tests/test_endpoints.py
+        ```
+    *   *Script sẽ tự động kiểm tra Health check và gửi yêu cầu sinh cẩm nang hướng nghiệp tới Gemini API để phản hồi kết quả kiểm thử ngay trên màn hình.*
+
+5.  **Thư mục lưu trữ hình ảnh học bạ chạy thử cục bộ (`test_data/`)**:
+    *   Dự án có sẵn thư mục `test_data/` tại root dùng để chứa các hình ảnh học bạ chạy thử local của lập trình viên.
+    *   Thư mục này **đã được cấu hình trong `.gitignore` để loại trừ khỏi Git**, đảm bảo tính bảo mật tuyệt đối cho thông tin học bạ cá nhân của học sinh khi đẩy code lên kho lưu trữ công khai.
 
 ---
+
+## 👥 6. Đội ngũ phát triển (KgLorious)
+*   **Vũ Thành Trong** - Trưởng nhóm / Fullstack Developer
+*   **Nguyễn Ngọc Long** - AI & Backend Engineer
+*   **Trần Anh Khoa** - Frontend Developer & UI/UX Designer
+
 ---
 *Dự án được bảo trợ kỹ thuật bởi các API thông minh từ VNPT AI và Google Gemini Pro.*
