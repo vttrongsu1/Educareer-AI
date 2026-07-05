@@ -611,8 +611,18 @@
 
                      const user = data.user;
                      if (user) {
-                         // Create profile record in 'students' table with studentName
-                         const emptyData = {
+                         // Lấy dữ liệu local hiện tại nếu có để tránh bị ghi đè dữ liệu rỗng sau khi đăng ký
+                         let localData = null;
+                         try {
+                             const stored = localStorage.getItem('educareer_student_profile');
+                             if (stored) {
+                                 localData = JSON.parse(stored);
+                             }
+                         } catch (e) {
+                             console.error("Lỗi đọc Local Profile trước khi tạo tài khoản:", e);
+                         }
+
+                         const initialData = localData || {
                              studentId: "HS" + Math.floor(1000 + Math.random() * 9000),
                              studentName: name,
                              school: "Chưa cập nhật",
@@ -623,10 +633,14 @@
                              academic: {},
                              tipi: {}
                          };
+
+                         // Gán lại tên học sinh đúng với họ tên khi đăng ký
+                         initialData.studentName = name;
+
                          const { error: dbErr } = await sb.from("students").insert({
                              id: user.id,
                              name: name,
-                             data: emptyData
+                             data: initialData
                          });
                         if (dbErr) console.error("Lỗi khi ghi thông tin học sinh ban đầu:", dbErr);
                     }

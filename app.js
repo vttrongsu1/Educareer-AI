@@ -255,15 +255,8 @@ async function initSupabaseSession() {
 
         const { data: { session } } = await sb.auth.getSession();
         if (!session) {
-            // Xóa sạch dữ liệu hồ sơ cũ của phiên đăng nhập trước để tránh lộ dữ liệu
-            localStorage.removeItem('educareer_student_profile');
-            localStorage.removeItem('educareer_v2_thpt_lop10');
-            localStorage.removeItem('educareer_v2_thpt_lop11');
-            localStorage.removeItem('educareer_v2_thpt_lop12');
-            localStorage.removeItem('educareer_v2_thcs_lop6');
-            localStorage.removeItem('educareer_v2_thcs_lop7');
-            localStorage.removeItem('educareer_v2_thcs_lop8');
-            localStorage.removeItem('educareer_v2_thcs_lop9');
+            // Do not delete guest user's local profile progress so they can experience the capacity map demo.
+            // Local profile cleanup only occurs when explicitly clicking Logout.
 
             // Cập nhật nút navbar thành "Đăng nhập" với CSS class login-btn-style
             const profileLink = document.getElementById('nav-profile-link');
@@ -343,7 +336,19 @@ async function initSupabaseSession() {
             const userName = (session.user.user_metadata && session.user.user_metadata.full_name) 
                 ? session.user.user_metadata.full_name 
                 : userEmail.split('@')[0];
-            const defaultProfile = {
+            
+            // Đọc dữ liệu local hiện tại nếu có
+            let localProfile = null;
+            try {
+                const stored = localStorage.getItem('educareer_student_profile');
+                if (stored) {
+                    localProfile = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.error("Lỗi đọc Local Profile trước khi đồng bộ:", e);
+            }
+
+            const defaultProfile = localProfile || {
                 studentId: "HS" + Math.floor(1000 + Math.random() * 9000),
                 studentName: userName,
                 school: "Chưa cập nhật",
