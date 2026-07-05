@@ -172,9 +172,9 @@ async def root_health_check():
 
 @app.post("/api/scan-transcript")
 async def scan_transcript(image: UploadFile = File(...)):
-    SMARTREADER_ACCESS_TOKEN = os.getenv("SMARTREADER_ACCESS_TOKEN", "")
-    SMARTREADER_TOKEN_ID = os.getenv("SMARTREADER_TOKEN_ID", "")
-    SMARTREADER_TOKEN_KEY = os.getenv("SMARTREADER_TOKEN_KEY", "")
+    SMARTREADER_ACCESS_TOKEN = os.getenv("SMARTREADER_ACCESS_TOKEN", "").strip()
+    SMARTREADER_TOKEN_ID = os.getenv("SMARTREADER_TOKEN_ID", "").strip()
+    SMARTREADER_TOKEN_KEY = os.getenv("SMARTREADER_TOKEN_KEY", "").strip()
     
     try:
         # Read file bytes
@@ -732,11 +732,11 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/consult-bot")
 async def consult_bot(req: ChatRequest):
-    SMARTBOT_URL = os.getenv("SMARTBOT_URL", "https://assistant-stream.vnpt.vn/v1/conversation")
-    SMARTBOT_BOT_ID = os.getenv("SMARTBOT_BOT_ID", "73008010-7606-11f1-8ff8-dfa790a1e2db")
-    SMARTBOT_TOKEN_ID = os.getenv("SMARTBOT_TOKEN_ID", "")
-    SMARTBOT_TOKEN_KEY = os.getenv("SMARTBOT_TOKEN_KEY", "")
-    SMARTBOT_ACCESS_TOKEN = os.getenv("SMARTBOT_ACCESS_TOKEN", "")
+    SMARTBOT_URL = os.getenv("SMARTBOT_URL", "https://assistant-stream.vnpt.vn/v1/conversation").strip()
+    SMARTBOT_BOT_ID = os.getenv("SMARTBOT_BOT_ID", "73008010-7606-11f1-8ff8-dfa790a1e2db").strip()
+    SMARTBOT_TOKEN_ID = os.getenv("SMARTBOT_TOKEN_ID", "").strip()
+    SMARTBOT_TOKEN_KEY = os.getenv("SMARTBOT_TOKEN_KEY", "").strip()
+    SMARTBOT_ACCESS_TOKEN = os.getenv("SMARTBOT_ACCESS_TOKEN", "").strip()
 
     if not SMARTBOT_ACCESS_TOKEN or not SMARTBOT_BOT_ID:
         raise HTTPException(
@@ -783,28 +783,34 @@ async def consult_bot(req: ChatRequest):
         if response.status_code != 200:
             raise Exception(f"VNPT SmartBot API returned status code {response.status_code}: {response.text}")
             
-        reply_parts = []
-        for line in response.text.split("\n"):
+        full_reply = ""
+        # Search backwards to find the last valid data: event in the stream
+        for line in reversed(response.text.split("\n")):
             line = line.strip()
-            if not line:
-                continue
             if line.startswith("data:"):
                 json_str = line[5:].strip()
                 try:
                     data = json.loads(json_str)
                     sb_obj = data.get("object", {}).get("sb", {})
                     card_data = sb_obj.get("card_data", [])
+                    
+                    # Accumulate text from all cards in the final event
+                    parts = []
                     for card in card_data:
                         text_content = card.get("text", "")
                         if text_content:
-                            reply_parts.append(text_content)
+                            parts.append(text_content)
+                    if parts:
+                        full_reply = "\n".join(parts)
+                        break  # Found the final complete response!
                 except Exception as je:
-                    print(f"Parse error for line: {line} - Error: {je}")
+                    print(f"Parse error for final line: {line} - Error: {je}")
 
-        full_reply = "\n".join(reply_parts) if reply_parts else "Rất tiếc, Chatbot không phản hồi nội dung văn bản."
+        if not full_reply:
+            full_reply = "Rất tiếc, Chatbot không phản hồi nội dung văn bản."
         
-        # Convert newline to <br> for HTML rendering in frontend
-        formatted_reply = full_reply.replace('\n', '<br>')
+        # Convert literal \n strings and actual newlines to <br> for HTML rendering in frontend
+        formatted_reply = full_reply.replace('\\n', '<br>').replace('\n', '<br>')
         
         return {
             "success": True,
