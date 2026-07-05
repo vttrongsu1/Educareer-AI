@@ -655,7 +655,7 @@ Không dùng liên kết giả lập placeholder.
     }
 
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=90)
+        response = requests.post(url, headers=headers, json=payload, timeout=180)
         if response.status_code != 200:
             raise Exception(f"Gemini API returned status code {response.status_code}: {response.text}")
             
