@@ -5002,13 +5002,7 @@
 
             if (nextIndex < extList.length) {
 
-                let cleanPath = originalPath;
-
-                if (window.location.protocol === 'file:') {
-
-                    cleanPath = cleanPath.replace('../Data/', 'Data/');
-
-                }
+                let cleanPath = originalPath.replace('../Data/', 'Data/');
 
                 if (cleanPath.includes('.')) {
 
@@ -5093,12 +5087,7 @@
             
 
             let originalPath = (option === 'A' ? q.imageA : q.imageB) || `../Data/Tracnghiem/MBTI/${q.id}_${option}`;
-
-            if (window.location.protocol === 'file:') {
-
-                originalPath = originalPath.replace('../Data/', 'Data/');
-
-            }
+            originalPath = originalPath.replace('../Data/', 'Data/');
 
             
 
@@ -5525,13 +5514,7 @@
 
                     if (q.image) {
 
-                        let path = q.image;
-
-                        if (window.location.protocol === 'file:') {
-
-                            path = path.replace('../Data/', 'Data/');
-
-                        }
+                        let path = q.image.replace('../Data/', 'Data/');
 
                         let initialSrc = path.includes('.') ? path : path + '.jpg';
 
@@ -5641,13 +5624,7 @@
 
                     if (wrapperA) {
 
-                        let pathA = q.imageA || `../Data/Tracnghiem/MBTI/${q.id}_A`;
-
-                        if (window.location.protocol === 'file:') {
-
-                            pathA = pathA.replace('../Data/', 'Data/');
-
-                        }
+                        let pathA = (q.imageA || `../Data/Tracnghiem/MBTI/${q.id}_A`).replace('../Data/', 'Data/');
 
                         let initialSrcA = pathA.includes('.') ? pathA : pathA + '.jpg';
 
@@ -5661,13 +5638,7 @@
 
                     if (wrapperB) {
 
-                        let pathB = q.imageB || `../Data/Tracnghiem/MBTI/${q.id}_B`;
-
-                        if (window.location.protocol === 'file:') {
-
-                            pathB = pathB.replace('../Data/', 'Data/');
-
-                        }
+                        let pathB = (q.imageB || `../Data/Tracnghiem/MBTI/${q.id}_B`).replace('../Data/', 'Data/');
 
                         let initialSrcB = pathB.includes('.') ? pathB : pathB + '.jpg';
 

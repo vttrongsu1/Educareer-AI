@@ -3235,11 +3235,8 @@ const SoundManager = {
     playAnswer() {
         if (this.isMuted || !this.answerSound) return;
         this.answerSound.currentTime = 0;
-        this.answerSound.play().then(() => {
-            this.showToast("🔔 Tiếng Trả lời câu hỏi!");
-        }).catch(e => {
+        this.answerSound.play().catch(e => {
             console.error("Lỗi phát âm thanh trả lời:", e);
-            this.showToast("❌ Lỗi phát tiếng Trả lời: " + e.message, true);
         });
     },
 
