@@ -295,6 +295,40 @@ async function initSupabaseSession() {
             return;
         }
 
+        const ADMIN_EMAILS = [
+            "admin@educareer.vn", 
+            "vttrongsu1@gmail.com", 
+            "longnnce200633@gmail.com", 
+            "khoatace200187@gmail.com", 
+            "admin@gmail.com"
+        ];
+        const userEmail = session.user.email;
+        const isAdmin = ADMIN_EMAILS.includes(userEmail);
+        const currentPage = decodeURIComponent(window.location.pathname.split('/').pop());
+
+        if (currentPage === 'tao-cam-nang.html' && !isAdmin) {
+            alert("Bạn không có quyền truy cập trang quản trị này!");
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Render admin link in navbar
+        if (isAdmin) {
+            const navLinks = document.getElementById('nav-links');
+            if (navLinks && !document.querySelector('.admin-nav-link')) {
+                const li = document.createElement('li');
+                const isSubDir = window.location.pathname.includes('/pages/') || window.location.pathname.includes('/game/');
+                const adminHref = isSubDir ? '../tao-cam-nang.html' : 'tao-cam-nang.html';
+                li.innerHTML = `<a href="${adminHref}" class="admin-nav-link" style="color:#f59e0b; font-weight:700;"><i class="fa-solid fa-user-shield"></i> Quản trị</a>`;
+                const profileLi = navLinks.querySelector('#nav-profile-link')?.parentElement;
+                if (profileLi) {
+                    navLinks.insertBefore(li, profileLi);
+                } else {
+                    navLinks.appendChild(li);
+                }
+            }
+        }
+
         // Tải hồ sơ từ bảng students
         const { data, error } = await sb.from("students").select("*").eq("id", session.user.id).maybeSingle();
 
@@ -1867,6 +1901,7 @@ function initIndustryCreator() {
     const form = document.getElementById("industry-editor-form");
     if (!form) return;
 
+    const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     const demoBtn = document.getElementById("btn-load-demo");
     const clearBtn = document.getElementById("btn-clear-form");
     const previewContent = document.getElementById("live-preview-content");
@@ -1881,7 +1916,35 @@ function initIndustryCreator() {
         "rating-stress": 0
     };
 
-    // A. Interactivity for star pickers
+    // --- A. Wizard Tab Switching Logic ---
+    const tabButtons = document.querySelectorAll(".wizard-tab-btn");
+    const tabContents = document.querySelectorAll(".wizard-tab-content");
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetId = btn.getAttribute("data-tab-target");
+            
+            // Toggle active buttons
+            tabButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // Toggle active contents
+            tabContents.forEach(content => {
+                content.classList.remove("active");
+                if (content.id === targetId) {
+                    content.classList.add("active");
+                }
+            });
+
+            // Fetch library list if Tab 5 is selected
+            if (targetId === "step-5") {
+                loadHandbookLibrary();
+            }
+        });
+    });
+
+    // --- B. Interactivity for star pickers ---
     const pickers = document.querySelectorAll(".stars-picker");
     pickers.forEach(picker => {
         const ratingId = picker.getAttribute("data-rating-id");
@@ -1904,7 +1967,7 @@ function initIndustryCreator() {
                 updatePreview();
             });
             
-            // Hover states (optional decoration)
+            // Hover states
             star.addEventListener("mouseenter", () => {
                 const value = parseInt(star.getAttribute("data-value"));
                 stars.forEach((s, idx) => {
@@ -1921,7 +1984,7 @@ function initIndustryCreator() {
         });
     });
 
-    // B. Live Preview Render
+    // --- C. Live Preview Render ---
     function updatePreview() {
         const title = document.getElementById("input-title").value || "Tên Ngành Học";
         const catValue = document.getElementById("input-category").value;
@@ -2026,29 +2089,76 @@ function initIndustryCreator() {
         input.addEventListener("change", updatePreview);
     });
 
-    // B.1. AI Generation Event Handler
+    // --- D. Premium AI Generator Modal Interactivity ---
     const aiBtn = document.getElementById("btn-ai-generate");
-    if (aiBtn) {
-        aiBtn.addEventListener("click", async (e) => {
+    const aiBackdrop = document.getElementById("ai-generator-backdrop");
+    const closeAiBtn = document.getElementById("btn-close-ai-modal");
+    const aiCareerInput = document.getElementById("ai-career-input");
+    const submitAiBtn = document.getElementById("btn-submit-ai-generate");
+    const aiInputView = document.getElementById("ai-modal-input-view");
+    const aiLoadingView = document.getElementById("ai-modal-loading-view");
+
+    if (aiBtn && aiBackdrop) {
+        // Open modal
+        aiBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            const careerName = prompt("Nhập tên ngành học muốn AI tự động tra cứu tuyển sinh thật và biên soạn cẩm nang:");
-            if (!careerName || !careerName.trim()) return;
+            aiBackdrop.classList.add("active");
+            aiInputView.style.display = "block";
+            aiLoadingView.style.display = "none";
+            aiCareerInput.value = "";
             
-            const originalText = aiBtn.innerHTML;
-            aiBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tra cứu AI...`;
-            aiBtn.disabled = true;
-            statusMsg.textContent = "Đang gọi Gemini AI + Google Search để tra cứu dữ liệu tuyển sinh thực tế (mất khoảng 10-20 giây)...";
-            statusMsg.className = "save-status-msg warning";
+            // Reset progress items
+            document.querySelectorAll(".ai-progress-item").forEach(item => {
+                item.className = "ai-progress-item";
+                item.querySelector("i").className = "fa-regular fa-circle";
+            });
+        });
+
+        // Close modal
+        closeAiBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            aiBackdrop.classList.remove("active");
+        });
+
+        // Submit AI Generate
+        submitAiBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const careerName = aiCareerInput.value.trim();
+            if (!careerName) {
+                alert("Vui lòng nhập tên ngành học!");
+                return;
+            }
+
+            aiInputView.style.display = "none";
+            aiLoadingView.style.display = "block";
+            statusMsg.textContent = "AI đang bắt đầu tra cứu và tổng hợp...";
+
+            // Step 1: Start Google Search
+            const step1 = document.getElementById("prog-step-1");
+            step1.className = "ai-progress-item active";
+            step1.querySelector("i").className = "fa-solid fa-spinner fa-spin";
 
             try {
-                const response = await fetch("https://educareer-ai.onrender.com/api/generate-career-guide", {
+                // Call API
+                const responsePromise = fetch("https://educareer-ai.onrender.com/api/generate-career-guide", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ career_name: careerName.trim() })
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ career_name: careerName })
                 });
 
+                // Simulate progress step transition (Google Search -> Gemini after 6 seconds)
+                setTimeout(() => {
+                    if (aiLoadingView.style.display !== "none") {
+                        step1.className = "ai-progress-item success";
+                        step1.querySelector("i").className = "fa-solid fa-circle-check";
+                        
+                        const step2 = document.getElementById("prog-step-2");
+                        step2.className = "ai-progress-item active";
+                        step2.querySelector("i").className = "fa-solid fa-spinner fa-spin";
+                    }
+                }, 6000);
+
+                const response = await responsePromise;
                 if (!response.ok) {
                     const errData = await response.json();
                     throw new Error(errData.detail || "Sinh dữ liệu thất bại.");
@@ -2062,10 +2172,21 @@ function initIndustryCreator() {
                     throw new Error("Dữ liệu trả về từ AI không đúng cấu trúc phân tầng mới.");
                 }
 
+                // Step 2 success -> Step 3
+                step1.className = "ai-progress-item success";
+                step1.querySelector("i").className = "fa-solid fa-circle-check";
+                
+                const step2 = document.getElementById("prog-step-2");
+                step2.className = "ai-progress-item success";
+                step2.querySelector("i").className = "fa-solid fa-circle-check";
+
+                const step3 = document.getElementById("prog-step-3");
+                step3.className = "ai-progress-item active";
+                step3.querySelector("i").className = "fa-solid fa-spinner fa-spin";
+
                 // Auto-fill fields
                 document.getElementById("input-title").value = data.ten_nganh;
                 
-                // Set Category
                 let category = "tech";
                 const slug = result.slug;
                 if (slug.includes("marketing") || slug.includes("kinh_te") || slug.includes("biz") || slug.includes("quan_tri") || slug.includes("logistics")) {
@@ -2084,11 +2205,9 @@ function initIndustryCreator() {
                 document.getElementById("input-sec2").value = chuyenNganh ? chuyenNganh.map(c => `- **${c.ten}:** ${c.mo_ta}`).join('\n') : "";
                 document.getElementById("input-sec3").value = toChat ? toChat.map(tc => `- **${tc.to_chat}:** ${tc.giai_thich}`).join('\n') : "";
                 
-                // Class 12 job details
                 const job12 = data.lop_12.co_hoi_viec_lam;
                 document.getElementById("input-sec4").value = job12 ? `${job12.mo_dau}\n\n` + job12.vi_tri.map(vt => `- **${vt.ten_vi_tri}:** ${vt.mo_ta}`).join('\n') + `\n\n* ${job12.nhan_xet_chung}` : "";
 
-                // Salaries
                 const sal9 = data.lop_9.muc_luong.theo_cap_bac;
                 const sal12 = data.lop_12.muc_luong.theo_cap_bac;
                 
@@ -2097,16 +2216,13 @@ function initIndustryCreator() {
                 document.getElementById("input-salary-exp").value = sal12[2] ? sal12[2].muc_luong : (sal9[2] ? sal9[2].muc_luong : "");
                 document.getElementById("input-salary-notes").value = `Đơn vị: ${data._meta.luong_don_vi} (Cập nhật thực tế năm ${data._meta.nam_du_lieu})`;
 
-                // Trends
                 const xuHuong = data.chung.xu_huong_trien_vong;
                 document.getElementById("input-sec6").value = xuHuong ? xuHuong.noi_dung : "";
 
-                // Competitiveness
                 const comp12 = data.lop_12.muc_do_canh_tranh;
                 document.getElementById("input-comp-level").value = "Cao";
                 document.getElementById("input-sec7").value = comp12 ? `${comp12.mo_dau}\n\n` + comp12.chi_tiet.map(ct => `- **${ct.cap_do}:** ${ct.mo_ta}`).join('\n') : "";
 
-                // Stars rating defaults for the form (Gemini returns difficulty ratings out of 5 stars)
                 const difficulty = data.lop_12.danh_gia_do_kho;
                 const difficultyMap = {
                     "Điểm chuẩn đầu vào": "demand",
@@ -2117,13 +2233,7 @@ function initIndustryCreator() {
                     "Yêu cầu ngoại ngữ": "salary"
                 };
 
-                const starsVal = {
-                    demand: 4,
-                    salary: 4,
-                    growth: 4,
-                    comp: 3,
-                    stress: 4
-                };
+                const starsVal = { demand: 4, salary: 4, growth: 4, comp: 3, stress: 4 };
 
                 if (difficulty) {
                     difficulty.forEach(item => {
@@ -2135,7 +2245,6 @@ function initIndustryCreator() {
                     });
                 }
 
-                // Apply stars UI
                 for (let k in starsVal) {
                     const val = starsVal[k];
                     const picker = document.querySelector(`.stars-picker[data-rating-id="rating-${k}"]`);
@@ -2148,27 +2257,33 @@ function initIndustryCreator() {
                     }
                 }
 
-                // Conclusion
                 const concl12 = data.lop_12.ket_luan;
                 document.getElementById("input-sec9").value = concl12 ? `${concl12.doan_1}\n\n${concl12.doan_2}` : "";
 
                 updatePreview();
-                statusMsg.textContent = `Tự sinh cẩm nang ngành "${data.ten_nganh}" bằng AI thành công! Dữ liệu đã được nạp và lưu trữ.`;
+                
+                step3.className = "ai-progress-item success";
+                step3.querySelector("i").className = "fa-solid fa-circle-check";
+                
+                statusMsg.textContent = `Tự sinh cẩm nang ngành "${data.ten_nganh}" bằng AI thành công!`;
                 statusMsg.className = "save-status-msg success";
+                
+                setTimeout(() => {
+                    aiBackdrop.classList.remove("active");
+                }, 1000);
 
             } catch (err) {
                 console.error(err);
                 statusMsg.textContent = `Thất bại khi sinh AI: ${err.message}`;
                 statusMsg.className = "save-status-msg error";
-                alert(`Lỗi sinh dữ liệu cẩm nang: ${err.message}\n\nHãy chắc chắn bạn đã khởi chạy server Python online tại địa chỉ https://educareer-ai.onrender.com`);
-            } finally {
-                aiBtn.innerHTML = originalText;
-                aiBtn.disabled = false;
+                alert(`Lỗi sinh dữ liệu cẩm nang: ${err.message}`);
+                aiInputView.style.display = "block";
+                aiLoadingView.style.display = "none";
             }
         });
     }
 
-    // C. Fill Demo CNTT
+    // --- E. Load Demo CNTT ---
     demoBtn.addEventListener("click", (e) => {
         e.preventDefault();
         const demoData = DEFAULT_INDUSTRIES[0];
@@ -2214,7 +2329,7 @@ function initIndustryCreator() {
         setTimeout(() => { statusMsg.textContent = ""; }, 3000);
     });
 
-    // D. Clear Form
+    // --- F. Clear Form ---
     clearBtn.addEventListener("click", (e) => {
         e.preventDefault();
         form.reset();
@@ -2241,7 +2356,7 @@ function initIndustryCreator() {
         setTimeout(() => { statusMsg.textContent = ""; }, 3000);
     });
 
-    // E. Save Industry (Form Submit)
+    // --- G. Save Industry (Form Submit) ---
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         
@@ -2250,6 +2365,7 @@ function initIndustryCreator() {
             if (ratingValues[ratingId] === 0) {
                 statusMsg.textContent = "Vui lòng chọn xếp hạng sao cho phần 8 (Đánh giá tổng quan)!";
                 statusMsg.className = "save-status-msg error";
+                alert("Vui lòng xếp hạng sao đầy đủ ở Tab 4!");
                 return;
             }
         }
@@ -2278,7 +2394,6 @@ function initIndustryCreator() {
             .replace(/\s+/g, "_"); // spaces to underscores
 
         // Get current user details for tracking
-        const sb = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
         let userId = null;
         let userEmail = null;
         if (sb) {
@@ -2333,7 +2448,6 @@ function initIndustryCreator() {
             }
         }
 
-        // Replace if already exists or add new
         const existIndex = customList.findIndex(item => item.id === slug || item.title.toLowerCase() === title.toLowerCase());
         if (existIndex !== -1) {
             newIndustry.id = customList[existIndex].id; // maintain exact same ID
@@ -2348,40 +2462,192 @@ function initIndustryCreator() {
             statusMsg.textContent = "Đang gửi lên cơ sở dữ liệu đám mây Supabase...";
             statusMsg.className = "save-status-msg warning";
             
-            sb.from('careers').upsert({
-                id: slug,
-                title: title,
-                category: category,
-                desc: desc,
-                data: newIndustry
-            }).then(({ error }) => {
-                if (error) {
-                    console.error("Lỗi lưu Supabase:", error);
-                    statusMsg.textContent = "Lưu cục bộ thành công! Nhưng gặp lỗi khi đẩy lên đám mây.";
-                    statusMsg.className = "save-status-msg error";
-                } else {
-                    console.log("Đã lưu cẩm nang lên Supabase thành công!");
-                    statusMsg.textContent = "Lưu thành công lên đám mây Supabase và tích hợp vào cẩm nang!";
-                    statusMsg.className = "save-status-msg success";
+            try {
+                const { error } = await sb.from('careers').upsert({
+                    id: slug,
+                    title: title,
+                    category: category,
+                    desc: desc,
+                    data: newIndustry
+                });
+
+                if (error) throw error;
+
+                console.log("Đã lưu cẩm nang lên Supabase thành công!");
+                statusMsg.textContent = "Lưu thành công lên đám mây Supabase và tích hợp vào cẩm nang!";
+                statusMsg.className = "save-status-msg success";
+                alert(`Lưu cẩm nang ngành "${title}" thành công!`);
+
+                // Switch to Tab 5 (Handbook Library) to view list
+                const libTabBtn = document.getElementById("btn-tab-library");
+                if (libTabBtn) {
+                    libTabBtn.click();
                 }
-            }).catch(err => {
-                console.error("Lỗi kết nối Supabase:", err);
-                statusMsg.textContent = "Lưu cục bộ thành công! Lỗi kết nối đám mây.";
+            } catch (error) {
+                console.error("Lỗi lưu Supabase:", error);
+                statusMsg.textContent = "Lưu cục bộ thành công! Nhưng gặp lỗi khi đẩy lên đám mây.";
                 statusMsg.className = "save-status-msg error";
-            });
+                alert(`Lưu cục bộ thành công nhưng gặp lỗi đám mây: ${error.message}`);
+            }
         } else {
             statusMsg.textContent = "Lưu thành công! Ngành học đã được tích hợp vào cẩm nang cục bộ.";
             statusMsg.className = "save-status-msg success";
+            alert(`Lưu cẩm nang cục bộ thành công!`);
+        }
+    });
+
+    // --- H. Handbook Library Loader, Edit, & Delete logic ---
+    async function loadHandbookLibrary() {
+        const tableBody = document.getElementById("library-table-body");
+        if (!tableBody) return;
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="3" style="text-align:center; color:#64748b; padding:20px;">
+                    <i class="fa-solid fa-spinner fa-spin" style="margin-right:6px;"></i> Đang tải cẩm nang từ Supabase...
+                </td>
+            </tr>
+        `;
+
+        if (!sb) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align:center; color:#ef4444; padding:20px;">
+                        Không kết nối được với Supabase. Vui lòng kiểm tra cấu hình.
+                    </td>
+                </tr>
+            `;
+            return;
         }
 
-        statusMsg.textContent = "Lưu thành công! Ngành học đã được tích hợp vào Cẩm nang.";
+        try {
+            const { data: careers, error } = await sb.from("careers").select("*").order("title", { ascending: true });
+            if (error) throw error;
+
+            if (!careers || careers.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align:center; color:#94a3b8; padding:20px;">
+                            Thư viện trống. Chưa có cẩm nang tự tạo nào trên đám mây.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = "";
+            careers.forEach(item => {
+                let catBadge = `<span class="badge-cat tech">Công nghệ</span>`;
+                if (item.category === "biz") catBadge = `<span class="badge-cat biz">Kinh tế</span>`;
+                if (item.category === "art") catBadge = `<span class="badge-cat art">Mỹ thuật</span>`;
+
+                html += `
+                    <tr data-career-id="${item.id}">
+                        <td style="font-weight:700; color:#f8fafc;">${item.title}</td>
+                        <td>${catBadge}</td>
+                        <td style="text-align:center;">
+                            <div class="lib-actions">
+                                <button type="button" class="btn-lib-sm btn-lib-edit" data-edit-id="${item.id}">
+                                    <i class="fa-solid fa-pen-to-square"></i> Sửa
+                                </button>
+                                <button type="button" class="btn-lib-sm btn-lib-delete" data-delete-id="${item.id}">
+                                    <i class="fa-solid fa-trash-can"></i> Xóa
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = html;
+
+            // Bind click listeners for Edit and Delete
+            tableBody.querySelectorAll(".btn-lib-edit").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const careerId = btn.getAttribute("data-edit-id");
+                    const found = careers.find(c => c.id === careerId);
+                    if (found && found.data) {
+                        loadIndustryToForm(found.data);
+                    }
+                });
+            });
+
+            tableBody.querySelectorAll(".btn-lib-delete").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const careerId = btn.getAttribute("data-delete-id");
+                    const found = careers.find(c => c.id === careerId);
+                    if (!found) return;
+
+                    if (confirm(`Bạn có chắc chắn muốn xóa cẩm nang ngành "${found.title}" khỏi Supabase không?`)) {
+                        try {
+                            btn.disabled = true;
+                            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Xóa...`;
+                            const { error: delErr } = await sb.from("careers").delete().eq("id", careerId);
+                            if (delErr) throw delErr;
+
+                            alert(`Đã xóa cẩm nang "${found.title}" thành công!`);
+                            loadHandbookLibrary();
+                        } catch (err) {
+                            alert(`Lỗi khi xóa: ${err.message}`);
+                            btn.disabled = false;
+                            btn.innerHTML = `<i class="fa-solid fa-trash-can"></i> Xóa`;
+                        }
+                    }
+                });
+            });
+
+        } catch (err) {
+            console.error("Lỗi tải thư viện cẩm nang:", err);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="3" style="text-align:center; color:#ef4444; padding:20px;">
+                        Lỗi tải dữ liệu: ${err.message}
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    // Helper to load a handbook back into the form fields
+    function loadIndustryToForm(ind) {
+        document.getElementById("input-title").value = ind.title || "";
+        document.getElementById("input-category").value = ind.category || "tech";
+        document.getElementById("input-desc").value = ind.desc || "";
+        document.getElementById("input-sec1").value = ind.sec1 || "";
+        document.getElementById("input-sec2").value = ind.sec2 || "";
+        document.getElementById("input-sec3").value = ind.sec3 || "";
+        document.getElementById("input-sec4").value = ind.sec4 || "";
+        document.getElementById("input-salary-intern").value = ind.salaryIntern || "";
+        document.getElementById("input-salary-fresh").value = ind.salaryFresh || "";
+        document.getElementById("input-salary-exp").value = ind.salaryExp || "";
+        document.getElementById("input-salary-notes").value = ind.salaryNotes || "";
+        document.getElementById("input-sec6").value = ind.sec6 || "";
+        document.getElementById("input-comp-level").value = ind.compLevel || "Cao";
+        document.getElementById("input-sec7").value = ind.sec7 || "";
+        document.getElementById("input-sec9").value = ind.sec9 || "";
+
+        // Fill star pickers
+        for (let ratingId in ratingValues) {
+            const key = ratingId.replace("rating-", "");
+            const val = (ind.ratings && ind.ratings[key]) ? ind.ratings[key] : 0;
+            ratingValues[ratingId] = val;
+            
+            const picker = document.querySelector(`.stars-picker[data-rating-id="${ratingId}"]`);
+            if (picker) {
+                picker.setAttribute("data-selected-val", val);
+                picker.querySelectorAll("i").forEach((s, idx) => {
+                    s.className = idx < val ? "fa-solid fa-star active" : "fa-regular fa-star";
+                });
+            }
+        }
+
+        // Switch tab to Step 1 (Tổng quan)
+        const tabBtn1 = document.querySelector('.wizard-tab-btn[data-tab-target="step-1"]');
+        if (tabBtn1) tabBtn1.click();
+
+        updatePreview();
+        statusMsg.textContent = `Đã tải dữ liệu cẩm nang ngành "${ind.title}" vào biểu mẫu để chỉnh sửa!`;
         statusMsg.className = "save-status-msg success";
-        
-        // Show alert overlay and redirect option
-        setTimeout(() => {
-            alert(`Lưu ngành ${title} thành công! Bạn có thể truy cập danh mục cẩm nang để kiểm tra.`);
-        }, 100);
-    });
+    }
 }
 
 // Global Sound Management System (SoundManager)

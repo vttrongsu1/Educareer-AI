@@ -9,6 +9,229 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Wizard Tab buttons styles */
+        .form-wizard-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: rgba(30, 41, 59, 0.7);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow-x: auto;
+        }
+        .wizard-tab-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .wizard-tab-btn:hover {
+            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .wizard-tab-btn.active {
+            color: #0f172a;
+            background: #f59e0b; /* Amber/Orange primary admin color */
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+        .wizard-tab-btn .tab-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.75rem;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+        .wizard-tab-btn.active .tab-num {
+            background: rgba(0, 0, 0, 0.15);
+            color: #0f172a;
+        }
+
+        /* Wizard container steps */
+        .wizard-tab-content {
+            display: none;
+            animation: fadeInTab 0.3s ease forwards;
+        }
+        .wizard-tab-content.active {
+            display: block;
+        }
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* AI Generator Modal styles */
+        .ai-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ai-modal-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .ai-modal-card {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ai-modal-backdrop.active .ai-modal-card {
+            transform: scale(1);
+        }
+        .ai-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .ai-modal-header i {
+            font-size: 1.8rem;
+            color: #06b6d4;
+        }
+        .ai-modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #f8fafc;
+        }
+        .ai-modal-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        .ai-modal-close:hover {
+            color: #f8fafc;
+        }
+        .ai-modal-progress-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .ai-progress-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s;
+        }
+        .ai-progress-item.active {
+            color: #06b6d4;
+            border-color: rgba(6, 182, 212, 0.2);
+            background: rgba(6, 182, 212, 0.05);
+        }
+        .ai-progress-item.success {
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        /* Handbook library directory styles */
+        .library-table-wrapper {
+            margin-top: 10px;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .library-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+            background: #1e293b;
+        }
+        .library-table th {
+            background: #0f172a;
+            padding: 12px 16px;
+            font-weight: 700;
+            color: #94a3b8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .library-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: #cbd5e1;
+        }
+        .library-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .badge-cat {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .badge-cat.tech { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+        .badge-cat.biz { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .badge-cat.art { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+        .lib-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+        .btn-lib-sm {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .btn-lib-edit { background: #2563eb; color: white; }
+        .btn-lib-edit:hover { background: #1d4ed8; }
+        .btn-lib-delete { background: #ef4444; color: white; }
+        .btn-lib-delete:hover { background: #dc2626; }
+    </style>
 </head>
 <body>
 
@@ -64,189 +287,253 @@
                             </div>
                         </div>
 
+                        <!-- Form Tabs Navigator -->
+                        <div class="form-wizard-tabs">
+                            <button type="button" class="wizard-tab-btn active" data-tab-target="step-1">
+                                <span class="tab-num">1</span>
+                                <span class="tab-txt">Tổng quan</span>
+                            </button>
+                            <button type="button" class="wizard-tab-btn" data-tab-target="step-2">
+                                <span class="tab-num">2</span>
+                                <span class="tab-txt">Đào tạo</span>
+                            </button>
+                            <button type="button" class="wizard-tab-btn" data-tab-target="step-3">
+                                <span class="tab-num">3</span>
+                                <span class="tab-txt">Việc làm & Lương</span>
+                            </button>
+                            <button type="button" class="wizard-tab-btn" data-tab-target="step-4">
+                                <span class="tab-num">4</span>
+                                <span class="tab-txt">Đánh giá</span>
+                            </button>
+                            <button type="button" class="wizard-tab-btn" data-tab-target="step-5" id="btn-tab-library">
+                                <span class="tab-num"><i class="fa-solid fa-folder-open"></i></span>
+                                <span class="tab-txt">Thư viện</span>
+                            </button>
+                        </div>
+
                         <form id="industry-editor-form" class="creator-form">
-                            <!-- Basic Information -->
-                            <div class="form-section-card">
-                                <h4><i class="fa-solid fa-circle-info"></i> Thông tin cơ bản</h4>
-                                <div class="form-row-2">
-                                    <div class="form-group">
-                                        <label for="input-title">Tên ngành học *</label>
-                                        <input type="text" id="input-title" placeholder="Ví dụ: Công Nghệ Thông Tin (CNTT)" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="input-category">Phân nhóm ngành *</label>
-                                        <select id="input-category" required>
-                                            <option value="tech">Công nghệ & Kỹ thuật</option>
-                                            <option value="biz">Kinh tế & Quản lý</option>
-                                            <option value="art">Nghệ thuật & Thiết kế</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="input-desc">Mô tả ngắn gọn (Hiển thị ở trang danh mục) *</label>
-                                    <textarea id="input-desc" rows="2" placeholder="Tóm tắt ngắn gọn lĩnh vực này để thu hút học sinh..." required></textarea>
-                                </div>
-                            </div>
-
-                            <!-- 1. Giới thiệu ngành -->
-                            <div class="form-section-card">
-                                <h4>1. Giới thiệu ngành</h4>
-                                <div class="form-group">
-                                    <label for="input-sec1">Ngành là gì? Vai trò của ngành & Ví dụ thực tế *</label>
-                                    <textarea id="input-sec1" rows="4" placeholder="Ví dụ: Lĩnh vực nghiên cứu chuyên sâu về máy tính... Giúp kết nối... Ví dụ: Facebook, ChatGPT..." required></textarea>
-                                </div>
-                            </div>
-
-                            <!-- 2. Chương trình đào tạo -->
-                            <div class="form-section-card">
-                                <h4>2. Chương trình đào tạo</h4>
-                                <div class="form-group">
-                                    <label for="input-sec2">Nội dung đào tạo & môn học nổi bật *</label>
-                                    <textarea id="input-sec2" rows="4" placeholder="Ví dụ: Trang bị kiến thức từ cơ bản đến nâng cao bao gồm lập trình máy tính, cơ sở dữ liệu..." required></textarea>
-                                </div>
-                            </div>
-
-                            <!-- 3. Tố chất phù hợp -->
-                            <div class="form-section-card">
-                                <h4>3. Tố chất phù hợp</h4>
-                                <div class="form-group">
-                                    <label for="input-sec3">Sở thích, đặc điểm & kỹ năng cần thiết *</label>
-                                    <textarea id="input-sec3" rows="4" placeholder="Ví dụ: Đam mê công nghệ, tư duy logic, sự kiên nhẫn khi gõ code..." required></textarea>
-                                </div>
-                            </div>
-
-                            <!-- 4. Triển vọng nghề nghiệp -->
-                            <div class="form-section-card">
-                                <h4>4. Triển vọng nghề nghiệp</h4>
-                                <div class="form-group">
-                                    <label for="input-sec4">Các vị trí công việc & môi trường làm việc sau tốt nghiệp *</label>
-                                    <textarea id="input-sec4" rows="4" placeholder="Ví dụ: Lập trình viên, Kỹ sư phần mềm, Chuyên gia AI..." required></textarea>
-                                </div>
-                            </div>
-
-                            <!-- 5. Mức lương tham khảo -->
-                            <div class="form-section-card">
-                                <h4>5. Mức lương tham khảo</h4>
-                                <div class="form-row-3">
-                                    <div class="form-group">
-                                        <label for="input-salary-intern">Thực tập sinh</label>
-                                        <input type="text" id="input-salary-intern" placeholder="Ví dụ: 3 - 6 triệu đồng/tháng">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="input-salary-fresh">Mới tốt nghiệp *</label>
-                                        <input type="text" id="input-salary-fresh" placeholder="Ví dụ: 8 - 15 triệu đồng/tháng" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="input-salary-exp">Có kinh nghiệm *</label>
-                                        <input type="text" id="input-salary-exp" placeholder="Ví dụ: 15 - 30 triệu đồng/tháng" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="input-salary-notes">Giải thích thêm về khả năng tăng thu nhập</label>
-                                    <textarea id="input-salary-notes" rows="2" placeholder="Ví dụ: Tùy thuộc vào năng lực chuyên môn và khả năng ngoại ngữ..."></textarea>
-                                </div>
-                            </div>
-
-                            <!-- 6. Xu hướng hiện nay -->
-                            <div class="form-section-card">
-                                <h4>6. Xu hướng và độ hot của ngành</h4>
-                                <div class="form-group">
-                                    <label for="input-sec6">Sự phát triển, nhu cầu & xu hướng tương lai *</label>
-                                    <textarea id="input-sec6" rows="4" placeholder="Ví dụ: Chuyển đổi số mạnh mẽ thúc đẩy nhu cầu cao. Xu hướng AI, IoT tăng trưởng..." required></textarea>
-                                </div>
-                            </div>
-
-                            <!-- 7. Mức độ cạnh tranh -->
-                            <div class="form-section-card">
-                                <h4>7. Mức độ cạnh tranh</h4>
-                                <div class="form-row-2">
-                                    <div class="form-group">
-                                        <label for="input-comp-level">Đánh giá mức độ</label>
-                                        <select id="input-comp-level">
-                                            <option value="Cao">Cao</option>
-                                            <option value="Trung bình">Trung bình</option>
-                                            <option value="Thấp">Thấp</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="input-sec7">Lý do & Cách tạo lợi thế vượt trội *</label>
-                                        <input type="text" id="input-sec7" placeholder="Ví dụ: Cạnh tranh cao vì lượng học sinh đông. Lợi thế: Thành thạo tiếng Anh..." required>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 8. Đánh giá tổng quan (Stars) -->
-                            <div class="form-section-card">
-                                <h4>8. Đánh giá tổng quan (Xếp hạng từ 1 - 5 sao)</h4>
-                                <div class="star-rating-editor">
-                                    <div class="star-group">
-                                        <span>Nhu cầu nhân lực</span>
-                                        <div class="stars-picker" data-rating-id="rating-demand">
-                                            <i class="fa-regular fa-star" data-value="1"></i>
-                                            <i class="fa-regular fa-star" data-value="2"></i>
-                                            <i class="fa-regular fa-star" data-value="3"></i>
-                                            <i class="fa-regular fa-star" data-value="4"></i>
-                                            <i class="fa-regular fa-star" data-value="5"></i>
+                            <!-- STEP 1: GENERAL OVERVIEW -->
+                            <div class="wizard-tab-content active" id="step-1">
+                                <!-- Basic Information -->
+                                <div class="form-section-card">
+                                    <h4><i class="fa-solid fa-circle-info"></i> Thông tin cơ bản</h4>
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label for="input-title">Tên ngành học *</label>
+                                            <input type="text" id="input-title" placeholder="Ví dụ: Công Nghệ Thông Tin (CNTT)" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="input-category">Phân nhóm ngành *</label>
+                                            <select id="input-category" required>
+                                                <option value="tech">Công nghệ & Kỹ thuật</option>
+                                                <option value="biz">Kinh tế & Quản lý</option>
+                                                <option value="art">Nghệ thuật & Thiết kế</option>
+                                            </select>
                                         </div>
                                     </div>
-                                    <div class="star-group">
-                                        <span>Mức lương trung bình</span>
-                                        <div class="stars-picker" data-rating-id="rating-salary">
-                                            <i class="fa-regular fa-star" data-value="1"></i>
-                                            <i class="fa-regular fa-star" data-value="2"></i>
-                                            <i class="fa-regular fa-star" data-value="3"></i>
-                                            <i class="fa-regular fa-star" data-value="4"></i>
-                                            <i class="fa-regular fa-star" data-value="5"></i>
+                                    <div class="form-group">
+                                        <label for="input-desc">Mô tả ngắn gọn (Hiển thị ở trang danh mục) *</label>
+                                        <textarea id="input-desc" rows="2" placeholder="Tóm tắt ngắn gọn lĩnh vực này để thu hút học sinh..." required></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- 1. Giới thiệu ngành -->
+                                <div class="form-section-card">
+                                    <h4>1. Giới thiệu ngành</h4>
+                                    <div class="form-group">
+                                        <label for="input-sec1">Ngành là gì? Vai trò của ngành & Ví dụ thực tế *</label>
+                                        <textarea id="input-sec1" rows="4" placeholder="Ví dụ: Lĩnh vực nghiên cứu chuyên sâu về máy tính... Giúp kết nối... Ví dụ: Facebook, ChatGPT..." required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 2: EDUCATION AND QUALITIES -->
+                            <div class="wizard-tab-content" id="step-2">
+                                <!-- 2. Chương trình đào tạo -->
+                                <div class="form-section-card">
+                                    <h4>2. Chương trình đào tạo</h4>
+                                    <div class="form-group">
+                                        <label for="input-sec2">Nội dung đào tạo & môn học nổi bật *</label>
+                                        <textarea id="input-sec2" rows="4" placeholder="Ví dụ: Trang bị kiến thức từ cơ bản đến nâng cao bao gồm lập trình máy tính, cơ sở dữ liệu..." required></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Tố chất phù hợp -->
+                                <div class="form-section-card">
+                                    <h4>3. Tố chất phù hợp</h4>
+                                    <div class="form-group">
+                                        <label for="input-sec3">Sở thích, đặc điểm & kỹ năng cần thiết *</label>
+                                        <textarea id="input-sec3" rows="4" placeholder="Ví dụ: Đam mê công nghệ, tư duy logic, sự kiên nhẫn khi gõ code..." required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 3: CAREER OUTLOOK & SALARY -->
+                            <div class="wizard-tab-content" id="step-3">
+                                <!-- 4. Triển vọng nghề nghiệp -->
+                                <div class="form-section-card">
+                                    <h4>4. Triển vọng nghề nghiệp</h4>
+                                    <div class="form-group">
+                                        <label for="input-sec4">Các vị trí công việc & môi trường làm việc sau tốt nghiệp *</label>
+                                        <textarea id="input-sec4" rows="4" placeholder="Ví dụ: Lập trình viên, Kỹ sư phần mềm, Chuyên gia AI..." required></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- 5. Mức lương tham khảo -->
+                                <div class="form-section-card">
+                                    <h4>5. Mức lương tham khảo</h4>
+                                    <div class="form-row-3">
+                                        <div class="form-group">
+                                            <label for="input-salary-intern">Thực tập sinh</label>
+                                            <input type="text" id="input-salary-intern" placeholder="Ví dụ: 3 - 6 triệu đồng/tháng">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="input-salary-fresh">Mới tốt nghiệp *</label>
+                                            <input type="text" id="input-salary-fresh" placeholder="Ví dụ: 8 - 15 triệu đồng/tháng" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="input-salary-exp">Có kinh nghiệm *</label>
+                                            <input type="text" id="input-salary-exp" placeholder="Ví dụ: 15 - 30 triệu đồng/tháng" required>
                                         </div>
                                     </div>
-                                    <div class="star-group">
-                                        <span>Cơ hội phát triển</span>
-                                        <div class="stars-picker" data-rating-id="rating-growth">
-                                            <i class="fa-regular fa-star" data-value="1"></i>
-                                            <i class="fa-regular fa-star" data-value="2"></i>
-                                            <i class="fa-regular fa-star" data-value="3"></i>
-                                            <i class="fa-regular fa-star" data-value="4"></i>
-                                            <i class="fa-regular fa-star" data-value="5"></i>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="input-salary-notes">Giải thích thêm về khả năng tăng thu nhập</label>
+                                        <textarea id="input-salary-notes" rows="2" placeholder="Ví dụ: Tùy thuộc vào năng lực chuyên môn và khả năng ngoại ngữ..."></textarea>
                                     </div>
-                                    <div class="star-group">
-                                        <span>Độ cạnh tranh</span>
-                                        <div class="stars-picker" data-rating-id="rating-comp">
-                                            <i class="fa-regular fa-star" data-value="1"></i>
-                                            <i class="fa-regular fa-star" data-value="2"></i>
-                                            <i class="fa-regular fa-star" data-value="3"></i>
-                                            <i class="fa-regular fa-star" data-value="4"></i>
-                                            <i class="fa-regular fa-star" data-value="5"></i>
-                                        </div>
+                                </div>
+
+                                <!-- 6. Xu hướng hiện nay -->
+                                <div class="form-section-card">
+                                    <h4>6. Xu hướng và độ hot của ngành</h4>
+                                    <div class="form-group">
+                                        <label for="input-sec6">Sự phát triển, nhu cầu & xu hướng tương lai *</label>
+                                        <textarea id="input-sec6" rows="4" placeholder="Ví dụ: Chuyển đổi số mạnh mẽ thúc đẩy nhu cầu cao. Xu hướng AI, IoT tăng trưởng..." required></textarea>
                                     </div>
-                                    <div class="star-group">
-                                        <span>Áp lực học tập</span>
-                                        <div class="stars-picker" data-rating-id="rating-stress">
-                                            <i class="fa-regular fa-star" data-value="1"></i>
-                                            <i class="fa-regular fa-star" data-value="2"></i>
-                                            <i class="fa-regular fa-star" data-value="3"></i>
-                                            <i class="fa-regular fa-star" data-value="4"></i>
-                                            <i class="fa-regular fa-star" data-value="5"></i>
+                                </div>
+                            </div>
+
+                            <!-- STEP 4: COMPETITION AND RATINGS -->
+                            <div class="wizard-tab-content" id="step-4">
+                                <!-- 7. Mức độ cạnh tranh -->
+                                <div class="form-section-card">
+                                    <h4>7. Mức độ cạnh tranh</h4>
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label for="input-comp-level">Đánh giá mức độ</label>
+                                            <select id="input-comp-level">
+                                                <option value="Cao">Cao</option>
+                                                <option value="Trung bình">Trung bình</option>
+                                                <option value="Thấp">Thấp</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="input-sec7">Lý do & Cách tạo lợi thế vượt trội *</label>
+                                            <input type="text" id="input-sec7" placeholder="Ví dụ: Cạnh tranh cao vì lượng học sinh đông. Lợi thế: Thành thạo tiếng Anh..." required>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- 9. Kết luận -->
-                            <div class="form-section-card">
-                                <h4>9. Kết luận</h4>
-                                <div class="form-group">
-                                    <label for="input-sec9">Tóm tắt ưu điểm & Lời khuyên cho học sinh *</label>
-                                    <textarea id="input-sec9" rows="4" placeholder="Ví dụ: Đây là lĩnh vực đáng học... Lời khuyên: Học sinh nên rèn luyện tư duy tự học..." required></textarea>
+                                <!-- 8. Đánh giá tổng quan (Stars) -->
+                                <div class="form-section-card">
+                                    <h4>8. Đánh giá tổng quan (Xếp hạng từ 1 - 5 sao)</h4>
+                                    <div class="star-rating-editor">
+                                        <div class="star-group">
+                                            <span>Nhu cầu nhân lực</span>
+                                            <div class="stars-picker" data-rating-id="rating-demand">
+                                                <i class="fa-regular fa-star" data-value="1"></i>
+                                                <i class="fa-regular fa-star" data-value="2"></i>
+                                                <i class="fa-regular fa-star" data-value="3"></i>
+                                                <i class="fa-regular fa-star" data-value="4"></i>
+                                                <i class="fa-regular fa-star" data-value="5"></i>
+                                            </div>
+                                        </div>
+                                        <div class="star-group">
+                                            <span>Mức lương trung bình</span>
+                                            <div class="stars-picker" data-rating-id="rating-salary">
+                                                <i class="fa-regular fa-star" data-value="1"></i>
+                                                <i class="fa-regular fa-star" data-value="2"></i>
+                                                <i class="fa-regular fa-star" data-value="3"></i>
+                                                <i class="fa-regular fa-star" data-value="4"></i>
+                                                <i class="fa-regular fa-star" data-value="5"></i>
+                                            </div>
+                                        </div>
+                                        <div class="star-group">
+                                            <span>Cơ hội phát triển</span>
+                                            <div class="stars-picker" data-rating-id="rating-growth">
+                                                <i class="fa-regular fa-star" data-value="1"></i>
+                                                <i class="fa-regular fa-star" data-value="2"></i>
+                                                <i class="fa-regular fa-star" data-value="3"></i>
+                                                <i class="fa-regular fa-star" data-value="4"></i>
+                                                <i class="fa-regular fa-star" data-value="5"></i>
+                                            </div>
+                                        </div>
+                                        <div class="star-group">
+                                            <span>Độ cạnh tranh</span>
+                                            <div class="stars-picker" data-rating-id="rating-comp">
+                                                <i class="fa-regular fa-star" data-value="1"></i>
+                                                <i class="fa-regular fa-star" data-value="2"></i>
+                                                <i class="fa-regular fa-star" data-value="3"></i>
+                                                <i class="fa-regular fa-star" data-value="4"></i>
+                                                <i class="fa-regular fa-star" data-value="5"></i>
+                                            </div>
+                                        </div>
+                                        <div class="star-group">
+                                            <span>Áp lực học tập</span>
+                                            <div class="stars-picker" data-rating-id="rating-stress">
+                                                <i class="fa-regular fa-star" data-value="1"></i>
+                                                <i class="fa-regular fa-star" data-value="2"></i>
+                                                <i class="fa-regular fa-star" data-value="3"></i>
+                                                <i class="fa-regular fa-star" data-value="4"></i>
+                                                <i class="fa-regular fa-star" data-value="5"></i>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Save / Submit -->
-                            <div class="form-actions-block">
-                                <button type="submit" class="btn btn-primary btn-lg" id="btn-save-industry"><i class="fa-solid fa-floppy-disk"></i> Lưu & Cập nhật Cẩm nang</button>
-                                <span class="save-status-msg" id="save-status-msg"></span>
+                                <!-- 9. Kết luận -->
+                                <div class="form-section-card">
+                                    <h4>9. Kết luận</h4>
+                                    <div class="form-group">
+                                        <label for="input-sec9">Tóm tắt ưu điểm & Lời khuyên cho học sinh *</label>
+                                        <textarea id="input-sec9" rows="4" placeholder="Ví dụ: Đây là lĩnh vực đáng học... Lời khuyên: Học sinh nên rèn luyện tư duy tự học..." required></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Save / Submit -->
+                                <div class="form-actions-block">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="btn-save-industry"><i class="fa-solid fa-floppy-disk"></i> Lưu & Cập nhật Cẩm nang</button>
+                                    <span class="save-status-msg" id="save-status-msg"></span>
+                                </div>
                             </div>
                         </form>
+
+                        <!-- STEP 5: HANDBOOK LIBRARY DIRECTORY -->
+                        <div class="wizard-tab-content" id="step-5">
+                            <div class="form-section-card" style="margin-top:0;">
+                                <h4><i class="fa-solid fa-folder-open"></i> Thư viện cẩm nang đã tạo</h4>
+                                <p style="font-size:0.8rem; color:#94a3b8; margin-bottom:16px;">
+                                    Danh sách các cẩm nang tự sinh hoặc soạn thảo thủ công được đồng bộ trên đám mây Supabase.
+                                </p>
+                                <div class="library-table-wrapper">
+                                    <table class="library-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Ngành học</th>
+                                                <th>Phân nhóm</th>
+                                                <th style="width:180px; text-align:center;">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="library-table-body">
+                                            <tr>
+                                                <td colspan="3" style="text-align:center; color:#64748b; padding:20px;">
+                                                    <i class="fa-solid fa-spinner fa-spin" style="margin-right:6px;"></i> Đang tải danh sách...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Right Column: Instant Preview and actions -->
@@ -329,6 +616,55 @@
         <i class="fa-solid fa-comment-dots"></i>
         <span>Tư vấn AI</span>
     </a>
+
+    <!-- AI Generator Modal Overlay -->
+    <div class="ai-modal-backdrop" id="ai-generator-backdrop">
+        <div class="ai-modal-card">
+            <div class="ai-modal-header">
+                <i class="fa-solid fa-brain"></i>
+                <h3>Trợ lý Sinh Cẩm nang AI</h3>
+                <button class="ai-modal-close" id="btn-close-ai-modal">&times;</button>
+            </div>
+            
+            <div id="ai-modal-input-view">
+                <p style="font-size:0.85rem; color:#94a3b8; line-height:1.5; margin-bottom:16px;">
+                    Nhập tên ngành học bạn muốn biên soạn. Trợ lý AI sẽ kết hợp Google Search để tìm kiếm thông tin tuyển sinh thật tại Việt Nam và sinh toàn bộ cẩm nang theo cấu trúc chuẩn.
+                </p>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label for="ai-career-input" style="color:#f8fafc; font-size:0.85rem; font-weight:700; margin-bottom:8px; display:block;">Tên ngành học muốn sinh</label>
+                    <input type="text" id="ai-career-input" placeholder="Ví dụ: Logistics và Quản lý Chuỗi cung ứng" style="width:100%; padding:12px; background:#0f172a; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:white; font-family:inherit;">
+                </div>
+                <button class="btn btn-primary btn-lg" id="btn-submit-ai-generate" style="width:100%;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Bắt đầu sinh bằng AI
+                </button>
+            </div>
+
+            <div id="ai-modal-loading-view" style="display:none;">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div style="font-size:2.5rem; color:#06b6d4; margin-bottom:12px;">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                    </div>
+                    <h4 style="color:white; margin:0; font-size:1.1rem;">AI đang xử lý yêu cầu...</h4>
+                    <p style="font-size:0.8rem; color:#64748b; margin-top:6px;">Quá trình tra cứu và tổng hợp mất khoảng 15-25 giây.</p>
+                </div>
+                
+                <div class="ai-modal-progress-list">
+                    <div class="ai-progress-item" id="prog-step-1">
+                        <i class="fa-regular fa-circle"></i>
+                        <span>1. Tra cứu điểm chuẩn & thông tin tuyển sinh qua Google Search</span>
+                    </div>
+                    <div class="ai-progress-item" id="prog-step-2">
+                        <i class="fa-regular fa-circle"></i>
+                        <span>2. Biên dịch và bóc tách cấu trúc cẩm nang bằng Gemini AI</span>
+                    </div>
+                    <div class="ai-progress-item" id="prog-step-3">
+                        <i class="fa-regular fa-circle"></i>
+                        <span>3. Hoàn tất & đồng bộ dữ liệu vào biểu mẫu chỉnh sửa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Interactivity Script -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
