@@ -763,15 +763,23 @@ async def consult_bot(req: ChatRequest):
             
         # Build a concise student profile context for VNPT SmartBot
         s_name = req.student_data.get("studentName") or "Học sinh"
-        s_grade = req.student_data.get("classNumber") or "Chưa rõ"
-        s_holland = req.student_data.get("hollandResult") or "Chưa làm trắc nghiệm"
-        s_mbti = req.student_data.get("mbtiResult") or "Chưa làm trắc nghiệm"
+        s_grade = req.student_data.get("gradeClass") or req.student_data.get("classNumber") or "Chưa rõ"
+        s_mbti = req.student_data.get("mbti") or "Chưa làm trắc nghiệm"
         
-        # Parse scores dictionary to a concise string
-        scores_data = req.student_data.get("scores") or {}
+        # Parse Holland RIASEC object
+        s_holland = "Chưa làm trắc nghiệm"
+        riasec_data = req.student_data.get("riasec") or {}
+        if isinstance(riasec_data, dict) and riasec_data:
+            # Sort keys by score value descending to get the dominant type
+            sorted_riasec = sorted([k for k, v in riasec_data.items() if v], key=lambda k: riasec_data[k], reverse=True)
+            if sorted_riasec:
+                s_holland = sorted_riasec[0]
+                
+        # Parse academic scores dictionary
+        academic_data = req.student_data.get("academic") or {}
         scores_list = []
-        if isinstance(scores_data, dict):
-            for subject, score in scores_data.items():
+        if isinstance(academic_data, dict):
+            for subject, score in academic_data.items():
                 if score:
                     scores_list.append(f"{subject}: {score}")
         scores_summary = ", ".join(scores_list) if scores_list else "Chưa nhập điểm"
