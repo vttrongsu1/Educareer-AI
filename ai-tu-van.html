@@ -1012,7 +1012,7 @@
 
                 const result = await response.json();
                 if (result.success) {
-                    appendMessage('bot', result.reply);
+                    appendMessage('bot', parseMultilineMarkdown(result.reply));
                 } else {
                     throw new Error("API error");
                 }
@@ -1031,7 +1031,7 @@
                 }
                 
                 if (typingIndicator) typingIndicator.style.display = 'none';
-                appendMessage('bot', reply);
+                appendMessage('bot', parseMultilineMarkdown(reply));
             }
         }
 
