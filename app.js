@@ -1162,6 +1162,12 @@ function formatBulletList(text) {
     return html;
 }
 
+// Helper to parse inline markdown (**bold**) into HTML <strong> tags
+function parseInlineMarkdown(text) {
+    if (!text) return "";
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+}
+
 // 3. Detail Page Logic (chi-tiet-nganh.html)
 async function initIndustryDetails() {
     const titleEl = document.getElementById("display-title");
@@ -1206,7 +1212,6 @@ async function initIndustryDetails() {
     let categoryName = "Công nghệ & Kỹ thuật";
     if (ind.category === "biz") categoryName = "Kinh tế & Quản lý";
     if (ind.category === "art") categoryName = "Nghệ thuật & Thiết kế";
-    if (ind.id.startsWith("custom_")) categoryName = "Cẩm nang Tự soạn";
     catBadge.textContent = categoryName;
 
     // B. Render Content
@@ -1420,7 +1425,7 @@ async function initIndustryDetails() {
                             ${raw.lop_9.co_hoi_viec_lam.vi_tri.map(vt => `
                                 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 4px solid var(--primary-cyan); padding: 12px 16px; border-radius: 8px;">
                                     <h4 style="font-size: 0.88rem; color: var(--text-dark); font-weight: 800; margin-bottom: 4px;">${vt.ten_vi_tri}</h4>
-                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5;">${vt.mo_ta}</p>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5;">${parseInlineMarkdown(vt.mo_ta)}</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -1490,7 +1495,7 @@ async function initIndustryDetails() {
                             ${raw.lop_12.co_hoi_viec_lam.vi_tri.map(vt => `
                                 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 4px solid var(--primary-cyan); padding: 12px 16px; border-radius: 8px;">
                                     <h4 style="font-size: 0.88rem; color: var(--text-dark); font-weight: 800; margin-bottom: 4px;">${vt.ten_vi_tri}</h4>
-                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5;">${vt.mo_ta}</p>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5;">${parseInlineMarkdown(vt.mo_ta)}</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -1554,7 +1559,7 @@ async function initIndustryDetails() {
                             ${raw.lop_12.muc_do_canh_tranh.chi_tiet.map(ct => `
                                 <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 12px 14px; border-radius: 8px;">
                                     <h4 style="font-size: 0.82rem; color: var(--primary-blue); font-weight: 800; margin-bottom: 4px;">${ct.cap_do}</h4>
-                                    <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.45;">${ct.mo_ta}</p>
+                                    <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.45;">${parseInlineMarkdown(ct.mo_ta)}</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -1631,7 +1636,7 @@ async function initIndustryDetails() {
                         ${raw["4_co_hoi_viec_lam"].vi_tri.map(vt => `
                             <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-left: 4px solid var(--primary-cyan); padding: 12px 16px; border-radius: 8px;">
                                 <h4 style="font-size: 0.88rem; color: var(--text-dark); font-weight: 800; margin-bottom: 4px;">${vt.ten_vi_tri}</h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5;">${vt.mo_ta}</p>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.5;">${parseInlineMarkdown(vt.mo_ta)}</p>
                             </div>
                         `).join('')}
                     </div>
@@ -1767,7 +1772,7 @@ async function initIndustryDetails() {
             <div class="detail-section">
                 <h2><i class="fa-solid fa-shield-halved"></i> 7. Mức độ cạnh tranh</h2>
                 <p><strong>Đánh giá mức độ:</strong> ${ind.compLevel || 'Chưa cập nhật'}</p>
-                <p>${ind.sec7 || ''}</p>
+                <div>${formatBulletList(ind.sec7 || '')}</div>
             </div>
             <div class="detail-section">
                 <h2><i class="fa-solid fa-quote-left"></i> 9. Kết luận</h2>
@@ -2060,15 +2065,15 @@ function initIndustryCreator() {
                     </div>
                     <div style="margin-bottom:20px;">
                         <h4 style="color:#2563eb; font-weight:700; margin-bottom:6px; border-left:3px solid #2563eb; padding-left:8px;">2. Chương trình đào tạo</h4>
-                        <p style="white-space:pre-line;">${sec2}</p>
+                        <div>${formatBulletList(sec2)}</div>
                     </div>
                     <div style="margin-bottom:20px;">
                         <h4 style="color:#2563eb; font-weight:700; margin-bottom:6px; border-left:3px solid #2563eb; padding-left:8px;">3. Tố chất phù hợp</h4>
-                        <p style="white-space:pre-line;">${sec3}</p>
+                        <div>${formatBulletList(sec3)}</div>
                     </div>
                     <div style="margin-bottom:20px;">
                         <h4 style="color:#2563eb; font-weight:700; margin-bottom:6px; border-left:3px solid #2563eb; padding-left:8px;">4. Triển vọng nghề nghiệp</h4>
-                        <p style="white-space:pre-line;">${sec4}</p>
+                        <div>${formatBulletList(sec4)}</div>
                     </div>
                     <div style="margin-bottom:20px;">
                         <h4 style="color:#2563eb; font-weight:700; margin-bottom:6px; border-left:3px solid #2563eb; padding-left:8px;">5. Mức lương tham khảo</h4>
@@ -2086,7 +2091,7 @@ function initIndustryCreator() {
                     <div style="margin-bottom:20px;">
                         <h4 style="color:#2563eb; font-weight:700; margin-bottom:6px; border-left:3px solid #2563eb; padding-left:8px;">7. Mức độ cạnh tranh</h4>
                         <p><strong>Cấp độ:</strong> ${compLevel}</p>
-                        <p>${sec7}</p>
+                        <div>${formatBulletList(sec7)}</div>
                     </div>
                     <div style="margin-bottom:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px;">
                         <h4 style="color:#2563eb; font-weight:700; margin-bottom:8px;"><i class="fa-solid fa-chart-simple"></i> 8. Đánh giá tổng quan</h4>
