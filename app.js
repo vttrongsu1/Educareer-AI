@@ -1145,6 +1145,25 @@ async function initIndustryCatalog() {
     render();
 }
 
+// Helper to format text with bullet points to HTML unordered lists
+function formatBulletList(text) {
+    if (!text) return "";
+    const lines = text.split('\n');
+    let html = '<ul style="padding-left: 20px; margin-top: 8px;">';
+    lines.forEach(line => {
+        let trimmed = line.trim();
+        if (!trimmed) return;
+        if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+            trimmed = trimmed.substring(1).trim();
+        }
+        // convert bold tags
+        trimmed = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html += `<li style="margin-bottom: 6px;">${trimmed}</li>`;
+    });
+    html += '</ul>';
+    return html;
+}
+
 // 3. Detail Page Logic (chi-tiet-nganh.html)
 async function initIndustryDetails() {
     const titleEl = document.getElementById("display-title");
@@ -1720,41 +1739,41 @@ async function initIndustryDetails() {
         bodyContent.innerHTML = `
             <div class="detail-section">
                 <h2><i class="fa-solid fa-compass"></i> 1. Giới thiệu ngành</h2>
-                <p>${ind.sec1.replace(/\n/g, "<br>")}</p>
+                <p>${(ind.sec1 || '').replace(/\n/g, "<br>")}</p>
             </div>
             <div class="detail-section">
                 <h2><i class="fa-solid fa-graduation-cap"></i> 2. Chương trình đào tạo</h2>
-                <div>${formatBulletList(ind.sec2)}</div>
+                <div>${formatBulletList(ind.sec2 || '')}</div>
             </div>
             <div class="detail-section">
                 <h2><i class="fa-solid fa-user-gear"></i> 3. Tố chất phù hợp</h2>
-                <div>${formatBulletList(ind.sec3)}</div>
+                <div>${formatBulletList(ind.sec3 || '')}</div>
             </div>
             <div class="detail-section">
                 <h2><i class="fa-solid fa-briefcase"></i> 4. Triển vọng nghề nghiệp</h2>
-                <div>${formatBulletList(ind.sec4)}</div>
+                <div>${formatBulletList(ind.sec4 || '')}</div>
             </div>
             <div class="detail-section">
                 <h2><i class="fa-solid fa-money-bill-wave"></i> 5. Mức lương tham khảo</h2>
                 <ul>
                     ${ind.salaryIntern ? `<li><strong>Thực tập sinh:</strong> ${ind.salaryIntern}</li>` : ''}
-                    <li><strong>Sinh viên mới tốt nghiệp:</strong> ${ind.salaryFresh}</li>
-                    <li><strong>Sau vài năm kinh nghiệm:</strong> ${ind.salaryExp}</li>
+                    <li><strong>Sinh viên mới tốt nghiệp:</strong> ${ind.salaryFresh || 'Chưa cập nhật'}</li>
+                    <li><strong>Sau vài năm kinh nghiệm:</strong> ${ind.salaryExp || 'Chưa cập nhật'}</li>
                 </ul>
                 ${ind.salaryNotes ? `<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; border-top: 1px dashed #e2e8f0; padding-top: 10px; margin-top: 10px;">* Ghi chú: ${ind.salaryNotes}</p>` : ''}
             </div>
             <div class="detail-section">
                 <h2><i class="fa-solid fa-chart-line"></i> 6. Xu hướng hiện nay</h2>
-                <p>${ind.sec6.replace(/\n/g, "<br>")}</p>
+                <p>${(ind.sec6 || '').replace(/\n/g, "<br>")}</p>
             </div>
             <div class="detail-section">
                 <h2><i class="fa-solid fa-shield-halved"></i> 7. Mức độ cạnh tranh</h2>
-                <p><strong>Đánh giá mức độ:</strong> ${ind.compLevel}</p>
-                <p>${ind.sec7}</p>
+                <p><strong>Đánh giá mức độ:</strong> ${ind.compLevel || 'Chưa cập nhật'}</p>
+                <p>${ind.sec7 || ''}</p>
             </div>
             <div class="detail-section">
                 <h2><i class="fa-solid fa-quote-left"></i> 9. Kết luận</h2>
-                <p>${ind.sec9.replace(/\n/g, "<br>")}</p>
+                <p>${(ind.sec9 || '').replace(/\n/g, "<br>")}</p>
             </div>
         `;
     }
@@ -1790,8 +1809,9 @@ async function initIndustryDetails() {
             comp: "Độ cạnh tranh",
             stress: "Áp lực học tập"
         };
-        for (let crit in ind.ratings) {
-            const val = ind.ratings[crit];
+        const ratings = ind.ratings || { demand: 3, salary: 3, growth: 3, comp: 3, stress: 3 };
+        for (let crit in ratings) {
+            const val = ratings[crit] || 3;
             const starsHtml = '<i class="fa-solid fa-star"></i>'.repeat(val) + '<i class="fa-regular fa-star"></i>'.repeat(5 - val);
             
             const item = document.createElement("div");
@@ -1807,7 +1827,8 @@ async function initIndustryDetails() {
         
         const notesItem = document.createElement("div");
         notesItem.className = "valuation-desc";
-        notesItem.innerHTML = `Độ cạnh tranh được đánh giá ở mức <strong>${ind.compLevel}</strong>. Áp lực học tập và yêu cầu cập nhật công nghệ mới liên tục đạt mức <strong>${ind.ratings.stress}/5</strong> sao.`;
+        const stressVal = ratings.stress || 3;
+        notesItem.innerHTML = `Độ cạnh tranh được đánh giá ở mức <strong>${ind.compLevel || 'Cao'}</strong>. Áp lực học tập và yêu cầu cập nhật công nghệ mới liên tục đạt mức <strong>${stressVal}/5</strong> sao.`;
         ratingsContainer.appendChild(notesItem);
     }
 
