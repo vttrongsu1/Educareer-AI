@@ -179,6 +179,34 @@ async def scan_transcript(image: UploadFile = File(...)):
     try:
         # Read file bytes
         file_bytes = await image.read()
+        
+        # Convert unsupported image formats (like webp, gif, bmp) to JPEG using Pillow
+        filename_lower = image.filename.lower()
+        if not (image.content_type in ["image/jpeg", "image/png", "image/jpg"] or filename_lower.endswith((".jpg", ".jpeg", ".png"))):
+            try:
+                from PIL import Image
+                import io
+                print(f"Converting unsupported format {image.content_type} to image/jpeg...")
+                img = Image.open(io.BytesIO(file_bytes))
+                if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+                    background = Image.new('RGB', img.size, (255, 255, 255))
+                    if img.mode == 'RGBA':
+                        background.paste(img, mask=img.split()[3])
+                    else:
+                        background.paste(img)
+                    img = background
+                else:
+                    img = img.convert('RGB')
+                
+                out_io = io.BytesIO()
+                img.save(out_io, format="JPEG", quality=90)
+                file_bytes = out_io.getvalue()
+                image.filename = image.filename.rsplit(".", 1)[0] + ".jpg"
+                image.content_type = "image/jpeg"
+                print(f"Converted successfully to JPEG. New size: {len(file_bytes)} bytes")
+            except Exception as conv_err:
+                print(f"Warning: Failed to convert image format: {conv_err}. Attempting raw upload.")
+
         file_len = len(file_bytes)
         print(f"DEBUG Incoming file name: {image.filename}, size: {file_len} bytes")
 
